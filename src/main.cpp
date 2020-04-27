@@ -1,12 +1,17 @@
- #define COUNT_LOW 1638
- #define COUNT_HIGH 7864
+#define COUNT_LOW 1638
+#define COUNT_HIGH 7864
 
- #define TIMER_WIDTH 16
+#define TIMER_WIDTH 16
 
 #include "esp32-hal-ledc.h"
 #include <Arduino.h>
 #include <WiFi.h>
 #include<vector>
+#include "HTTPRequest.h"
+#include "armErrors.h"
+
+#define Engine vector<unsigned int>
+#define Engines vector<Engine>
 
 const char* ssid = "DragonSlayer";
 const char* password = "ifyouwanttohave";
@@ -30,101 +35,95 @@ void WiFIConnect() {
 
 
 void send(WiFiClient client, String code, String text) {
-   client.println("HTTP/1.1 " + code + " OK");
-   client.println("Content-type:text/html");
+   client.println("HTTP/1.1 " + code);   
+   client.println("Content-Type: text/plain");
+   String ln = String(text.length());
+   String ls = "Content-Length: " + ln;
+   client.println(ls);
+   client.println("Access-Control-Allow-Origin: *");   
    client.println("Connection: close");
    client.println();   
    client.println(text);    
 }
 
-bool isNewLine(char symbol) {
-   return ((symbol == '\n') || (symbol == '\r'));
-}
-
-
-std::vector<String> parseRequest(String clientData) {
-   unsigned int ln = clientData.length();   
-   std::vector<String> pr;   
-   unsigned int sIndex = 0;
-   for (unsigned int i = 0; i < ln; i++) {
-      const char smb = clientData[i];
-      if (isNewLine(smb)) continue;
-      if ((smb == ' ') || (i == ln - 1)) {
-         if (sIndex != i)
-            pr.push_back(clientData.substring(sIndex, i));
-         sIndex = i + 1;
-      }      
-   }
-   return pr;
-}
-
-String getQuery(String URL) {
-   int pos = URL.indexOf("?");
-   if (pos == -1) return "";   
-   return URL.substring(pos+1, URL.length());
-}
-
-std::vector<unsigned long> getEngineParameters(String query) {
-   std::vector<unsigned long> res;
-   int pos = query.indexOf(":");
-   if (pos == -1) return res;
-   String fp = query.substring(0, pos);
-   String sp = query.substring(pos+1, query.length());
-   res.push_back(fp.toInt());
-   res.push_back(sp.toInt());   
+Engine getEngineParameters(string query) {
+   Engine res;
+   size_t pos = query.find(":");
+   if (pos == string::npos) return res;
+   string fp = query.substr(0, pos);
+   string sp = query.substr(pos+1, query.length() - pos + 1);      
+   res.push_back(atoi(fp.c_str()));
+   res.push_back(atoi(sp.c_str()));
    return res;
 }
 
-void setEngine(unsigned long engine, unsigned long angle) {
-   ledcWrite(engine, angle);
+
+Engines getEngines(vector<string> queryParams) {
+   unsigned int ln = queryParams.size();
+   Engines res;
+   for (unsigned int i = 0; i < ln; i++) {
+      string qr = queryParams[i];
+      Engine engine = getEngineParameters(qr);
+      res.push_back(engine);
+   }  
+   return res;    
 }
 
-void route(WiFiClient client, String clientData) {
-   std::vector<String> pr = parseRequest(clientData);
-   if (pr.size() < 2) {
-      send(client, "400", "Invalid request");
-      return;
-   }
-   String url = pr[1];   
-   String query = getQuery(url);
-   std::vector<unsigned long> ep;
-   try {
-      ep = getEngineParameters(query);
-      if (ep.size() < 2) {
-         send(client, "400", "Invalid query");
-         return;
-      }
-   } catch (...){
-      send(client, "400", "Invalid query");
-      return;
-   }
 
-   unsigned long engine = ep[0];
-   unsigned long value = ep[1];
-
-   if ((engine < 1) || (engine > 4)) {
-      send(client, "400", "Invalid engine number");
-      return;
-   }
-
+void setEngine(unsigned int engineIndex, unsigned int value) {
    if (value < COUNT_LOW) {
-      send(client, "400", "Value too low");
-      return;
+      string msg = "value is too low " + value;
+      throw invalid_argument(msg);      
    }
 
    if (value > COUNT_HIGH) {
-      send(client, "400", "Value too high");
-      return;
+      string msg = "value is too high " + value;
+      throw invalid_argument(msg);      
    }
 
-   setEngine(engine, value);
-   send(client, "200", "OK");
+   if ((engineIndex < 1) && (engineIndex > 4)) {
+         string msg = "Invalid engine number" + engineIndex;
+         throw invalid_argument(msg);
+   }      
+   ledcWrite(engineIndex, value);   
 }
 
 
-String readClient(WiFiClient client) {
-   String header = "";
-   String currentLine = "";
+void setEngines(Engines engines) {
+   unsigned int ln = engines.size();
+   for (unsigned int i =0; i < ln; i++) {
+      Engine ep = engines[i];
+      if (ep.size() < 2) {
+         string msg = "Invalid parameter for engine " + i;
+         throw invalid_argument(msg);
+      }
+      unsigned int engine = ep[0];
+      unsigned int value = ep[1];      
+      setEngine(engine, value);
+   }
+}
+
+unsigned int route(string clientData) {
+   HTTPRequest* hr = new HTTPRequest(clientData);   
+   vector<string> qr = hr->queryParams;      
+   delete hr;
+   if (qr.size() < 4) {            
+      return 1;
+   }
+         
+   Engines en = getEngines(qr);
+   if (en.size() < 4) {            
+      return 1;
+   }
+      
+   setEngines(en);         
+   return 0;
+}
+
+
+string readClient(WiFiClient client) {
+   string header = "";
+   string currentLine = "";
    while (client.connected()) {    
       if (!client.available()) return header;
       char c = client.read();
@@ -143,12 +142,27 @@ String readClient(WiFiClient client) {
    return header;
 }
 
+
 void dispatchClient() {
-   WiFiClient client = server.available();
+   WiFiClient client = server.available();      
    if (!client) return;   
-   String clientData = readClient(client);
-   route(client, clientData);   
-   client.stop();
+   string clientData = readClient(client);
+   try {
+      unsigned int res = route(clientData); 
+      ArmErrors::Error rc = ArmErrors::get(res);
+      if (res == 0) {
+         send(client, "200", "OK");
+      } else {
+         throw invalid_argument("Must be 4 parameters for 4 engines");
+      }
+   } catch (const std::exception& e) {
+      Serial.write(e.what());
+      Serial.write("\n");
+      send(client, "400", e.what());
+   } catch (...) {
+      Serial.write("Error");
+   }   
+   client.stop();   
 }
 
 
