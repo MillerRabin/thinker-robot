@@ -67,13 +67,13 @@ uint degToCount(const uint value, const uint maxDeg) {
 double getX(const double sAngle, const double eAngle, const double wAngle, const double rAngle) {
     const double sRad = (sAngle + SHOULDER_OFFSET) * PI / 180.0;
     const double l1 = SHOULDER_LENGTH * cos(sRad);            
-    Serial.printf("shoulder %f - %f\n", sAngle, l1);
+    //Serial.printf("shoulder %f - %f\n", sAngle, l1);
     const double eRad = (eAngle + sAngle + ELBOW_OFFSET) * PI / 180.0;
     const double l2 = ELBOW_LENGTH * cos(eRad);        
-    Serial.printf("elbow %f - %f\n", eAngle, l2);
+    //Serial.printf("elbow %f - %f\n", eAngle, l2);
     const double wRad = (wAngle + sAngle + eAngle + WRIST_OFFSET) * PI / 180.0;
     const double l3 = WRIST_LENGTH * cos(wRad);        
-    Serial.printf("wrist %f - %f\n", wAngle, l3);
+    //Serial.printf("wrist %f - %f\n", wAngle, l3);
     const double rRad = (rAngle + ROTATE_OFFSET) * PI / 180.0;    
     return (l1 + l2 + l3) * sin(rRad);
 }
