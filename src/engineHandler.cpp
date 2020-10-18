@@ -2,8 +2,7 @@
 #include <ArduinoJson.h>
 #include <ESP32_Servo.h>
 #include "initServer.h"
-#include <math.h>
-
+#include <Position.h>
 
 #define COUNT_LOW 1638
 #define COUNT_HIGH 7864
@@ -26,19 +25,6 @@
 
 #define GRIPPER_MAX_ANGLE 4000
 
-#define SHOULDER_LENGTH 105
-#define ELBOW_LENGTH 95
-#define WRIST_LENGTH 150
-
-#define SHOULDER_OFFSET 0
-#define ELBOW_OFFSET 35
-#define WRIST_OFFSET 250
-#define ROTATE_OFFSET -45
-#define GRIPPER_ROTATE_OFFSET -45
-
-
-#define TOP_OFFSET 80
-
 unsigned int gGripper = 0;
 unsigned int gGripperRotate = 0;
 unsigned int gRotate = 0;
@@ -48,6 +34,22 @@ unsigned int gWrist = 0;
 
  
 int getValue(JsonObject& jsonObj, const char* key, const unsigned int min, const unsigned int max) {
+    if (!jsonObj.containsKey(key)) return -1;
+    const char* str = jsonObj[key];
+    const int val = atoi(str);
+    return val;
+}
+
+double getDoubleDef(JsonObject& jsonObj, const char* key, const double min, const double max, const double def) {
+    if (!jsonObj.containsKey(key)) return def;    
+    const char* str = jsonObj[key];
+    const int val = atof(str);
+    if (val < min) return def;
+    if (val > max) return def;
+    return val;
+}
+
+int getPosition(JsonObject& jsonObj, const char* key) {
     if (!jsonObj.containsKey(key)) return -1;
     const char* str = jsonObj[key];
     const int val = atoi(str);
@@ -64,54 +66,15 @@ uint degToCount(const uint value, const uint maxDeg) {
     return (uint)vl;
 }
 
-double getX(const double sAngle, const double eAngle, const double wAngle, const double rAngle) {
-    const double sRad = (sAngle + SHOULDER_OFFSET) * PI / 180.0;
-    const double l1 = SHOULDER_LENGTH * cos(sRad);            
-    //Serial.printf("shoulder %f - %f\n", sAngle, l1);
-    const double eRad = (eAngle + sAngle + ELBOW_OFFSET) * PI / 180.0;
-    const double l2 = ELBOW_LENGTH * cos(eRad);        
-    //Serial.printf("elbow %f - %f\n", eAngle, l2);
-    const double wRad = (wAngle + sAngle + eAngle + WRIST_OFFSET) * PI / 180.0;
-    const double l3 = WRIST_LENGTH * cos(wRad);        
-    //Serial.printf("wrist %f - %f\n", wAngle, l3);
-    const double rRad = (rAngle + ROTATE_OFFSET) * PI / 180.0;    
-    return (l1 + l2 + l3) * sin(rRad);
-}
-
 double getGripperAngleZ(const double grAngle, const double rAngle) {
     return (grAngle + GRIPPER_ROTATE_OFFSET - 90) - (90 - rAngle - ROTATE_OFFSET);
 }
 
 double getGripperAngleXY(const double sAngle, const double eAngle, const double wAngle) {    
-    const double a1 = (-1 * sAngle + SHOULDER_OFFSET);
-    //Serial.printf("shoulder %f - %f\n", sAngle, a1);
-    const double a2 = 180 - (eAngle + ELBOW_OFFSET);
-    //Serial.printf("elbow %f - %f\n", eAngle, a2);
+    const double a1 = (-1 * sAngle + SHOULDER_OFFSET);    
+    const double a2 = 180 - (eAngle + ELBOW_OFFSET);    
     const double a3 = wAngle - (WRIST_OFFSET - 95);
-    //Serial.printf("wrist %f - %f\n", wAngle, a3);
     return a1 - a2 + a3;
-}
-
-
-double getY(const double sAngle, const double eAngle, const double wAngle) {
-    const double sRad = (sAngle + SHOULDER_OFFSET) * PI / 180.0;
-    const double l1 = SHOULDER_LENGTH * sin(sRad);            
-    const double eRad = (eAngle + sAngle + ELBOW_OFFSET + 180) * PI / 180.0;
-    const double l2 = ELBOW_LENGTH * sin(eRad);    
-    const double wRad = (wAngle + sAngle + eAngle + WRIST_OFFSET + 180) * PI / 180.0;
-    const double l3 = WRIST_LENGTH * sin(wRad);    
-    return l1 + l2 + l3 + TOP_OFFSET;
-}
-
-double getZ(const double sAngle, const double eAngle, const double wAngle, const double rAngle) {
-    const double sRad = (sAngle + SHOULDER_OFFSET) * PI / 180.0;
-    const double l1 = SHOULDER_LENGTH * cos(sRad);            
-    const double eRad = (eAngle + sAngle + ELBOW_OFFSET) * PI / 180.0;
-    const double l2 = ELBOW_LENGTH * cos(eRad);    
-    const double wRad = (wAngle + sAngle + eAngle + WRIST_OFFSET) * PI / 180.0;
-    const double l3 = WRIST_LENGTH * cos(wRad);    
-    const double rRad = (rAngle + ROTATE_OFFSET) * PI / 180.0;    
-    return (l1 + l2 + l3) * cos(rRad);
 }
 
 void sendSuccess(AsyncWebServerRequest* request) {
@@ -126,9 +89,10 @@ void sendSuccess(AsyncWebServerRequest* request) {
     root["shoulder"] = gShoulder;
     root["elbow"] = gElbow;
     root["wrist"] = gWrist;
-    root["length-x"] = getX(gShoulder, gElbow, gWrist, gRotate);
-    root["length-y"] = getY(gShoulder, gElbow, gWrist);
-    root["length-z"] = getZ(gShoulder, gElbow, gWrist, gRotate);
+    const Position pos(gShoulder, gElbow, gWrist, gRotate);    
+    root["length-x"] = pos.x.vector;
+    root["length-y"] = pos.y.vector;
+    root["length-z"] = pos.z.vector;
     root.printTo(*response);
     request->send(response);
 }
@@ -206,8 +170,30 @@ AsyncCallbackJsonWebHandler* engineHandler = new AsyncCallbackJsonWebHandler("/m
         setShoulder(jsonObj);
         setElbow(jsonObj);
         setWrist(jsonObj);
-        sendSuccess(request);
+        sendSuccess(request);        
+    } catch (const std::exception& e) {
+        sendError(request, e.what());
+    } catch (...) {
+        sendError(request, "Unknown Error");
+    }
+});
+
+AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("/position", [](AsyncWebServerRequest *request, JsonVariant &json) {    
+    try {
+        JsonObject& jsonObj = json.as<JsonObject>();        
+        const Position pos(gShoulder, gElbow, gWrist, gRotate);        
+        const double tx = getDoubleDef(jsonObj, "x", 95, 200, pos.x.vector);    
+        const double ty = getDoubleDef(jsonObj, "y", -50, 200, pos.y.vector);    
+        const double tz = getDoubleDef(jsonObj, "z", -50, 200, pos.z.vector);    
+                
+        const double dx = tx - pos.x.vector;
+        const double dy = ty - pos.y.vector;
+        const double dz = tz - pos.z.vector;
+
+        Serial.printf("l1 - %f, l2 - %f, l3 - %f, vector - %f\n", pos.x.l1, pos.x.l2, pos.x.l3, pos.x.vector);
+        Serial.printf("dx - %f, dy - %f, dz - %f\n", dx, dy, dz);
         
+        sendSuccess(request);        
     } catch (const std::exception& e) {
         sendError(request, e.what());
     } catch (...) {
@@ -227,6 +213,7 @@ void enableEngines() {
     ledcAttachPin(ROTATE_PIN, ROTATE_CHANNEL);
     ledcAttachPin(SHOULDER_PIN, SHOULDER_CHANNEL);
     ledcAttachPin(ELBOW_PIN, ELBOW_CHANNEL);
-    ledcAttachPin(WRIST_PIN, WRIST_CHANNEL);
+    ledcAttachPin(WRIST_PIN, WRIST_CHANNEL);    
     Server.addHandler(engineHandler);    
+    Server.addHandler(positionHandler);    
 }

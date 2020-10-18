@@ -12,7 +12,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "C:/projects/millerrabin/roboarm/.pio/build/esp32doit-devkit-v1/firmware.elf",
+            "executable": "c:/projects/millerrabin/roboarm/.pio/build/esp32doit-devkit-v1/firmware.elf",
             "toolchainBinDir": "C:/Users/millerrabin/.platformio/packages/toolchain-xtensa32/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -24,7 +24,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "C:/projects/millerrabin/roboarm/.pio/build/esp32doit-devkit-v1/firmware.elf",
+            "executable": "c:/projects/millerrabin/roboarm/.pio/build/esp32doit-devkit-v1/firmware.elf",
             "toolchainBinDir": "C:/Users/millerrabin/.platformio/packages/toolchain-xtensa32/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
