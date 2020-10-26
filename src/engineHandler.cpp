@@ -170,7 +170,7 @@ AsyncCallbackJsonWebHandler* engineHandler = new AsyncCallbackJsonWebHandler("/m
         setShoulder(jsonObj);
         setElbow(jsonObj);
         setWrist(jsonObj);
-        sendSuccess(request);        
+        sendSuccess(request);
     } catch (const std::exception& e) {
         sendError(request, e.what());
     } catch (...) {
