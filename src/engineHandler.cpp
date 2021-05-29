@@ -79,9 +79,9 @@ void sendSuccess(AsyncWebServerRequest* request) {
     root["elbow"] = gElbow;
     root["wrist"] = gWrist;
     const Position pos(gShoulder, gElbow, gWrist, gRotate);    
-    root["length-x"] = pos.x.lengthSum;
-    root["length-y"] = pos.y.lengthSum;
-    root["length-z"] = pos.z.lengthSum;
+    root["length-x"] = pos.x.length;
+    root["length-y"] = pos.y.length;
+    root["length-z"] = pos.z.length;
     root.printTo(*response);
     request->send(response);
 }
@@ -178,8 +178,7 @@ void apply(Strategy strategy) {
             gElbow = setEngine(ELBOW_ENGINE, control.angle);
             continue;
         }        
-
-    }
+    }    
 }
 
 
@@ -187,9 +186,9 @@ AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("
     try {
         JsonObject& jsonObj = json.as<JsonObject>();        
         const Position pos(gShoulder, gElbow, gWrist, gRotate);        
-        const double tx = getDoubleDef(jsonObj, "x", 95, 200, pos.x.lengthSum);    
-        const double ty = getDoubleDef(jsonObj, "y", -50, 200, pos.y.lengthSum);    
-        const double tz = getDoubleDef(jsonObj, "z", -50, 200, pos.z.lengthSum);    
+        const double tx = getDoubleDef(jsonObj, "x", 95, 200, pos.x.length);    
+        const double ty = getDoubleDef(jsonObj, "y", -50, 200, pos.y.length);    
+        const double tz = getDoubleDef(jsonObj, "z", -50, 200, pos.z.length);    
         Strategy moveStrategy(pos, tx, ty, tz);
         apply(moveStrategy);
         sendSuccess(request);        

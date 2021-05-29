@@ -14,7 +14,7 @@ class EngineControl {
 
 class Strategy {
     private:
-        void case1(Position pos, double x);
+        void case1(Position pos, double x, double z);
     public:
         Strategy(Position pos, double x, double y, double z);
         std::vector<EngineControl> sequence;       
