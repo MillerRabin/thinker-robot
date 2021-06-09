@@ -169,7 +169,7 @@ AsyncCallbackJsonWebHandler* engineHandler = new AsyncCallbackJsonWebHandler("/m
 });
 
 void apply(Strategy strategy) {
-    for(EngineControl control : strategy.sequence) {
+    for(EngineControl control : strategy.sequence) {    
         if (control.engine == SHOULDER_ENGINE) {
             gShoulder = setEngine(SHOULDER_ENGINE, control.angle);
             continue;
@@ -177,7 +177,11 @@ void apply(Strategy strategy) {
         if (control.engine == ELBOW_ENGINE) {
             gElbow = setEngine(ELBOW_ENGINE, control.angle);
             continue;
-        }        
+        }
+        if (control.engine == WRIST_ENGINE) {
+            gWrist = setEngine(WRIST_ENGINE, control.angle);    
+            continue;
+        }
     }    
 }
 

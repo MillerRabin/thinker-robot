@@ -3,6 +3,25 @@
 #include <math.h>
 #include <Position.h>
 
+double APoint::addX(const double dx) {
+    this->x = x + dx;
+    return this->x;
+}
+
+Leverage Position::getShoulderZ(const double sAngle) {
+    const double sRad = (SHOULDER_INC * sAngle + SHOULDER_OFFSET) * PI / 180.0;
+    Leverage lev;
+    lev.length = SHOULDER_LENGTH * sin(sRad);
+    lev.rad = sRad;
+    return lev;
+}
+
+Leverage Position::getShoulderX(const double sAngle, const double rRad) {
+    Leverage shoulder;
+    shoulder.rad = (SHOULDER_INC * sAngle + SHOULDER_OFFSET) * PI / 180.0;
+    shoulder.length = SHOULDER_LENGTH * cos(shoulder.rad) * sin(rRad);
+    return shoulder;
+}
 
 Projection Position::getX(const double sAngle, const double eAngle, const double wAngle, const double rAngle) {    
     const double rRad = Position::getRotateRad(rAngle);
@@ -25,21 +44,6 @@ const double Position::getRotateRad(const double rAngle) {
     return (rAngle + ROTATE_OFFSET) * PI / 180.0;
 }
 
-Leverage Position::getShoulderZ(const double sAngle) {
-    const double sRad = (SHOULDER_INC * sAngle + SHOULDER_OFFSET) * PI / 180.0;
-    Leverage lev;
-    lev.length = SHOULDER_LENGTH * sin(sRad);
-    lev.rad = sRad;
-    return lev;
-}
-
-Leverage Position::getShoulderX(const double sAngle, const double rRad) {
-    Leverage shoulder;
-    shoulder.rad = (SHOULDER_INC * sAngle + SHOULDER_OFFSET) * PI / 180.0;
-    shoulder.length = SHOULDER_LENGTH * cos(shoulder.rad) * sin(rRad);
-    return shoulder;
-}
-
 double Position::getShoulderAngleFromX(const double x, const double rRad) {                
     const double trad = x / SHOULDER_LENGTH / sin(rRad);    
     const double srad = acos(trad);
@@ -48,18 +52,6 @@ double Position::getShoulderAngleFromX(const double x, const double rRad) {
     return sAngle;
 }
 
-
-double Position::getWristAngleFromX(Leverage shoulder, Leverage elbow, const double x) {
-    const double tsum = x / WRIST_LENGTH;    
-    const double asum = acos(tsum);
-    const double wrad  = asum;
-    const double wdeg = wrad / PI * 180.0;
-    const double wAngle = (wdeg + WRIST_OFFSET + 90);
-    Serial.printf("sum: %f, asum: %F, wrad: %f, wdeg: %f, wAngle: %f\n", tsum, asum, wrad, wdeg, wAngle);
-    return wAngle;
-}
-
-
 Leverage Position::getElbowZ(Leverage shoulder, const double eAngle) {
     Leverage elbow;
     elbow.rad = (ELBOW_INC * eAngle + ELBOW_OFFSET) * PI / 180.0;
@@ -67,21 +59,65 @@ Leverage Position::getElbowZ(Leverage shoulder, const double eAngle) {
     return elbow;
 }
 
-double Position::getElbowAngleFromZ(Leverage shoulder, const double z) {
-    const double tsum = z / ELBOW_LENGTH;    
-    const double asum = asin(tsum);
-    const double erad  = asum - shoulder.rad;
-    const double edeg = erad / PI * 180.0;
-    const double eAngle = (edeg - ELBOW_OFFSET) * ELBOW_INC;
-    Serial.printf("shoulder: %f, sum: %f, asum: %F, erad: %f, edeg: %f, eAngle: %f\n", shoulder.rad, tsum, asum, erad, edeg, eAngle);
+double Position::getElbowAngle(const double elbowRad) {        
+    const double edeg = elbowRad / PI * 180.0;
+    const double eAngle = (edeg - ELBOW_OFFSET) / ELBOW_INC;    
     return eAngle;
 }
 
-Leverage Position::getWristX(Leverage shoulder, Leverage elbow, const double rRad, const double wAngle) {
+double Position::getElbowRadFromZ(Leverage shoulder, const double z) {
+    const double tsum = z / ELBOW_LENGTH;    
+    const double asum = asin(tsum);
+    const double erad  = asum - shoulder.rad;    
+    return erad;
+}
+
+Leverage Position::getWristX(Leverage shoulder, const double elbowRad, const double rotateRad, const double wristAngle) {
     Leverage wrist;
-    wrist.rad = (WRIST_INC * wAngle + WRIST_OFFSET) * PI / 180.0;
-    wrist.length = WRIST_LENGTH * cos(wrist.rad + elbow.rad + shoulder.rad) * sin(rRad);
+    wrist.rad = (WRIST_INC * wristAngle + WRIST_OFFSET) * PI / 180.0;
+    wrist.length = WRIST_LENGTH * cos(wrist.rad + elbowRad + shoulder.rad) * sin(rotateRad);
     return wrist;
+}
+
+APoint Position::getWristPoint(const double shoulderRad, const double elbowRad, const double rotateRad, const double wristAngle) {
+    APoint point;
+    point.XZRad = (WRIST_INC * wristAngle + WRIST_OFFSET) * PI / 180.0;
+    point.XYRad = rotateRad;
+    point.sum = point.XZRad + elbowRad + shoulderRad;
+    point.x = WRIST_LENGTH * cos(point.sum) * sin(rotateRad);
+    point.y = WRIST_LENGTH * cos(point.sum) * cos(rotateRad);
+    point.z = WRIST_LENGTH * sin(point.sum);
+    return point;
+}
+
+APoint Position::getShoulderPoint(const double rotateRad, const double shoulderAngle) {
+    APoint point;
+    point.XZRad = (SHOULDER_INC * shoulderAngle + SHOULDER_OFFSET) * PI / 180.0;
+    point.XYRad = rotateRad;
+    point.sum = point.XZRad;
+    point.x = SHOULDER_LENGTH * cos(point.sum) * sin(rotateRad);
+    point.y = SHOULDER_LENGTH * cos(point.sum) * cos(rotateRad);
+    point.z = SHOULDER_LENGTH * sin(point.sum);
+    return point;
+}
+
+double Position::getWristAngleFromX(const double shoulderRad, const double elbowRad, APoint point) {    
+    const double sign = (point.sum < 0) ? -1 : 1;
+    const double tsum = point.x / (WRIST_LENGTH * sin(point.XYRad));
+    const double asum = acos(tsum) * sign;
+    const double wrad  = asum - elbowRad - shoulderRad;
+    const double wdeg = wrad / PI * 180.0;
+    const double wAngle = (wdeg - WRIST_OFFSET) / WRIST_INC;    
+    return wAngle;
+}
+
+double Position::getWristAngleFromZ(const double shoulderRad, const double elbowRad, APoint point) {
+    const double tsum = point.z / WRIST_LENGTH;
+    const double asum = asin(tsum);
+    const double wrad  = asum - elbowRad - shoulderRad;
+    const double wdeg = wrad / PI * 180.0;
+    const double wAngle = (wdeg - WRIST_OFFSET) / WRIST_INC;
+    return wAngle;
 }
 
 Leverage Position::getWristZ(Leverage shoulder, Leverage elbow, const double wAngle) {
@@ -131,3 +167,4 @@ Position::Position(const unsigned int sAngle, const unsigned int eAngle, const u
     wristAngle = wAngle;
     rotateAngle = rAngle;
 }
+

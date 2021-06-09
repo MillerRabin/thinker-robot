@@ -4,6 +4,17 @@
 #include <armParams.h>
 #include <Position.h>
 
+class APoint {
+    public:
+        double XZRad;
+        double XYRad;
+        double sum;
+        double x;
+        double y;
+        double z;
+        double addX(const double dx);
+};
+
 class Leverage {
     public:
         double length;
@@ -37,10 +48,14 @@ class Position {
         static double getShoulderAngleFromX(const double x, const double rRad);
         static Leverage getShoulderZ(const double sAngle);        
         static Leverage getElbowZ(Leverage shoulder, const double eAngle);
-        static double getElbowAngleFromZ(Leverage shoulder, const double z);
-        static double getWristAngleFromX(Leverage shoulder, Leverage elbow, const double x);
-        static Leverage getWristX(Leverage shoulder, Leverage elbow, const double rRad, const double wAngle);
+        static double getElbowAngle(const double elbowRad);
+        static double getElbowRadFromZ(Leverage shoulder, const double z);        
+        static Leverage getWristX(Leverage shoulder, const double elbowRad, const double rotateRad, const double wristAngle);        
         static Leverage getWristZ(Leverage shoulder, Leverage elbow, const double wAngle);        
+        static APoint getWristPoint(const double shoulderRad, const double elbowRad, const double rotateRad, const double wristAngle);
+        static APoint getShoulderPoint(const double rotateRad, const double shoulderAngle);
+        static double getWristAngleFromX(const double shoulderRad, const double elbowRad, APoint point);
+        static double getWristAngleFromZ(const double shoulderRad, const double elbowRad, APoint point);
 };
 
 #endif
