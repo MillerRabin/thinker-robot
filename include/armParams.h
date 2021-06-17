@@ -17,18 +17,21 @@
 
 #define SHOULDER_LENGTH 105
 #define ELBOW_LENGTH 95
-#define WRIST_LENGTH 150
+#define WRIST_LENGTH 160
 
 #define SHOULDER_OFFSET 0
 #define SHOULDER_INC 1
-#define ELBOW_OFFSET 145
+#define ELBOW_OFFSET 140
 #define ELBOW_INC -1
-#define WRIST_OFFSET 145
+#define ELBOW_MIN 0
+#define ELBOW_MAX 280
+
+#define WRIST_OFFSET 155
 #define WRIST_INC -1
 #define ROTATE_OFFSET -45
 #define GRIPPER_ROTATE_OFFSET -45
 
-#define TOP_OFFSET 80
+#define TOP_OFFSET 85
 
 
 #endif

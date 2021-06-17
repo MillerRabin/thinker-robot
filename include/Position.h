@@ -3,17 +3,7 @@
 
 #include <armParams.h>
 #include <Position.h>
-
-class APoint {
-    public:
-        double XZRad;
-        double XYRad;
-        double sum;
-        double x;
-        double y;
-        double z;
-        double addX(const double dx);
-};
+#include <arm.h>
 
 class Leverage {
     public:
@@ -38,7 +28,7 @@ class Position {
         Position(const unsigned int sAngle, const unsigned int eAngle, const unsigned int wAngle, const double rAngle);
         Projection x;
         Projection y;
-        Projection z;
+        Projection z;        
         unsigned int shoulderAngle;
         unsigned int elbowAngle;
         unsigned int wristAngle;
@@ -52,10 +42,6 @@ class Position {
         static double getElbowRadFromZ(Leverage shoulder, const double z);        
         static Leverage getWristX(Leverage shoulder, const double elbowRad, const double rotateRad, const double wristAngle);        
         static Leverage getWristZ(Leverage shoulder, Leverage elbow, const double wAngle);        
-        static APoint getWristPoint(const double shoulderRad, const double elbowRad, const double rotateRad, const double wristAngle);
-        static APoint getShoulderPoint(const double rotateRad, const double shoulderAngle);
-        static double getWristAngleFromX(const double shoulderRad, const double elbowRad, APoint point);
-        static double getWristAngleFromZ(const double shoulderRad, const double elbowRad, APoint point);
 };
 
 #endif

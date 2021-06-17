@@ -5,36 +5,44 @@
 
 
 void Strategy::case1(Position pos, double x, double z) {        
-    const double dx = x - pos.x.length;    
-    //const double dz = z - pos.z.length;
+    Serial.printf("source x: %f, z: %f\n", pos.x.length, pos.z.length);
+    Serial.printf("target x: %f, z: %f\n", x, z);
+        
     ArmRotate rotate = ArmRotate(pos.rotateAngle);
     const double rRad = rotate.XYRad;    
     ArmShoulder shoulder = ArmShoulder(rRad, pos.shoulderAngle);            
-    const double sz = shoulder.z;    
-    const double sRad = shoulder.XZRad;
-    shoulder.addX(dx);            
-    const double dsz = shoulder.z - sz;    
-    const unsigned int sAngle = shoulder.getAngleXZ();    
-    Serial.printf("shoulder angle: %d\n", sAngle);    
-    ArmElbow elbow = ArmElbow(sRad, rRad, pos.elbowAngle);            
-    const double eRad = elbow.XZRad;
-    elbow.addZ(shoulder.XZRad, -dsz);
+    ArmElbow elbow = ArmElbow(shoulder.XZRad, rRad, pos.elbowAngle);
+    
+    const double sLength = ArmShoulder::getLengthXZ(x, z);
+    Serial.printf("sLength: %f\n", sLength);    
+    const double eLength = ArmElbow::getLengthXZ(shoulder, x, z);    
+    Serial.printf("eLength: %f\n", eLength);    
+    const double wLength = ArmWrist::getLengthXZ(shoulder, elbow, x, z);
+    Serial.printf("wLength: %f\n", wLength);    
+    const double lSum = ELBOW_LENGTH + WRIST_LENGTH;
+    Serial.printf("eLength: %f, lsum: %f\n", eLength, lSum);    
+
+
+    elbow.setToLength(shoulder, x, z, WRIST_LENGTH);        
+    Serial.printf("source shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
+    Serial.printf("source elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);    
+    ArmWrist wrist = ArmWrist(shoulder.XZRad, elbow.XZRad, rRad, pos.wristAngle);    
+    wrist.setZ(shoulder, elbow, z);
+    Serial.printf("shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
+    Serial.printf("elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);
+    Serial.printf("wrist x: %f, wrist z: %f\n", wrist.x, wrist.z);
+
+    const unsigned int sAngle = shoulder.getAngleXZ();
+    const unsigned int wAngle = wrist.getAngleXZ();    
     const unsigned int eAngle = elbow.getAngleXZ();
-    Serial.printf("elbow z: %f, dsz: %f\n", elbow.z, dsz);
-    Serial.printf("elbow angle: %d\n", eAngle);
-    Serial.printf("Wrist angle %d\n", pos.wristAngle);
-    ArmWrist sourceWrist = ArmWrist(sRad, eRad, rRad, pos.wristAngle);    
-    ArmWrist targetWrist = ArmWrist(shoulder.XZRad, elbow.XZRad, rRad, pos.wristAngle);    
-    Serial.printf("source wrist.x: %f, target wrist.x: %f\n", sourceWrist.x, targetWrist.x);    
-    targetWrist.setX(shoulder.XZRad, elbow.XZRad, sourceWrist.x);
-    const unsigned int wAngle = targetWrist.getAngleXZ();
-    Serial.printf("target Wrist angle %d\n", wAngle);
+    Serial.printf("shoulder angle: %d, elbow angle: %d, wrist angle %d\n", sAngle, eAngle, wAngle);
+
     EngineControl sEngine(SHOULDER_ENGINE, sAngle);
     EngineControl eEngine(ELBOW_ENGINE, eAngle);
     EngineControl wEngine(WRIST_ENGINE, wAngle);
     this->sequence.push_back(sEngine);
     this->sequence.push_back(eEngine);
-    this->sequence.push_back(wEngine);        
+    this->sequence.push_back(wEngine);
 }
 
 EngineControl::EngineControl(unsigned int engine, unsigned int angle) {
