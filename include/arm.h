@@ -76,7 +76,7 @@ class ArmElbow : public ArmPoint {
         ArmRoot getValidRoot(ArmShoulder shoulder, ArmRoots roots);
         double getRadFromPos(const double shoulderRad, const double x, const double z);
     public: 
-        ArmElbow(const double shoulderRad, const double rotateRad, const double elbowAngle);        
+        ArmElbow(const double rotateRad, const double shoulderRad, const double elbowAngle);        
         void setToLength(ArmShoulder shoulder, const double x, const double z, const double length);
         static double getLengthXZ(ArmShoulder shoulder, const double x, const double z);                
         void addZ(const double shoulderRad, const double dz);
@@ -96,7 +96,7 @@ class ArmWrist : public ArmPoint {
     private:
         void setPoints(const double shoulderRad, const double elbowRad, const double wristRad, const double rotateRad);        
     public: 
-        ArmWrist(const double shoulderRad, const double elbowRad, const double rotateRad, const double wristAngle);        
+        ArmWrist(const double rotateRad, const double shoulderRad, const double elbowRad, const double wristAngle);
         static double getLengthXZ(ArmShoulder shoulder, ArmElbow elbow, const double x, const double z);        
         void setZ(ArmShoulder shoulder, ArmElbow elbow, const double z);
         double getLength() override {

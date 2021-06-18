@@ -5,13 +5,13 @@
 
 
 void Strategy::case1(Position pos, double x, double z) {        
-    Serial.printf("source x: %f, z: %f\n", pos.x.length, pos.z.length);
+    Serial.printf("source x: %f, z: %f\n", pos.getX(), pos.getZ());
     Serial.printf("target x: %f, z: %f\n", x, z);
         
     ArmRotate rotate = ArmRotate(pos.rotateAngle);
     const double rRad = rotate.XYRad;    
     ArmShoulder shoulder = ArmShoulder(rRad, pos.shoulderAngle);            
-    ArmElbow elbow = ArmElbow(shoulder.XZRad, rRad, pos.elbowAngle);
+    ArmElbow elbow = ArmElbow(rRad, shoulder.XZRad, pos.elbowAngle);
     
     const double sLength = ArmShoulder::getLengthXZ(x, z);
     Serial.printf("sLength: %f\n", sLength);    
@@ -26,7 +26,7 @@ void Strategy::case1(Position pos, double x, double z) {
     elbow.setToLength(shoulder, x, z, WRIST_LENGTH);        
     Serial.printf("source shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
     Serial.printf("source elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);    
-    ArmWrist wrist = ArmWrist(shoulder.XZRad, elbow.XZRad, rRad, pos.wristAngle);    
+    ArmWrist wrist = ArmWrist(rRad, shoulder.XZRad, elbow.XZRad, pos.wristAngle);    
     wrist.setZ(shoulder, elbow, z);
     Serial.printf("shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
     Serial.printf("elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);
