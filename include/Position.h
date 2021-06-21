@@ -11,12 +11,14 @@ class Position {
         const unsigned int rotateAngle;
         const unsigned int shoulderAngle;
         const unsigned int elbowAngle;
-        const unsigned int wristAngle;        
+        const unsigned int wristAngle;
+        const unsigned int clawAngle;
         ArmRotate rotate;
         ArmShoulder shoulder;
         ArmElbow elbow;
-        ArmWrist wrist;        
-        Position(const unsigned int sAngle, const unsigned int eAngle, const unsigned int wAngle, const double rAngle);
+        ArmWrist wrist;
+        ArmClaw claw;        
+        Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawAngle);
         double getX();
         double getY();
         double getZ();

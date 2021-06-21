@@ -22,12 +22,9 @@ void Strategy::case1(Position pos, double x, double z) {
     const double lSum = ELBOW_LENGTH + WRIST_LENGTH;
     Serial.printf("eLength: %f, lsum: %f\n", eLength, lSum);    
 
-
     elbow.setToLength(shoulder, x, z, WRIST_LENGTH);        
-    Serial.printf("source shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
-    Serial.printf("source elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);    
-    ArmWrist wrist = ArmWrist(rRad, shoulder.XZRad, elbow.XZRad, pos.wristAngle);    
-    wrist.setZ(shoulder, elbow, z);
+    ArmWrist wrist = ArmWrist(rRad, shoulder.XZRad, elbow.XZRad, pos.wristAngle);            
+    wrist.setPos(shoulder, elbow, x, z);
     Serial.printf("shoulder x: %f, shoulder z: %f\n", shoulder.x, shoulder.z);
     Serial.printf("elbow x: %f, elbow z: %f\n", elbow.x, elbow.z);
     Serial.printf("wrist x: %f, wrist z: %f\n", wrist.x, wrist.z);
@@ -51,13 +48,5 @@ EngineControl::EngineControl(unsigned int engine, unsigned int angle) {
 }
   
 Strategy::Strategy(Position pos, double x, double y, double z) {
-    //const double dx = x - pos.x.length;
-    //const double dy = y - pos.y.length;
-    //const double dz = z - pos.z.length;
-    //const double xOffset = pos.x.shoulder.length + dx;
-    //const double zOffset = pos.z.shoulder.length + dz;           
     this->case1(pos, x, z);
-        
-    //Serial.printf("l1 - %f, l2 - %f, l3 - %f, vector - %f\n", pos.x.shoulder.length, pos.x.elbow.length, pos.x.wrist.length, pos.x.length);
-    //Serial.printf("dx - %f, dy - %f, dz - %f\n", dx, dy, dz);
 }

@@ -14,14 +14,13 @@
 
 #define GRIPPER_MAX_ANGLE 4000
 
-unsigned int gGripper = 0;
-unsigned int gGripperRotate = 0;
-unsigned int gRotate = 0;
-unsigned int gShoulder = 0;
-unsigned int gElbow = 0;
-unsigned int gWrist = 0;
+double gGripper = 0;
+double gGripperRotate = 0;
+double gRotate = 0;
+double gShoulder = 0;
+double gElbow = 0;
+double gWrist = 0;
 
- 
 int getValue(JsonObject& jsonObj, const char* key, const unsigned int min, const unsigned int max) {
     if (!jsonObj.containsKey(key)) return -1;
     const char* str = jsonObj[key];
@@ -55,30 +54,17 @@ uint degToCount(const uint value, const uint maxDeg) {
     return (uint)vl;
 }
 
-double getGripperAngleZ(const double grAngle, const double rAngle) {
-    return (grAngle + GRIPPER_ROTATE_OFFSET - 90) - (90 - rAngle - ROTATE_OFFSET);
-}
-
-double getGripperAngleXY(const double sAngle, const double eAngle, const double wAngle) {    
-    const double a1 = (-1 * sAngle + SHOULDER_OFFSET);    
-    const double a2 = 180 - (eAngle + ELBOW_OFFSET);    
-    const double a3 = wAngle - (WRIST_OFFSET - 95);
-    return a1 - a2 + a3;
-}
-
 void sendSuccess(AsyncWebServerRequest* request) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["gripper"] = gGripper;
     root["gripper-rotate"] = gGripperRotate;
-    root["gripper-rotate-angle-z"] = getGripperAngleZ(gGripperRotate, gRotate);
-    root["gripper-rotate-angle-xy"] = getGripperAngleXY(gShoulder, gElbow, gWrist);
     root["rotate"] = gRotate;
     root["shoulder"] = gShoulder;
     root["elbow"] = gElbow;
     root["wrist"] = gWrist;
-    Position pos(gShoulder, gElbow, gWrist, gRotate);        
+    Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);        
     root["length-x"] = pos.getX();
     root["length-y"] = pos.getY();
     root["length-z"] = pos.getZ();
@@ -124,9 +110,9 @@ void setRotate(JsonObject& jsonObj) {
 }
 
 unsigned int setEngine(const unsigned int engine, const unsigned int angle) {
-        const uint tDeg = degToCount(angle, 270);        
-        ledcWrite(engine, tDeg);        
-        return angle;
+    const uint tDeg = degToCount(angle, 270);        
+    ledcWrite(engine, tDeg);        
+    return angle;
 }
 
 
@@ -189,10 +175,10 @@ void apply(Strategy strategy) {
 AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("/position", [](AsyncWebServerRequest *request, JsonVariant &json) {    
     try {
         JsonObject& jsonObj = json.as<JsonObject>();        
-        Position pos(gShoulder, gElbow, gWrist, gRotate);        
-        const double tx = getDoubleDef(jsonObj, "x", 95, 200, pos.getX());    
-        const double ty = getDoubleDef(jsonObj, "y", -50, 200, pos.getY());    
-        const double tz = getDoubleDef(jsonObj, "z", -50, 200, pos.getZ());    
+        Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);
+        const double tx = getDoubleDef(jsonObj, "x", -360, 360, pos.getX());    
+        const double ty = getDoubleDef(jsonObj, "y", 0, 200, pos.getY());    
+        const double tz = getDoubleDef(jsonObj, "z", 25, 440, pos.getZ());    
         Strategy moveStrategy(pos, tx, ty, tz);
         apply(moveStrategy);
         sendSuccess(request);        

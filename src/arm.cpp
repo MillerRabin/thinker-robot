@@ -7,10 +7,11 @@ double ArmPoint::getRad(const double angle) {
     return (this->getInc() * angle + this->getOffset()) * PI / 180.0;    
 }
 
-void ArmPoint::setCoords() {
-    this->x = this->getLength() * cos(this->XZCurrent) * sin(this->XYRad);
-    this->y = this->getLength() * cos(this->XZCurrent) * cos(this->XYRad);
-    this->z = this->getLength() * sin(this->XZCurrent);
+void ArmPoint::setCoords() {    
+    const double length = this->getLength();
+    this->x = length * cos(this->XZCurrent) * sin(this->XYRad);
+    this->y = length * cos(this->XZCurrent) * cos(this->XYRad);
+    this->z = length * sin(this->XZCurrent);
 }
 
 double ArmPoint::getAngleXZ() {
@@ -23,6 +24,14 @@ double ArmPoint::getAngleXZ(const double rad) {
     const double sdeg = rad / PI * 180.0;
     const double sAngle = (sdeg - this->getOffset()) / this->getInc();        
     return sAngle;
+}
+
+double ArmPoint::getRadFromPos(const double localX, const double localZ) {    
+    Serial.printf("localX: %f, localZ: %f\n", localX, localZ);
+    const double length = this->getLength();    
+    const double sinz = localZ / length;        
+    const double sina = asin(sinz);    
+    return (localX < 0) ? PI - sina :  sina;    
 }
 
 ArmRotate::ArmRotate(const double rotateAngle) {            
@@ -127,14 +136,10 @@ ArmRoots ArmElbow::getRoots(ArmShoulder shoulder, const double x, const double z
     return roots;
 }
 
-double ArmElbow::getRadFromPos(const double shoulderRad, const double x, const double z) {
-    const double length = this->getLength();    
-    const double rad = (x < 0) ? acos(x / length) : asin(z / length);
-    return rad - shoulderRad;
-}
 
-double ArmElbow::getAngleFromPos(const double shoulderRad, const double x, const double z) {        
-    const double erad = this->getRadFromPos(shoulderRad, x, z);
+double ArmElbow::getAngleFromPos(ArmShoulder shoulder, const double x, const double z) {        
+    const double tsum = getRadFromPos(x, z);    
+    const double erad = tsum - shoulder.XZRad;
     return this->getAngleXZ(erad);    
 }
 
@@ -146,8 +151,8 @@ bool ArmElbow::isAngleValid(const double angle) {
 }
 
 ArmRoot ArmElbow::getValidRoot(ArmShoulder shoulder, ArmRoots roots) {
-    const double angle1 = this->getAngleFromPos(shoulder.XZRad, roots.r1.x, roots.r1.z);
-    const double angle2 = this->getAngleFromPos(shoulder.XZRad, roots.r2.x, roots.r2.z);
+    const double angle1 = this->getAngleFromPos(shoulder, roots.r1.x, roots.r1.z);
+    const double angle2 = this->getAngleFromPos(shoulder, roots.r2.x, roots.r2.z);
     Serial.printf("angle1: %f, angle2: %f\n", angle1, angle2);
     const bool av1 = ArmElbow::isAngleValid(angle1);
     const bool av2 = ArmElbow::isAngleValid(angle2);
@@ -160,7 +165,7 @@ void ArmElbow::setToLength(ArmShoulder shoulder, const double x, const double z,
     const double sx = shoulder.x;
     const double sz = shoulder.z + TOP_OFFSET;    
     Serial.printf("sx: %f, sz: %f, R: %d\n", sx, sz, ELBOW_LENGTH);
-    Serial.printf("x: %f, z: %f, r: %d\n", x, z, WRIST_LENGTH);
+    Serial.printf("x: %f, z: %f, r: %f\n", x, z, length);
     ArmRoots roots = ArmElbow::getRoots(shoulder, x, z, length);
     const double x1 = roots.r1.x + shoulder.x;
     const double z1 = roots.r1.z + shoulder.z + TOP_OFFSET;
@@ -169,7 +174,8 @@ void ArmElbow::setToLength(ArmShoulder shoulder, const double x, const double z,
     Serial.printf("roots r1x: %f, r1z: %f, r2x: %f, r2z: %f\n", roots.r1.x, roots.r1.z, roots.r2.x, roots.r2.z);
     Serial.printf("r1x: %f, r1z: %f, r2x: %f, r2z: %f\n", x1, z1, x2, z2);
     ArmRoot root = this->getValidRoot(shoulder, roots);
-    const double erad = this->getRadFromPos(shoulder.XZRad, root.x, root.z);
+    const double tsum = this->getRadFromPos(root.x, root.z);
+    const double erad = tsum - shoulder.XZRad;    
     this->setPoints(shoulder.XZRad, this->XYRad, erad);    
 }
 
@@ -194,9 +200,25 @@ double ArmWrist::getLengthXZ(ArmShoulder shoulder, ArmElbow elbow, const double 
 }
 
 
-void ArmWrist::setZ(ArmShoulder shoulder, ArmElbow elbow, const double z) {        
+void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double z) {
     const double wz = z - shoulder.z - elbow.z - TOP_OFFSET;
-    const double tsum = asin(wz / this->getLength());
-    const double wrad = tsum - shoulder.XZRad - elbow.XZRad;    
+    const double wx = x - shoulder.x - elbow.x;
+    const double tsum = getRadFromPos(wx, wz);
+    const double wrad = tsum - shoulder.XZRad - elbow.XZRad;
     this->setPoints(shoulder.XZRad, elbow.XZRad, wrad, shoulder.XYRad);
+}
+
+ArmClaw::ArmClaw(const double rotateRad, const double shoulderRad, const double elbowRad, const double wristRad, const double clawAngle) {
+    const double cRad = this->getRad(clawAngle);
+    this->setPoints(shoulderRad, elbowRad, wristRad, cRad, rotateRad);
+}
+
+void ArmClaw::setPoints(const double shoulderRad, const double elbowRad, const double wristRad, const double clawRad, const double rotateRad) {
+    this->XZRad = wristRad;
+    this->XYRad = clawRad;        
+    this->XZCurrent = this->XZRad + shoulderRad + elbowRad;
+    //const double zwidth = this->getWidth() * cos(this->XZRad);    
+    //Serial,printf("claw width: %f\n", zwidth);
+    this->setCoords();
+    
 }
