@@ -16,25 +16,25 @@
 #define ELBOW_PIN 13
 
 #define SHOULDER_LENGTH 105
-#define SHOULDER_OFFSET 0
-#define SHOULDER_INC 1
+#define SHOULDER_BASE 0
+#define SHOULDER_SCALE 1
 
 #define ELBOW_LENGTH 95
-#define ELBOW_OFFSET 140
-#define ELBOW_INC -1
+#define ELBOW_BASE 140
+#define ELBOW_SCALE -1
 #define ELBOW_MIN 0
 #define ELBOW_MAX 280
 
 #define WRIST_LENGTH 160
-#define WRIST_OFFSET 145
-#define WRIST_INC -1
+#define WRIST_BASE 145
+#define WRIST_SCALE -1
 
 #define CLAW_LENGTH 100
 #define CLAW_WIDTH -35
-#define CLAW_OFFSET -45
+#define CLAW_BASE -45
 
-#define ROTATE_OFFSET -45
+#define ROTATE_BASE -45
 
-#define TOP_OFFSET 80
+#define TOP_BASE 80
 
 #endif

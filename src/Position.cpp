@@ -13,8 +13,8 @@ Position::Position(const double shoulderAngle, const double elbowAngle, const do
     rotate(rotateAngle),    
     shoulder(rotate.XYRad, shoulderAngle),
     elbow(rotate.XYRad, shoulder.XZRad, elbowAngle),
-    wrist(rotate.XYRad, shoulder.XZRad, elbow.XZRad, wristAngle),
-    claw(rotate.XYRad, shoulder.XZRad, elbow.XZRad, wrist.XZRad, clawAngle)
+    wrist(rotate.XYRad, elbow.XZRad, wristAngle),
+    claw(rotate.XYRad, wrist.XZRad, clawAngle)
 {    
 
 }
@@ -27,6 +27,6 @@ double Position::getY() {
     return shoulder.y + elbow.y + wrist.y;
 }
 
-double Position::getZ() {            
-    return shoulder.z + elbow.z + wrist.z + TOP_OFFSET;
+double Position::getZ() {                
+    return shoulder.z + elbow.z + wrist.z + TOP_BASE;
 }
