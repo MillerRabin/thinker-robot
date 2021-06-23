@@ -17,7 +17,8 @@ class Strategy {
         void case1(Position pos, double x, double z);
     public:
         Strategy(Position pos, double x, double y, double z);
-        std::vector<EngineControl> sequence;       
+        std::vector<EngineControl> sequence;
+        std::vector<std::string> errors;
 };
 
 #endif

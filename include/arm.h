@@ -61,9 +61,8 @@ class ArmShoulder : public ArmPoint {
     private:
         void setPoints(const double rotateRad, const double shoulderAngle);        
     public: 
-        ArmShoulder(const double rotateRad, const double shoulderAngle);        
-        void setZ(const double z);
-        void setToLength(const double length, const double x);
+        ArmShoulder(const double rotateRad, const double shoulderAngle);                
+        void setToLength(const double length, const double x, const double z);
         double getAngleXZ();
         static double getLengthXZ(const double x, const double z);
         double getLength() override {

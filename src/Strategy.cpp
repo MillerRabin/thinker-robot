@@ -12,8 +12,6 @@ void Strategy::case1(Position pos, double x, double z) {
     const double rRad = rotate.XYRad;    
     ArmShoulder shoulder = ArmShoulder(rRad, pos.shoulderAngle);            
     
-    const double sLength = ArmShoulder::getLengthXZ(x, z);
-    Serial.printf("sLength: %f\n", sLength);    
     const double eLength = ArmElbow::getLengthXZ(pos.shoulder, x, z);    
     Serial.printf("eLength: %f\n", eLength);    
     const double wLength = ArmWrist::getLengthXZ(pos.shoulder, pos.elbow, x, z);
@@ -21,7 +19,7 @@ void Strategy::case1(Position pos, double x, double z) {
     const double lSum = ELBOW_LENGTH + WRIST_LENGTH;
     Serial.printf("eLength: %f, lsum: %f\n", eLength, lSum);        
     if (lSum < eLength) { 
-        shoulder.setToLength(eLength, x);        
+        shoulder.setToLength(lSum, x, z);        
         const double eLength = ArmElbow::getLengthXZ(shoulder, x, z);    
         Serial.printf("new eLength: %f\n", eLength);    
     }
@@ -34,17 +32,32 @@ void Strategy::case1(Position pos, double x, double z) {
     Serial.printf("elbow.XZRad: %f, elbow x: %f, elbow z: %f\n", elbow.XZRad, elbow.x, elbow.z);
     Serial.printf("wrist.XZRad: %f, wrist x: %f, wrist z: %f\n", wrist.XZRad, wrist.x, wrist.z);
 
-    const unsigned int sAngle = round(shoulder.getAngleXZ());
-    const unsigned int eAngle = round(elbow.getAngleXZ(shoulder));
-    const unsigned int wAngle = round(wrist.getAngleXZ(elbow));
-    Serial.printf("shoulder angle: %d, elbow angle: %d, wrist angle %d\n", sAngle, eAngle, wAngle);
+    const double dsAngle = shoulder.getAngleXZ();
+    const double deAngle = elbow.getAngleXZ(shoulder);
+    const double dwAngle = wrist.getAngleXZ(elbow);
+    
+    Serial.printf("shoulder angle: %f, elbow angle: %f, wrist angle %f\n", dsAngle, deAngle, dwAngle);
+        
+    if (isnan(dsAngle)) 
+        errors.push_back("Shoulder angle is NaN");
+    
+    if (isnan(deAngle))
+        errors.push_back("Elbow angle is NaN");
+        
+    if (isnan(dwAngle))
+        errors.push_back("Wrist angle is NaN");
 
-    EngineControl sEngine(SHOULDER_ENGINE, sAngle);
-    EngineControl eEngine(ELBOW_ENGINE, eAngle);
-    EngineControl wEngine(WRIST_ENGINE, wAngle);    
+    if (errors.size() > 0) return;
+        
+    EngineControl wEngine(WRIST_ENGINE, round(dwAngle));
     this->sequence.push_back(wEngine);
+    
+    EngineControl eEngine(ELBOW_ENGINE, round(deAngle));
     this->sequence.push_back(eEngine);    
+    
+    EngineControl sEngine(SHOULDER_ENGINE, round(dsAngle));
     this->sequence.push_back(sEngine);
+    
 }
 
 EngineControl::EngineControl(unsigned int engine, unsigned int angle) {

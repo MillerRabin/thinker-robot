@@ -15,8 +15,11 @@ void ArmPoint::setCoords() {
 }
 
 double ArmPoint::getAngleXZFromRad(const double rad) {
+    if (rad == NAN) return NAN;
     const double sdeg = rad / PI * 180.0;
-    const double sAngle = (sdeg - this->getBase()) / this->getScale();        
+    double sAngle = (sdeg - this->getBase()) / this->getScale();        
+    if (sAngle < 0)
+        sAngle = 360 - sAngle;
     const double tAngle = sAngle - (trunc(sAngle / 360) * 360);
     return tAngle;
 }
@@ -53,29 +56,27 @@ double ArmShoulder::getAngleXZ() {
     return getAngleXZFromRad(rad);
 }
 
-void ArmShoulder::setToLength(const double length, const double x) {    
-    const double a = x;
+void ArmShoulder::setToLength(const double length, const double x, const double z) {    
+    const double a = ArmShoulder::getLengthXZ(x, z);
+    Serial.printf("shoulder length: %f\n", a);    
     const double b = length;
     const double c = getLength();    
     const double p = (a + b + c) / 2;
-    const double z = 2 * sqrt(p* (p - a) * (p - b) * (p - c)) / a;
-    Serial.printf("shoulder z = %f\n", z);
-    setZ(z);
+    const double h = 2 * sqrt(p* (p - a) * (p - b) * (p - c)) / a;    
+    const double sinh = h / c;
+    const double trad = asin(sinh);
+    const double wz = z - TOP_BASE;
+    const double lsin = wz / a;
+    const double lrad = asin(lsin);
+    const double srad = trad + lrad;
+    Serial.printf("shoulder h = %f, sinh = %f, trad = %f, wz = %f, lsin = %f, lrad = %f, XZRad = %f\n", h, sinh, trad, wz, lsin, lrad, srad);
+    setPoints(this->XYRad, srad);
 }
 
 void ArmShoulder::setPoints(const double rotateRad, const double shoulderRad) {
     this->XZRad = shoulderRad;
     this->XYRad = rotateRad;    
     this->setCoords();   
-}
-
-void ArmShoulder::setZ(const double z) {
-   const double qz = z * z;
-   const double length = getLength();
-   const double qLength = length * length;
-   const double x = sqrt(qLength - qz);
-   const double srad = getRadFromPos(x, z);
-   setPoints(XYRad, srad);
 }
 
 
@@ -115,6 +116,7 @@ ArmRoots ArmElbow::getRoots(ArmShoulder shoulder, const double x, const double z
     const double qc = c * c;
     const double a = qx + qz;
     ArmRoots roots;
+    Serial.printf("getRoots sx: = %f\n", sx);
     if (sx != 0) {
         const double b = -2 * sz * c;
         const double e = c * c - qR * qx;

@@ -20,6 +20,7 @@ double gRotate = 0;
 double gShoulder = 0;
 double gElbow = 0;
 double gWrist = 0;
+std::vector<std::string> gErrors;
 
 int getValue(JsonObject& jsonObj, const char* key, const unsigned int min, const unsigned int max) {
     if (!jsonObj.containsKey(key)) return -1;
@@ -54,6 +55,7 @@ uint degToCount(const uint value, const uint maxDeg) {
     return (uint)vl;
 }
 
+
 void sendSuccess(AsyncWebServerRequest* request) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
@@ -67,7 +69,13 @@ void sendSuccess(AsyncWebServerRequest* request) {
     Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);        
     root["length-x"] = pos.getX();
     root["length-y"] = pos.getY();
-    root["length-z"] = pos.getZ();
+    root["length-z"] = pos.getZ();        
+    JsonArray &errors = root.createNestedArray("errors");
+    for(std::string error : gErrors) {  
+        const char* elem = error.c_str(); 
+        Serial.printf("error %s\n", elem);
+        errors.add((char *)elem);
+    }    
     root.printTo(*response);
     request->send(response);
 }
@@ -155,6 +163,8 @@ AsyncCallbackJsonWebHandler* engineHandler = new AsyncCallbackJsonWebHandler("/m
 });
 
 void apply(Strategy strategy) {
+    gErrors = strategy.errors;
+    if (gErrors.size() > 0) return;
     for(EngineControl control : strategy.sequence) {    
         if (control.engine == SHOULDER_ENGINE) {
             gShoulder = setEngine(SHOULDER_ENGINE, control.angle);
