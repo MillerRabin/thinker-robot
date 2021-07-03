@@ -3,135 +3,152 @@
 
 #include <armParams.h>
 #include <math.h>
+#include <string>
 
-class ArmRoot {
-    public:    
-        double x = NAN;
-        double z = NAN;
-};
+using namespace std;
 
-class ArmRoots {
-    public:    
-        ArmRoot r1;
-        ArmRoot r2;
-};
+//------ArmPoint------
 
 class ArmPoint {
     protected:
         void setCoords();
-        double getRadFromPos(const double localX, const double localZ);
+        const double getRadFromPos(const double localX, const double localY, const double localZ);
+        static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
     public:
         double XZRad;
         double XYRad;        
         double x;
         double y;
         double z;
-        double virtual getLength() {
+        const double virtual getLength() {
             return 0;
         };
-        double virtual getBase()  {
+        const double virtual getBase()  {
             return 0;
         };
-        double virtual getScale() {
+        const double virtual getScale() {
             return 1;
         };
-        double virtual getWidth()  {
+        const double virtual getWidth()  {
             return 0;
         };
-        double getRad(const double angle);
-        double getAngleXZFromRad(const double rad);
+        const double getRad(const double angle);
+        const double getAngleFromRad(const double rad);
+        const bool isValid();
 };
 
+//------ArmRotate------
 
 class ArmRotate : public ArmPoint {
+    private:
+        void setPoints(const double rotateRad);
     public: 
-        ArmRotate(const double rotateRad);
-        double getLength() override {
+        ArmRotate(const double rotateRad);        
+        const double getAngle();
+        void setRadFromPos(const double x, const double y);
+        const static double getRadFromPos(const double x, const double y);
+        const double getLength() override {
             return 0;
         };
-        double getBase() override {
+        const double getBase() override {
             return ROTATE_BASE;
         };
-        double getScale() override {
+        const double getScale() override {
             return 1;
         };
 
 };
+
+//------ArmShoulder------
+
 class ArmShoulder : public ArmPoint {
     private:
-        void setPoints(const double rotateRad, const double shoulderAngle);        
+        void setPoints(const double rotateRad, const double shoulderRad);        
+        static const double validateAngle(const double angle);
     public: 
-        ArmShoulder(const double rotateRad, const double shoulderAngle);                
-        void setToLength(const double length, const double x, const double z);
-        double getAngleXZ();
-        static double getLengthXZ(const double x, const double z);
-        double getLength() override {
+        ArmShoulder(ArmRotate rotate, const double shoulderAngle);                
+        void setAvailableLength(const double maxLength, const double x, const double y, const double z);        
+        const double getAngle(const bool validate = true);
+        static const double getLength(const double x, const double y, const double z);
+        void setXZRad(const double rad);
+        void setRotate(ArmRotate rotate);
+        const double getLength() override {
             return SHOULDER_LENGTH;
         };
-        double getBase() override {
+        const double getBase() override {
             return SHOULDER_BASE;
         };
-        double getScale() override {
+        const double getScale() override {
             return SHOULDER_SCALE;
         };
 };
 
+//------ArmElbow------
+
 class ArmElbow : public ArmPoint {
     private:
         void setPoints(const double rotateRad, const double elbowRad);        
-        static ArmRoots getRoots(ArmShoulder shoulder, const double x, const double z, const double length);
-        static bool isAngleValid(const double angle);
-        double getAngleFromPos(ArmShoulder shoulder, const double x, const double z);
-        ArmRoot getValidRoot(ArmShoulder shoulder, ArmRoots roots);        
+        static const double validateAngle(const double angle);
     public: 
-        ArmElbow(const double rotateRad, const double shoulderRad, const double elbowAngle);        
-        double getAngleXZ(ArmShoulder shoulder);
-        void setToLength(ArmShoulder shoulder, const double x, const double z, const double length);
-        static double getLengthXZ(ArmShoulder shoulder, const double x, const double z);
-        double getLength() override {
+        ArmElbow(ArmShoulder shoulder, const double elbowAngle);        
+        const double getAngle(ArmShoulder shoulder, const bool validate = true);
+        void setToLength(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
+        static const double getLength(ArmShoulder shoulder, const double x, const double y, const double z);
+        static const bool isAngleValid(const double angle);
+        const double getAngleFromPos(ArmShoulder shoulder, const double x, const double y, const double z);        
+        void setPos(const double x, const double y, const double z);
+        void setRotate(ArmRotate rotate);
+        const double getLength() override {
             return ELBOW_LENGTH;
         };
-        double getBase() override {
+        const double getBase() override {
             return ELBOW_BASE;
         };
-        double getScale() override {
+        const double getScale() override {
             return ELBOW_SCALE;
         };
 
 };
 
+//------ArmWrist------
+
 class ArmWrist : public ArmPoint {
     private:
         void setPoints(const double wristRad, const double rotateRad);        
+        static const double validateAngle(const double angle);
     public: 
-        ArmWrist(const double rotateRad, const double elbowRad, const double wristAngle);
-        double getAngleXZ(ArmElbow elbow);
-        static double getLengthXZ(ArmShoulder shoulder, ArmElbow elbow, const double x, const double z);        
-        void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double z);
-        double getLength() override {
+        ArmWrist(ArmElbow elbow, const double wristAngle);        
+        const double getAngle(ArmElbow elbow, const bool validate = true);
+        static const double getLength(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);        
+        void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
+        const double getLength() override {
             return WRIST_LENGTH;
         };
-        double getBase() override {
+        const double getBase() override {
             return WRIST_BASE;
         };
-        double getScale() override {
+        const double getScale() override {
             return WRIST_SCALE;
         };
 
 };
 
+//------ArmClaw------
+
 class ArmClaw : public ArmPoint {
-    private:
+    private:        
         void setPoints(const double rotateRad, const double wristRad, const double clawRad);
     public:    
-        ArmClaw(const double rotateRad, const double wristRad, const double clawAngle);
-        double getLength() override {
+        ArmClaw(ArmWrist wrist, const double clawAngle);
+        ArmClaw(const double rotateRad, const double wristRad, const double clawRad);
+        const double getAngle();
+        const double getLength() override {
             return CLAW_LENGTH;
         };
-        double getBase() override {
+        const double getBase() override {
             return CLAW_BASE;
         };
-        double getWidth() override {
+        const double getWidth() override {
             return CLAW_WIDTH;
         };
 

@@ -55,35 +55,3 @@ void loop() {
     ESP.restart();
   }
 }
-
-/*void setEngine(unsigned int engineIndex, unsigned int value) {
-   if (value < COUNT_LOW) {
-      string msg = "value is too low " + value;
-      throw invalid_argument(msg);      
-   }
-
-   if (value > COUNT_HIGH) {
-      string msg = "value is too high " + value;
-      throw invalid_argument(msg);      
-   }
-
-   if ((engineIndex < 1) && (engineIndex > 4)) {
-         string msg = "Invalid engine number" + engineIndex;
-         throw invalid_argument(msg);
-   }      
-   ledcWrite(engineIndex, value);   
-}*/
-
-/*void setupEngines() {
-   ledcSetup(1, 50, TIMER_WIDTH); // channel 1, 50 Hz, 16-bit width
-   ledcAttachPin(GRIPPER_PIN, 1);   // GPIO 22 assigned to channel 1
-   
-   ledcSetup(2, 50, TIMER_WIDTH); // channel 2, 50 Hz, 16-bit width
-   ledcAttachPin(19, 2);   // GPIO 19 assigned to channel 2
-   
-   ledcSetup(3, 50, TIMER_WIDTH); // channel 3, 50 Hz, 16-bit width
-   ledcAttachPin(23, 3);   // GPIO 23 assigned to channel 3
-   
-   ledcSetup(4, 50, TIMER_WIDTH); // channel 4, 50 Hz, 16-bit width
-   ledcAttachPin(18, 4);   // GPIO 18 assigned to channel 4
-}*/

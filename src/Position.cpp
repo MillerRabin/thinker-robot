@@ -1,32 +1,65 @@
 #include <armParams.h>
 #include <arduino.h>
 #include <math.h>
-#include <Position.h>
+#include <position.h>
 #include <arm.h>
 
 Position::Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawAngle) :
-    rotateAngle(rotateAngle),
-    shoulderAngle(shoulderAngle),
-    elbowAngle(elbowAngle),
-    wristAngle(wristAngle),
-    clawAngle(clawAngle),
     rotate(rotateAngle),    
-    shoulder(rotate.XYRad, shoulderAngle),
-    elbow(rotate.XYRad, shoulder.XZRad, elbowAngle),
-    wrist(rotate.XYRad, elbow.XZRad, wristAngle),
-    claw(rotate.XYRad, wrist.XZRad, clawAngle)
+    shoulder(rotate, shoulderAngle),
+    elbow(shoulder, elbowAngle),
+    wrist(elbow, wristAngle),
+    claw(wrist, clawAngle)
 {    
 
 }
 
-double Position::getX() {    
+Position::Position(ArmRotate rotate, ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw) :
+    rotate(rotate),
+    shoulder(shoulder),
+    elbow(elbow),
+    wrist(wrist),
+    claw(claw)
+{    
+
+}
+
+const double Position::getX() {    
     return shoulder.x + elbow.x + wrist.x;
 }
 
-double Position::getY() {
+const double Position::getY() {
     return shoulder.y + elbow.y + wrist.y;
 }
 
-double Position::getZ() {                
+const double Position::getZ() {                
     return shoulder.z + elbow.z + wrist.z + TOP_BASE;
+}
+
+const double Position::getRotateAngle() {
+    return rotate.getAngle();
+}
+
+const double Position::getShoulderAngle() {
+    return shoulder.getAngle();
+}
+
+const double Position::getElbowAngle() {
+    return elbow.getAngle(shoulder);
+}
+
+const double Position::getWristAngle() {
+    return wrist.getAngle(elbow);
+}
+
+const double Position::getClawAngle() {
+    return claw.getAngle();
+}
+
+bool Position::isValid() {
+    const double dsAngle = getShoulderAngle();
+    const double deAngle = getElbowAngle();
+    const double dwAngle = getWristAngle();        
+    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) return false;
+    return true;    
 }

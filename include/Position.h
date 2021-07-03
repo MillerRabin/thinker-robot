@@ -2,27 +2,27 @@
 #define position_h
 
 #include <armParams.h>
-#include <Position.h>
+#include <position.h>
 #include <arm.h>
-
 
 class Position {
     public: 
-        const unsigned int rotateAngle;
-        const unsigned int shoulderAngle;
-        const unsigned int elbowAngle;
-        const unsigned int wristAngle;
-        const unsigned int clawAngle;
         ArmRotate rotate;
         ArmShoulder shoulder;
         ArmElbow elbow;
         ArmWrist wrist;
         ArmClaw claw;        
-        Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawAngle);
-        double getX();
-        double getY();
-        double getZ();
-        
+        Position(const double shoulderAngle = NAN, const double elbowAngle = NAN, const double wristAngle = NAN, const double rotateAngle = NAN, const double clawAngle = NAN);
+        Position(ArmRotate rotate, ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw);
+        bool isValid();
+        const double getX();
+        const double getY();
+        const double getZ();
+        const double getRotateAngle();
+        const double getShoulderAngle();
+        const double getElbowAngle();
+        const double getWristAngle();
+        const double getClawAngle();
 };
 
 #endif

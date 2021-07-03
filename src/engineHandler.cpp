@@ -3,8 +3,8 @@
 #include <ArduinoJson.h>
 #include <ESP32_Servo.h>
 #include "initServer.h"
-#include <Position.h>
-#include <Strategy.h>
+#include <position.h>
+#include <strategy.h>
 
 #define COUNT_LOW 1638
 #define COUNT_HIGH 7864
@@ -16,10 +16,10 @@
 
 double gGripper = 0;
 double gGripperRotate = 0;
-double gRotate = 0;
-double gShoulder = 0;
-double gElbow = 0;
-double gWrist = 0;
+double gRotate = 135;
+double gShoulder = 90;
+double gElbow = 230;
+double gWrist = 235;
 std::vector<std::string> gErrors;
 
 int getValue(JsonObject& jsonObj, const char* key, const unsigned int min, const unsigned int max) {
@@ -94,25 +94,25 @@ void setGripper(JsonObject& jsonObj) {
     const int tGripper = getValue(jsonObj, "gripper", COUNT_LOW, GRIPPER_MAX_ANGLE);    
     if (tGripper >= 0 ) {
         const uint tDeg = degToCount(tGripper, 270);
-        gGripper = (unsigned int) tGripper;
+        gGripper = tGripper;
         ledcWrite(GRIPPER_ENGINE, tDeg);
     }
 }
 
 void setGripperRotate(JsonObject& jsonObj) {
-    const int tGripper = getValue(jsonObj, "gripper_rotate", COUNT_LOW, COUNT_HIGH);    
-    if (tGripper >= 0 ) {
-        const uint tDeg = degToCount(tGripper, 270);
-        gGripperRotate = (unsigned int) tGripper;
+    const int tGripperRotate = getValue(jsonObj, "gripper_rotate", COUNT_LOW, COUNT_HIGH);    
+    if (tGripperRotate >= 0 ) {
+        const uint tDeg = degToCount(tGripperRotate, 270);
+        gGripperRotate = tGripperRotate;
         ledcWrite(GRIPPER_ROTATE_ENGINE, tDeg);
     }
 }
 
 void setRotate(JsonObject& jsonObj) {
-    const int tGripper = getValue(jsonObj, "rotate", COUNT_LOW, COUNT_HIGH);    
-    if (tGripper >= 0 ) {
-        const uint tDeg = degToCount(tGripper, 270);
-        gRotate = (unsigned int) tGripper;        
+    const int tRotate = getValue(jsonObj, "rotate", COUNT_LOW, COUNT_HIGH);    
+    if (tRotate >= 0 ) {
+        const uint tDeg = degToCount(tRotate, ROTATE_MAX);
+        gRotate = tRotate;        
         ledcWrite(ROTATE_ENGINE, tDeg);
     }
 }
@@ -125,22 +125,22 @@ unsigned int setEngine(const unsigned int engine, const unsigned int angle) {
 
 
 void setShoulder(JsonObject& jsonObj) {
-    const int tGripper = getValue(jsonObj, "shoulder", COUNT_LOW, COUNT_HIGH);    
-    if (tGripper >= 0 )
-        gShoulder = setEngine(SHOULDER_ENGINE, tGripper);
+    const int tShoulder = getValue(jsonObj, "shoulder", COUNT_LOW, COUNT_HIGH);    
+    if (tShoulder >= 0 )
+        gShoulder = setEngine(SHOULDER_ENGINE, tShoulder);
 }
 
 void setElbow(JsonObject& jsonObj) {
-    const int tGripper = getValue(jsonObj, "elbow", COUNT_LOW, COUNT_HIGH);    
-    if (tGripper >= 0 )
-        gElbow = setEngine(ELBOW_ENGINE, tGripper);
+    const int tElbow = getValue(jsonObj, "elbow", COUNT_LOW, COUNT_HIGH);    
+    if (tElbow >= 0 )
+        gElbow = setEngine(ELBOW_ENGINE, tElbow);
 }
 
 void setWrist(JsonObject& jsonObj) {
-    const int tGripper = getValue(jsonObj, "wrist", COUNT_LOW, COUNT_HIGH);    
-    if (tGripper >= 0 ) {
-        const uint tDeg = degToCount(tGripper, 270);
-        gWrist = (unsigned int) tGripper;
+    const int tWrist = getValue(jsonObj, "wrist", COUNT_LOW, COUNT_HIGH);    
+    if (tWrist >= 0 ) {
+        const uint tDeg = degToCount(tWrist, 270);
+        gWrist = tWrist;
         ledcWrite(WRIST_ENGINE, tDeg);
     }
 }
@@ -178,6 +178,11 @@ void apply(Strategy strategy) {
             gWrist = setEngine(WRIST_ENGINE, control.angle);    
             continue;
         }
+        if (control.engine == ROTATE_ENGINE) {
+            gRotate = setEngine(ROTATE_ENGINE, control.angle);
+            continue;
+        }
+
     }    
 }
 
@@ -187,7 +192,7 @@ AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("
         JsonObject& jsonObj = json.as<JsonObject>();        
         Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);
         const double tx = getDoubleDef(jsonObj, "x", -360, 360, pos.getX());    
-        const double ty = getDoubleDef(jsonObj, "y", 0, 200, pos.getY());    
+        const double ty = getDoubleDef(jsonObj, "y", -360, 360, pos.getY());    
         const double tz = getDoubleDef(jsonObj, "z", 25, 440, pos.getZ());    
         Strategy moveStrategy(pos, tx, ty, tz);
         apply(moveStrategy);
