@@ -34,6 +34,7 @@ class ArmPoint {
         };
         const double getRad(const double angle);
         const double getAngleFromRad(const double rad);
+        static const double getRadFromXY(const double x, const double y);
         const bool isValid();
 };
 
@@ -45,8 +46,7 @@ class ArmRotate : public ArmPoint {
     public: 
         ArmRotate(const double rotateRad);        
         const double getAngle();
-        void setRadFromPos(const double x, const double y);
-        const static double getRadFromPos(const double x, const double y);
+        void setRadFromPos(const double x, const double y);        
         const double getLength() override {
             return 0;
         };
@@ -98,6 +98,7 @@ class ArmElbow : public ArmPoint {
         const double getAngleFromPos(ArmShoulder shoulder, const double x, const double y, const double z);        
         void setPos(const double x, const double y, const double z);
         void setRotate(ArmRotate rotate);
+        const double getLocalRad(ArmShoulder shoulder);
         const double getLength() override {
             return ELBOW_LENGTH;
         };
@@ -119,7 +120,8 @@ class ArmWrist : public ArmPoint {
     public: 
         ArmWrist(ArmElbow elbow, const double wristAngle);        
         const double getAngle(ArmElbow elbow, const bool validate = true);
-        static const double getLength(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);        
+        static const double getLength(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
+        const double getLocalRad(ArmElbow elbow);
         void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
         const double getLength() override {
             return WRIST_LENGTH;

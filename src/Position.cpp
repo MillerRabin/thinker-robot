@@ -56,10 +56,15 @@ const double Position::getClawAngle() {
     return claw.getAngle();
 }
 
-bool Position::isValid() {
+bool Position::isValid() {        
     const double dsAngle = getShoulderAngle();
     const double deAngle = getElbowAngle();
     const double dwAngle = getWristAngle();        
     if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) return false;
+    const double sRad = shoulder.XZRad;
+    const double eRad = elbow.getLocalRad(shoulder);
+    const double wRad = wrist.getLocalRad(elbow);
+    const double sum = (sRad + eRad + wRad) / PI * 180;
+    if (sum > MAX_SUM_ANGLE) return false;    
     return true;    
 }

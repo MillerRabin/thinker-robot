@@ -29,11 +29,44 @@ const double ArmPoint::getAngleFromRad(const double rad) {
     return tAngle;
 }
 
+
+const double ArmPoint::getRadFromXY(const double x, const double y) {
+    const double lengthV = sqrt(x*x + y*y);
+    const double sr = (lengthV != 0) ? y / lengthV : 0;
+    const double siny = asin(sr);
+    Serial.printf("siny: %f, x: %f, y: %f\n", siny, x, y);
+    const double res = (x < 0) ? 
+                       (y < 0) ? -PI - siny : PI - siny
+                       : siny;    
+    const double minRad = (ROTATE_MIN + ROTATE_BASE) / 180.0 * PI;
+    const double maxRad = (ROTATE_MAX + ROTATE_BASE) / 180.0 * PI;
+    
+    Serial.printf("minRad: %f, maxRad: %f, res: %f\n", minRad, maxRad, res);
+    if (res > maxRad) return res - PI;
+    if (res < minRad) return res + PI;    
+    return res;
+}
+
 const double ArmPoint::getRadFromPos(const double localX, const double localY, const double localZ) {        
+    const double rRad = ArmPoint::getRadFromXY(localX, localY);
     const double length = this->getLength();    
     const double sinz = (length > 0) ? localZ / length : 0;
-    const double sina = asin(sinz); 
-    const double vl = (round(localX) < 0) ? -1 * sqrt(localX * localX + localY * localY) : sqrt(localX * localX + localY * localY);    
+    const double sina = asin(sinz);      
+    const double rx = round(localX);
+    //const double ry = round(localY);
+    
+    const double lpi = PI / 4;
+    const double sign = ((rRad < lpi) && (rRad > -lpi)) ? 
+                        (rx < 0) ? -1.0 : 1.0 :
+                        1.0;
+    
+    /*                    (rx < 0) ? 
+                        (ry < 0) ? 1.0 : -1.0 :
+                        (ry < 0) ? 1.0 : 1.0;*/
+                        
+    Serial.printf("rRad: %f, sign: %f\n", rRad, sign);
+    
+    const double vl =  sign * sqrt(localX * localX + localY * localY);
     const double tsina = (vl < 0) ?
                          (localZ < 0) ? PI + abs(sina) : PI - abs(sina) :           
                         sina;    
@@ -48,7 +81,6 @@ const bool ArmPoint::isValid() {
 
 const bool ArmPoint::isEqual(const double op1, const double op2, const double tolerance) {
     const double delta = op1 - op2;
-    Serial.printf("delta is: %f\n", delta);
     return (delta < tolerance) && (delta > -tolerance);
 }
 
@@ -63,22 +95,6 @@ const double ArmRotate::getAngle() {
     return getAngleFromRad(rad);
 }
 
-const double ArmRotate::getRadFromPos(const double x, const double y) {
-    const double lengthV = sqrt(x*x + y*y);
-    const double sr = (lengthV != 0) ? y / lengthV : 0;
-    const double siny = asin(sr);
-    Serial.printf("siny: %f, x: %f, y: %f\n", siny, x, y);
-    const double res =  (x < 0) ?
-                        (y < 0) ? PI + abs(siny) : PI - abs(siny) :
-                        siny;    
-    const double maxRad = (ROTATE_MAX + ROTATE_BASE) / 180.0 * PI;
-    const double minRad = (ROTATE_MIN + ROTATE_BASE) / 180.0 * PI;
-    if (res > maxRad) return res - PI;
-    if (res < minRad) return res + PI;
-    Serial.printf("minRad: %f, maxRad: %f, res: %f\n", minRad, maxRad, res);
-    return res;
-}
-
 void ArmRotate::setPoints(const double rotateRad) {
     XZRad = 0;
     XYRad = rotateRad;    
@@ -86,7 +102,7 @@ void ArmRotate::setPoints(const double rotateRad) {
 }
 
 void ArmRotate::setRadFromPos(const double x, const double y) {
-    const double rRad = ArmRotate::getRadFromPos(x, y);
+    const double rRad = ArmPoint::getRadFromXY(x, y);
     setPoints(rRad);    
 }
 
@@ -126,13 +142,12 @@ void ArmShoulder::setAvailableLength(const double maxLength, const double x, con
     const double acSum = a + c;
 
     const double b = (maxLength > acSum) ? acSum : maxLength;
-        
-    Serial.printf("maxLength: %f, acSum: %f, a: %f, b: %f, c: %f\n", maxLength, acSum, a, b, c);    
+            
     const double p = (a + b + c) / 2;
     const double pa = p - a;
     const double pb = p - b;
     const double pc = p - c;
-    Serial.printf("p: %f, pa: %f, pb: %f, pc: %f\n", p, pa, pb, pc);    
+    
     const double h = 2 * sqrt(p * pa * pb * pc) / a;    
     
     const double sinh = h / c;
@@ -143,22 +158,21 @@ void ArmShoulder::setAvailableLength(const double maxLength, const double x, con
     const double lrad = asin(lsin);
         
     const double srad = trad + lrad;
-    Serial.printf("shoulder h = %f, sinh = %f, trad = %f, wz = %f, lsin = %f, lrad = %f, XZRad = %f\n", h, sinh, trad, wz, lsin, lrad, srad);
 
     setPoints(this->XYRad, srad);
 
     const double tLength = ArmElbow::getLength(*this, x, y, z);
-    Serial.printf("try length 1: %f, b: %f\n", tLength, b);
+
     if (ArmPoint::isEqual(tLength, b)) return;
     const double drad = (PI - trad) + lrad;
     setPoints(this->XYRad, drad);
     const double dLength = ArmElbow::getLength(*this, x, y, z);
-    Serial.printf("try length 2: %f, b: %f\n", dLength, b);
+
     if (ArmPoint::isEqual(dLength, b)) return;
     const double mrad = (PI - trad) - lrad;
     setPoints(this->XYRad, mrad);
     const double mLength = ArmElbow::getLength(*this, x, y, z);
-    Serial.printf("try length 3: %f, b: %f\n", mLength, b);
+
     if (ArmPoint::isEqual(mLength, b)) return;
     setPoints(this->XYRad, NAN);
 }
@@ -233,6 +247,12 @@ void ArmElbow::setRotate(ArmRotate rotate) {
     setCoords();
 }
 
+const double ArmElbow::getLocalRad(ArmShoulder shoulder) {        
+    const double rad = (XZRad < 0) ? 2 * PI + XZRad : XZRad;
+    return rad - shoulder.XZRad;
+}
+
+
 //------ArmWrist------
 
 
@@ -270,6 +290,12 @@ const double ArmWrist::getLength(ArmShoulder shoulder, ArmElbow elbow, const dou
     const double qz = sz * sz;    
     return sqrt(qx + qy + qz);
 }
+
+const double ArmWrist::getLocalRad(ArmElbow elbow) {        
+    const double rad = (XZRad < 0) ? 2 * PI + XZRad : XZRad;
+    return rad - elbow.XZRad;
+}
+
 
 void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z) {    
     const double wx = x - shoulder.x - elbow.x;        
