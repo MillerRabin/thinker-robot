@@ -33,7 +33,7 @@ const double Position::getY() {
 }
 
 const double Position::getZ() {                
-    return shoulder.z + elbow.z + wrist.z + TOP_BASE;
+    return shoulder.z + elbow.z + wrist.z + BASE_HEIGHT;
 }
 
 const double Position::getRotateAngle() {
@@ -56,15 +56,21 @@ const double Position::getClawAngle() {
     return claw.getAngle();
 }
 
-bool Position::isValid() {        
+const bool Position::isValid() {        
     const double dsAngle = getShoulderAngle();
     const double deAngle = getElbowAngle();
     const double dwAngle = getWristAngle();        
-    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) return false;
-    const double sRad = shoulder.XZRad;
-    const double eRad = elbow.getLocalRad(shoulder);
-    const double wRad = wrist.getLocalRad(elbow);
-    const double sum = (sRad + eRad + wRad) / PI * 180;
-    if (sum > MAX_SUM_ANGLE) return false;    
+    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) {
+        Serial.printf("Angle is invalid. Shoulder %f, Elbow: %f, Wrist: %f\n", dsAngle, deAngle, dwAngle);
+        return false;
+    }    
+    const double eRad = abs(elbow.getLocalRad(shoulder));
+    const double wRad = abs(wrist.getLocalRad(elbow));
+    const double sum = (eRad + wRad) / PI * 180;
+    Serial.printf("eRad: %f, wRad: %f, sum: %f\n", eRad, wRad, sum);
+    if (sum > MAX_SUM_ANGLE) {        
+        Serial.printf("Angle sum check is invalid: %f\n", sum);
+        return false;    
+    }
     return true;    
 }

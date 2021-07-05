@@ -47,9 +47,6 @@ Position Strategy::tryShoulderLength(ArmRotate rotate, ArmShoulder shoulder, con
         Serial.printf("Shoulder is invalid\n");    
         return Position();
     }
-
-    const double eLength = ArmElbow::getLength(tShoulder, x, y, z);    
-    Serial.printf("new eLength: %f\n", eLength);    
     return tryElbow(rotate, tShoulder, x, y, z);    
 }
 
@@ -62,9 +59,6 @@ Position Strategy::tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const 
         Serial.printf("Shoulder is invalid\n");    
         return Position();
     }
-
-    const double eLength = ArmElbow::getLength(tShoulder, x, y, z);    
-    Serial.printf("new eLength: %f\n", eLength);    
     return tryElbow(rotate, tShoulder, x, y, z);    
 }
 
@@ -72,10 +66,8 @@ Position Strategy::tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const 
 Position Strategy::tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z) {
     ArmElbow elbow = position.elbow;
     elbow.setRotate(rotate);
-    elbow.setPos(root.x, root.y, root.z);
-    
-    const double swAngle = position.getWristAngle();
-    Serial.printf("start wrist angle: %f\n", swAngle);
+    elbow.setPos(root.x, root.y, root.z);    
+    const double swAngle = position.getWristAngle();    
     ArmWrist wrist = ArmWrist(elbow, swAngle);
     wrist.setPos(shoulder, elbow, x, y, z);    
     Serial.printf("shoulder.XZRad: %f, shoulder.XYRad: %f, shoulder x: %f, shoulder z: %f, angle: %f\n", shoulder.XZRad, shoulder.XYRad, shoulder.x, shoulder.z, shoulder.getAngle(false));
@@ -87,17 +79,17 @@ Position Strategy::tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot 
 Position Strategy::tryElbow(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z) {
     const double sx = shoulder.x;
     const double sy = shoulder.y;
-    const double sz = shoulder.z + TOP_BASE;
+    const double sz = shoulder.z + BASE_HEIGHT;
     Serial.printf("sx: %f, sy: %f, sz: %f, R: %d\n", sx, sy, sz, ELBOW_LENGTH);
     Serial.printf("x: %f, y: %f, z: %f, r: %d\n", x, y, z, WRIST_LENGTH);
         
     ArmRoots roots = Strategy::getElbowRoots(shoulder, x, y, z, WRIST_LENGTH);
     const double x1 = roots.r1.x + shoulder.x;
     const double y1 = roots.r1.y + shoulder.y;
-    const double z1 = roots.r1.z + shoulder.z + TOP_BASE;
+    const double z1 = roots.r1.z + shoulder.z + BASE_HEIGHT;
     const double x2 = roots.r2.x + shoulder.x;
     const double y2 = roots.r2.y + shoulder.y;
-    const double z2 = roots.r2.z + shoulder.z + TOP_BASE;    
+    const double z2 = roots.r2.z + shoulder.z + BASE_HEIGHT;    
     Serial.printf("roots r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", roots.r1.x, roots.r1.y, roots.r1.z, roots.r2.x, roots.r2.y, roots.r2.z);
     Serial.printf("r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", x1, y1, z1, x2, y2, z2);
     
@@ -119,14 +111,26 @@ Position Strategy::tryElbow(ArmRotate rotate, ArmShoulder shoulder, const double
 void Strategy::freeAngle(const double x, const double y, const double z) {        
     Serial.printf("\nSTART: source x: %f, y: %f, z: %f\n", position.getX(), position.getY(), position.getZ());
     Serial.printf("target x: %f, y: %f, z: %f\n", x, y, z);    
-    const double sLength = ArmShoulder::getLength(x, y, z);
+    const double vl = sqrt(x*x + y*y);
+    if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
+        char sx[25]; 
+        dtostrf(x, 1, 3, sx);
+        char sy[25]; 
+        dtostrf(y, 1, 3, sy);
+        char sz[25]; 
+        dtostrf(z, 1, 3, sz);
+        string rString = string("EOUTOFRANGE: The Arm can`t move through it`s base. x: ") + sx + string(", y: ") + sy + string(", z: ") + sz;        
+        errors.push_back(rString);
+        return;
+    }
+    
+    const double sLength = ArmShoulder::getLength(x, y, z);        
     if (sLength > MAX_LENGTH) {
         char ss[25]; 
         dtostrf(sLength, 1, 3, ss);
         char ms[25]; 
         dtostrf(MAX_LENGTH, 1, 3, ms);
-        string rString = string("EOUTOFRANGE: shoulder length: ") + ss + string(" is out of range. Max length is: ") + ms;
-        Serial.println(rString.c_str());
+        string rString = string("EOUTOFRANGE: shoulder length: ") + ss + string(" is out of range. Max length is: ") + ms;        
         errors.push_back(rString);
         return;
     }
@@ -138,9 +142,10 @@ void Strategy::freeAngle(const double x, const double y, const double z) {
     ArmShoulder shoulder = position.shoulder;
     shoulder.setRotate(rotate);
     Position fPos = getArmPosition(rotate, shoulder, x, y, z);
-    if (!fPos.isValid()) {
-        Serial.printf("All roots is invalid\n");    
-        return;
+    if (!fPos.isValid()) {            
+        string rString = "EUNREACHABLE: The point is unreachable";        
+        errors.push_back(rString);
+        return;    
     }
 
     Serial.printf("fPos.rotate.XYRad is: %f\n", fPos.rotate.XYRad);
@@ -168,69 +173,11 @@ Strategy::Strategy(Position pos, const double x, const double y, const double z)
     freeAngle(x, y, z);
 }
 
-/*ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {        
-    const double sx1 = trunc(x * 10000) / 10000;
-    const double sx2 = trunc(shoulder.x * 10000) / 10000;
-    const double sz1 = trunc(z * 10000) / 10000;
-    const double sz2 = trunc((shoulder.z + TOP_BASE) * 10000) / 10000;
-    const double sx = sx1 - sx2;
-    const double sy = y - shoulder.y;
-    const double sz = sz1 - sz2;
-    const double sl = sqrt(sx * sx + sy * sy);
-    Serial.printf("shoulder.XYRad: %f, sx: %f, sy: %f, sz: %f, sl: %f\n", shoulder.XYRad, sx, sy, sz, sl);
-    const double ql = sl * sl;
-    const double qz = sz * sz;
-    const double R = ELBOW_LENGTH;
-    const double qR = R * R;
-    const double r = length;
-    const double qr = r * r;
-    const double c = (qr - ql - qz - qR) / -2.0;    
-    const double qc = c * c;
-    const double a = ql + qz;    
 
-    if (sl != 0) {        
-        const double b = -2.0 * sz * c;
-        const double e = qc - (qR * ql);
-        const double qb = b * b;
-        const double rs = 4.0 * a * e; 
-        const double D = qb - rs ;        
-        Serial.printf("qb: %f, rs: %f, D: %f\n", qb, rs, D);
-        Serial.printf("ql: %f, qr: %f, qR: %f, qc: %f\n", ql, qr, qR, qc);
-        Serial.printf("a: %f, b: %f, c: %f, e: %f\n", a, b, c, e);
-        if (D > 0) {            
-            const double z1 = (-b + sqrt(D)) / (2.0 * a);
-            const double z2 = (-b - sqrt(D)) / (2.0 * a);            
-            const double l1 = (c - z1 * sz) / sl;
-            const double l2 = (c - z2 * sz) / sl;
-            Serial.printf("l1: %f, z1: %f, l2: %f, z2: %f\n", l1, z1, l2, z2);
-            return ArmRoots(ArmRoot(shoulder.XYRad, l1, z1), ArmRoot(shoulder.XYRad, l2, z2));
-        } if (D == 0) {
-            const double z = (-b + sqrt(D)) / (2.0 * a);
-            const double l = (c - z * sz) / sl;            
-            return ArmRoots(ArmRoot(shoulder.XYRad, l, z), ArmRoot());
-        }
-        return ArmRoots(ArmRoot(), ArmRoot());
-    }
-
-    const double D = qR - qc / qz;
-    if (D > 0) {            
-        const double l1 = sqrt(D);
-        const double l2 = -1 * sqrt(D);
-        const double z1 = c / sz;        
-        return ArmRoots(ArmRoot(shoulder.XYRad, l1, z1), ArmRoot(shoulder.XYRad, l2, z1));
-    } if (D == 0) {
-        const double l = 0;                    
-        const double z = c / sz;
-        return ArmRoots(ArmRoot(shoulder.XYRad, l, z), ArmRoot());
-    }
-    return ArmRoots(ArmRoot(), ArmRoot());
-}*/
-
- 
 ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {        
     const double sx = x - shoulder.x;
     const double sy = y - shoulder.y;
-    const double sz = z - (shoulder.z + TOP_BASE);
+    const double sz = z - (shoulder.z + BASE_HEIGHT);
     const double qx = sx * sx;
     const double qy = sy * sy;
     const double qz = sz * sz;
@@ -246,25 +193,20 @@ ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const dou
     const double qr = r * r;
     const double rSum = R + r;
     const double rDiff = abs(R - r);
-    const double dDiff = od - rSum;
     const double tolerance = 0.00001;
     const double d = ((od < (rSum + tolerance)) && (od > (rSum - tolerance))) ? rSum : od;
-    
-    Serial.printf("d: %f, rSum: %f, rDiff: %f, dDiff: %f\n", d, rSum, rDiff, dDiff);    
-    
+        
     if ((d <= rSum) && (d > rDiff)) {
         const double b = (qr - qR + qd) / (2 * d);           
         const double a = d - b;      
         const double qa = a * a;
         const double h = sqrt(abs(qR - qa));
-        Serial.printf("a: %f, b: %f,q qa: %f, qR: %f, h: %f\n", a, b, qa, qr, h);
         const double pos0L = a / d * sl;
         const double pos0Z = a / d * sz;        
         const double l1 = pos0L + h / d * sz;
         const double z1 = pos0Z - h / d * sl;
         const double l2 = pos0L - h / d * sz;
-        const double z2 = pos0Z + h / d * sl;
-        Serial.printf("l1: %f, z1: %f, l2: %f, z2: %f\n", l1, z1, l2, z2);
+        const double z2 = pos0Z + h / d * sl;        
         return ArmRoots(ArmRoot(shoulder.XYRad, l1, z1), ArmRoot(shoulder.XYRad, l2, z2));
     }
         
