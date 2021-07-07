@@ -37,4 +37,28 @@ describe('Positioning', function() {
             await checkPosition({ x: -95, y: 0, z: 80 });
         });
     });
+
+    describe('Set position', function () {
+        it ('140 140 80', async function () {
+            await checkPosition({ x: 140, y: 140, z: 80 });
+        });
+    });
+
+    describe('Set position', function () {
+        it ('-140 140 80', async function () {
+            await checkPosition({ x: -140, y: 140, z: 80 });
+        });
+    });
+
+    describe('Set position', function () {
+        it ('140 -140 80', async function () {
+            await checkPosition({ x: 140, y: -140, z: 80 });
+        });
+    });
+
+    describe('Set position', function () {
+        it ('-140 -140 80', async function () {
+            await checkPosition({ x: -140, y: -140, z: 80 });
+        });
+    });
 });
