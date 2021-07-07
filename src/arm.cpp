@@ -99,6 +99,10 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
 
 const bool ArmPoint::isValid() {
     if (isnan(XZRad)) return false;
+    const double minRad = getRad(getMinAngle());
+    const double maxRad = getRad(getMaxAngle());
+    if (XZRad < minRad) return false;            
+    if (XZRad > maxRad) return false;            
     return true;
 }
 
@@ -270,7 +274,6 @@ const double ArmElbow::getAngleFromPos(ArmShoulder shoulder, const double x, con
 void ArmElbow::setPos(const double x, const double y, const double z) {    
     Serial.printf("Elbow set pos\n");
     const double erad = getRadFromPos(x, y, z);    
-    Serial.printf("erad is %f\n", erad);
     setPoints(XYRad, erad);    
 }
 
@@ -333,7 +336,6 @@ void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, cons
     const double wy = y - shoulder.y - elbow.y;
     const double wz = z - shoulder.z - elbow.z - BASE_HEIGHT;
     const double wrad = getRadFromPos(wx, wy, wz);        
-    Serial.printf("Wrad: %f\n", wrad);
     setPoints(wrad, elbow.XYRad);
 }
 

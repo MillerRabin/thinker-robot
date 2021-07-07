@@ -36,6 +36,7 @@ class Strategy {
         Position tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z);
         Position tryElbow(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z);                
         Position tryShoulderLength(ArmRotate rotate, ArmShoulder shoulder, const double length, const double x, const double y, const double z);
+        Position tryHalfLength(ArmRotate rotate, ArmShoulder shoulder, const double length, const double x, const double y, const double z);
         Position tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const double rad, const double x, const double y, const double z);
         Position getArmPosition(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z);
         Position position;

@@ -14,28 +14,49 @@ const bool ArmRoot::isValid() {
     return (!isnan(x)) && (!isnan(y)) && (!isnan(z));
 }
 
-//------Position------
+//------Strategy------
+Position Strategy::tryHalfLength(ArmRotate rotate, ArmShoulder shoulder, const double length, const double x, const double y, const double z) {
+    const double h = length / 2.0;
+    const double qh = length / 4.0;
+    
+    const double pHalf = h + qh;
+    Serial.printf("try positive half: %f\n", pHalf);
+    Position phPos = tryShoulderLength(rotate, shoulder, pHalf, x, y, z);        
+    if (phPos.isValid()) return phPos;
+
+    const double nHalf = h - qh;
+    Serial.printf("try negative half: %f\n", nHalf);
+    return tryShoulderLength(rotate, shoulder, nHalf, x, y, z);            
+}
 
 Position Strategy::getArmPosition(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z) {
     Serial.printf("try pi/2\n");        
     Position rPos = tryShoulderRad(rotate, shoulder, PI/2, x, y, z);        
-    if (rPos.isValid()) return rPos;    
-    const double eLength = ArmElbow::getLength(shoulder, x, y, z);
-    const double lSum = ELBOW_LENGTH + WRIST_LENGTH;
-    Serial.printf("eLength: %f, lsum: %f\n", eLength, lSum);        
-    Serial.printf("try eLength\n");        
-    Position fPos = tryShoulderLength(rotate, shoulder, eLength, x, y, z);        
+    if (rPos.isValid()) return rPos;
+    double fullLength = ELBOW_LENGTH + WRIST_LENGTH;
+            
+    Serial.printf("try full length: %f\n", fullLength);
+    Position fPos = tryShoulderLength(rotate, shoulder, fullLength, x, y, z);        
     if (fPos.isValid()) return fPos;
-    Serial.printf("eLength is Invalid.\nTry lsum\n");        
-    Position sPos = tryShoulderLength(rotate, shoulder, lSum, x, y, z);
-    if (sPos.isValid()) return sPos;
-    Serial.printf("lSum is Invalid.\nTry ELBOW_LENGTH\n");        
-    Position tPos = tryShoulderLength(rotate, shoulder, ELBOW_LENGTH, x, y, z);
-    if (tPos.isValid()) return tPos;
-    const double dvis = lSum - ((lSum - eLength) / 2);
-    Serial.printf("eLength is Invalid.\nTry dvis: %f\n", dvis);        
-    Position fourthPos = tryShoulderLength(rotate, shoulder, dvis, x, y, z);
-    return fourthPos;
+    
+    Serial.printf("try min length: %d\n", ELBOW_LENGTH);
+    Position mPos = tryShoulderLength(rotate, shoulder, ELBOW_LENGTH, x, y, z);        
+    if (mPos.isValid()) return mPos;
+    
+    int count = 1;    
+    const double length = WRIST_LENGTH;
+    for (int i = 0; i < 2; i++) {
+        count = count * 2;
+        const double step = length / count;
+        for (int j = 1; j < count; j = j + 2) {
+            const double line = ELBOW_LENGTH + (step * j);
+            Serial.printf("try line: %f\n", line);
+            Position pos = tryHalfLength(rotate, shoulder, line, x, y, z);        
+            if (pos.isValid()) return pos;
+        }
+    }
+
+    return Position();
 }
 
 Position Strategy::tryShoulderLength(ArmRotate rotate, ArmShoulder shoulder, const double length, const double x, const double y, const double z) {
@@ -55,6 +76,7 @@ Position Strategy::tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const 
     tShoulder.setXZRad(rad);
     const double sAngle = tShoulder.getAngle(false);
     Serial.printf("Start Shoulder angle is: %f\n", sAngle);    
+    
     if (!tShoulder.isValid()) {
         Serial.printf("Shoulder is invalid\n");    
         return Position();

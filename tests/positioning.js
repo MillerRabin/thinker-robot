@@ -62,5 +62,22 @@ describe('Positioning', function() {
         it ('-140 -140 80', async function () {
             await checkPosition({ x: -140, y: -140, z: 80 });
         });
+
+        it ('26 0 130', async function () {
+            await checkPosition({ x: 26, y: 0, z: 130 });
+        });
+
+        it ('-26 0 130', async function () {
+            await checkPosition({ x: -26, y: 0, z: 130 });
+        });
+
+        it ('0 26 130', async function () {
+            await checkPosition({ x: 0, y: 26, z: 130 });
+        });
+
+        it ('0 -26 130', async function () {
+            await checkPosition({ x: 0, y: -26, z: 130 });
+        });
+
     });
 });

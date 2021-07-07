@@ -32,6 +32,12 @@ class ArmPoint {
         const double virtual getWidth()  {
             return 0;
         };
+        const double virtual getMaxAngle()  {
+            return 270;
+        };
+        const double virtual getMinAngle()  {
+            return 0;
+        };
         const double getRad(const double angle);
         const double getAngleFromRad(const double rad);
         static const double getRadFromXY(const double x, const double y);
@@ -56,7 +62,12 @@ class ArmRotate : public ArmPoint {
         const double getScale() override {
             return 1;
         };
-
+        const double getMaxAngle() override {
+            return ROTATE_MAX;
+        };
+        const double getMinAngle() override {
+            return ROTATE_MIN;
+        };
 };
 
 //------ArmShoulder------
@@ -81,6 +92,13 @@ class ArmShoulder : public ArmPoint {
         const double getScale() override {
             return SHOULDER_SCALE;
         };
+        const double getMaxAngle() override {
+            return SHOULDER_MAX;
+        };
+        const double getMinAngle() override {
+            return SHOULDER_MIN;
+        };
+
 };
 
 //------ArmElbow------
@@ -108,7 +126,13 @@ class ArmElbow : public ArmPoint {
         const double getScale() override {
             return ELBOW_SCALE;
         };
-
+        const double getMaxAngle() override {
+            return ELBOW_MAX;
+        };
+        const double getMinAngle() override {
+            return ELBOW_MIN;
+        };
+    
 };
 
 //------ArmWrist------
@@ -131,6 +155,12 @@ class ArmWrist : public ArmPoint {
         };
         const double getScale() override {
             return WRIST_SCALE;
+        };
+        const double getMaxAngle() override {
+            return WRIST_MAX;
+        };
+        const double getMinAngle() override {
+            return WRIST_MIN;
         };
 
 };

@@ -78,6 +78,7 @@ void sendSuccess(AsyncWebServerRequest* request) {
     }    
     root.printTo(*response);
     request->send(response);
+    gErrors.clear();
 }
 
 void sendError(AsyncWebServerRequest *request, const char* message) {

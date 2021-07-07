@@ -66,8 +66,7 @@ const bool Position::isValid() {
     }    
     const double eRad = abs(elbow.getLocalRad(shoulder));
     const double wRad = abs(wrist.getLocalRad(elbow));
-    const double sum = (eRad + wRad) / PI * 180;
-    Serial.printf("eRad: %f, wRad: %f, sum: %f\n", eRad, wRad, sum);
+    const double sum = (eRad + wRad) / PI * 180;    
     if (sum > MAX_SUM_ANGLE) {        
         Serial.printf("Angle sum check is invalid: %f\n", sum);
         return false;    
