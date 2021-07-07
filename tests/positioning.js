@@ -35,6 +35,10 @@ describe('Positioning', function() {
             await checkPosition({ x: -95, y: 0, z: 80 });
         });
 
+        it ('-95 80 80', async function () {
+            await checkPosition({ x: -95, y: 80, z: 80 });
+        });
+
         it ('0 95 80', async function () {
             await checkPosition({ x: 0, y: 95, z: 80 });
         });
