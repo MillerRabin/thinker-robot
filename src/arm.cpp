@@ -48,32 +48,37 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
     const int ry = round(localY);    
     const int rz = round(localZ);        
     const double dPI = PI / 2;
+    const double qPI = PI / 4;
     
-    const int sign = (XYRad >= PI + dPI) ?
+    const int sign = (XYRad > PI + dPI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 : 1 :
                             (ry < 0) ?  1 : 1 :
-                     (XYRad >= PI) ?
+                     (XYRad > PI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 :  1 :
                             (ry < 0) ?  1 :  1 :
-                     (XYRad >= dPI) ?
+                     (XYRad > dPI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  -1 :  1 :
+                            (ry < 0) ?  1 :  1 :
                      (XYRad >= 0) ?
                         (rx < 0) ? 
-                            (ry < 0) ?  1 :  -1 :
-                            (ry < 0) ?  1 :  1 :
+                            (ry < 0) ? -1 : -1 :
+                            (ry < 0) ? -1 :  1 :
                      (XYRad >= -dPI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  -1 :
+                            (ry < 0) ?  1 : -1 :
+                     (XYRad >= -dPI - qPI) ?
+                        (rx < 0) ? 
+                            (ry < 0) ?  1 :  1 :
+                            (ry < 0) ?  1 :  1 :
                      (XYRad >= -PI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 :                     
-                     (XYRad > -PI - dPI) ?
+                            (ry < 0) ?  1 : -1 :                     
+                     (XYRad >= -PI - dPI) ?
                         (rx < 0) ? 
                             (ry < 0) ?  1 :  1 :
                             (ry < 0) ?  1 :  1 :
