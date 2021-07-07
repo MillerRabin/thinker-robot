@@ -68,7 +68,7 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
                             (ry < 0) ? -1 :  1 :
                      (XYRad >= -dPI) ?
                         (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
+                            (ry < 0) ?  1 : -1 :
                             (ry < 0) ?  1 : -1 :
                      (XYRad >= -dPI - qPI) ?
                         (rx < 0) ? 
