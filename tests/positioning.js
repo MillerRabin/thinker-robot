@@ -30,33 +30,31 @@ describe('Positioning', function() {
         it ('95 0 80', async function () {
             await checkPosition({ x: 95, y: 0, z: 80 });
         });
-    });
 
-    describe('Set position', function () {
         it ('-95 0 80', async function () {
             await checkPosition({ x: -95, y: 0, z: 80 });
         });
-    });
 
-    describe('Set position', function () {
+        it ('0 95 80', async function () {
+            await checkPosition({ x: 0, y: 95, z: 80 });
+        });
+
+        it ('0 -95 80', async function () {
+            await checkPosition({ x: 0, y: -95, z: 80 });
+        });
+
         it ('140 140 80', async function () {
             await checkPosition({ x: 140, y: 140, z: 80 });
         });
-    });
 
-    describe('Set position', function () {
         it ('-140 140 80', async function () {
             await checkPosition({ x: -140, y: 140, z: 80 });
         });
-    });
 
-    describe('Set position', function () {
         it ('140 -140 80', async function () {
             await checkPosition({ x: 140, y: -140, z: 80 });
         });
-    });
 
-    describe('Set position', function () {
         it ('-140 -140 80', async function () {
             await checkPosition({ x: -140, y: -140, z: 80 });
         });
