@@ -77,21 +77,21 @@ Position Strategy::tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot 
 }
 
 Position Strategy::tryElbow(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z) {
-    const double sx = shoulder.x;
-    const double sy = shoulder.y;
-    const double sz = shoulder.z + BASE_HEIGHT;
-    Serial.printf("sx: %f, sy: %f, sz: %f, R: %d\n", sx, sy, sz, ELBOW_LENGTH);
-    Serial.printf("x: %f, y: %f, z: %f, r: %d\n", x, y, z, WRIST_LENGTH);
+    //const double sx = shoulder.x;
+    //const double sy = shoulder.y;
+    //const double sz = shoulder.z + BASE_HEIGHT;
+    //Serial.printf("sx: %f, sy: %f, sz: %f, R: %d\n", sx, sy, sz, ELBOW_LENGTH);
+    //Serial.printf("x: %f, y: %f, z: %f, r: %d\n", x, y, z, WRIST_LENGTH);
         
     ArmRoots roots = Strategy::getElbowRoots(shoulder, x, y, z, WRIST_LENGTH);
-    const double x1 = roots.r1.x + shoulder.x;
-    const double y1 = roots.r1.y + shoulder.y;
-    const double z1 = roots.r1.z + shoulder.z + BASE_HEIGHT;
-    const double x2 = roots.r2.x + shoulder.x;
-    const double y2 = roots.r2.y + shoulder.y;
-    const double z2 = roots.r2.z + shoulder.z + BASE_HEIGHT;    
-    Serial.printf("roots r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", roots.r1.x, roots.r1.y, roots.r1.z, roots.r2.x, roots.r2.y, roots.r2.z);
-    Serial.printf("r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", x1, y1, z1, x2, y2, z2);
+    //const double x1 = roots.r1.x + shoulder.x;
+    //const double y1 = roots.r1.y + shoulder.y;
+    //const double z1 = roots.r1.z + shoulder.z + BASE_HEIGHT;
+    //const double x2 = roots.r2.x + shoulder.x;
+    //const double y2 = roots.r2.y + shoulder.y;
+    //const double z2 = roots.r2.z + shoulder.z + BASE_HEIGHT;    
+    //Serial.printf("roots r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", roots.r1.x, roots.r1.y, roots.r1.z, roots.r2.x, roots.r2.y, roots.r2.z);
+    //Serial.printf("r1x: %f, r1y: %f, r1z: %f, r2x: %f, r2y: %f, r2z: %f\n", x1, y1, z1, x2, y2, z2);
     
     if (roots.r1.isValid()) {
         Serial.printf("Try root 1\n");
