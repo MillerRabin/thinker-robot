@@ -65,18 +65,13 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
     const double sina = asin(sinz);  
     const double asina = abs(sina);
     
-
-    Serial.printf("length: %f, XYRad: %f, sina: %f\n", length, XYRad, sina);    
-    Coords coord = Coords(length, sina, XYRad);
-    Serial.printf("coord.x: %f(%f), coord.y: %f(%f), coord.z: %f(%f)\n", coord.x, localX, coord.y, localY, coord.z, localZ);
+    Coords coord = Coords(length, sina, XYRad);    
     if (coord.isEqual(localX, localY, localZ)) return sina;
     const double a1 =  PI + asina;
-    Coords coord2 = Coords(length, a1, XYRad);
-    Serial.printf("coord2.x: %f(%f), coord2.y: %f(%f), coord2.z: %f(%f)\n", coord2.x, localX, coord2.y, localY, coord2.z, localZ);
+    Coords coord2 = Coords(length, a1, XYRad);    
     if (coord2.isEqual(localX, localY, localZ)) return a1;
     const double a2 =  PI - asina;
-    Coords coord3 = Coords(length, a2, XYRad);
-    Serial.printf("coord3.x: %f(%f), coord3.y: %f(%f), coord3.z: %f(%f)\n", coord3.x, localX, coord3.y, localY, coord3.z, localZ);
+    Coords coord3 = Coords(length, a2, XYRad);    
     if (coord3.isEqual(localX, localY, localZ)) return a2;
     return NAN;    
 }
@@ -256,10 +251,10 @@ const double ArmElbow::getAngleFromPos(ArmShoulder shoulder, const double x, con
 }
 
 void ArmElbow::setPosLocal(const double localX, const double localY, const double localZ) {    
-    Serial.printf("Elbow set pos\n");
+    //Serial.printf("Elbow set pos\n");
     const double erad = getRadFromPos(localX, localY, localZ);    
     setPoints(XYRad, erad);    
-    Serial.printf("Elbow XZRad: %f, x: %f(%f), y: %f(%f), z: %f(%f)\n", XZRad, localX, x, localY, y, localZ, z);
+    //Serial.printf("Elbow XZRad: %f, x: %f(%f), y: %f(%f), z: %f(%f)\n", XZRad, localX, x, localY, y, localZ, z);
 }
 
 void ArmElbow::setRotate(ArmRotate rotate) {
@@ -315,17 +310,12 @@ const double ArmWrist::getLocalRad(ArmElbow elbow) {
 }
 
 
-void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z) {    
-    Serial.printf("Wrist set pos\n");    
-    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);
-    Serial.printf("Shoulder.x: %f, Shoulder.y: %f, Shoulder.z: %f\n", shoulder.x, shoulder.y, shoulder.z);
-    Serial.printf("Elbow.x: %f, Elbow.y: %f, Elbow.z: %f\n", elbow.x, elbow.y, elbow.z);
+void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z) {        
     const double wx = x - (shoulder.x + elbow.x);
     const double wy = y - (shoulder.y + elbow.y);
     const double wz = z - (shoulder.z + elbow.z + BASE_HEIGHT);
     double wrad = getRadFromPos(wx, wy, wz);
-    setPoints(wrad, elbow.XYRad);
-    Serial.printf("Wrist XZRad: %f, x: %f -> %f(%f), y: %f -> %f(%f), z: %f -> %f(%f)\n", XZRad, x, wx, this->x, y, wy, this->y, z, wz, this->z);
+    setPoints(wrad, elbow.XYRad);    
 }
 
 //-------ArmClaw-------

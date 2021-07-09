@@ -60,15 +60,13 @@ const bool Position::isValid() {
     const double dsAngle = getShoulderAngle();
     const double deAngle = getElbowAngle();
     const double dwAngle = getWristAngle();        
-    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) {
-        Serial.printf("Angle is invalid. Shoulder %f, Elbow: %f, Wrist: %f\n", dsAngle, deAngle, dwAngle);
+    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) {        
         return false;
     }    
     const double eRad = abs(elbow.getLocalRad(shoulder));
     const double wRad = abs(wrist.getLocalRad(elbow));
     const double sum = (eRad + wRad) / PI * 180;    
-    if (sum > MAX_SUM_ANGLE) {        
-        Serial.printf("Angle sum check is invalid: %f\n", sum);
+    if (sum > MAX_SUM_ANGLE) {                
         return false;    
     }
     return true;    
