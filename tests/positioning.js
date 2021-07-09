@@ -2,14 +2,14 @@ const assert = require('assert');
 const fetch = require('node-fetch');
 
 const endpoint = 'http://192.168.1.19';
-const tolerance = 2;
+const gTolerance = 2;
 
 function isEqual(source, target, tolerance) {
     return (source <= (target + tolerance)) &&
            (source >= (target - tolerance))
 }
 
-async function checkPosition(pos) {
+async function checkPosition(pos, tolerance = gTolerance) {
     const res = await fetch(endpoint + '/position', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -19,9 +19,9 @@ async function checkPosition(pos) {
     const lengthX = obj['length-x'];
     const lengthY = obj['length-y'];
     const lengthZ = obj['length-z'];
-    assert.strictEqual(isEqual(lengthX, pos.x, tolerance), true, 'X is incorrect');
-    assert.strictEqual(isEqual(lengthY, pos.y, tolerance), true, 'Y is incorrect');
-    assert.strictEqual(isEqual(lengthZ, pos.z, tolerance), true, 'Z is incorrect');
+    assert.strictEqual(isEqual(lengthX, pos.x, tolerance), true, `X ${lengthX} is incorrect`);
+    assert.strictEqual(isEqual(lengthY, pos.y, tolerance), true, `Y ${lengthY} is incorrect`);
+    assert.strictEqual(isEqual(lengthZ, pos.z, tolerance), true, `Z ${lengthZ} is incorrect`);
 }
 
 
@@ -77,6 +77,14 @@ describe('Positioning', function() {
 
         it ('0 -26 130', async function () {
             await checkPosition({ x: 0, y: -26, z: 130 });
+        });
+
+        it ('26 26 130', async function () {
+            await checkPosition({ x: 26, y: 26, z: 130 });
+        });
+
+        it ('-26 26 130', async function () {
+            await checkPosition({ x: -26, y: 26, z: 130 });
         });
 
     });

@@ -7,11 +7,24 @@
 
 using namespace std;
 
+//------Coords------
+
+class Coords {
+    public:
+        const double length;
+        const double x;
+        const double y;
+        const double z;
+        Coords(const double length, const double XZRad, const double XYRad);
+        const bool isEqual(const double x, const double y, const double z, const double tolerance = 0.00001);
+};
+
+
 //------ArmPoint------
 
 class ArmPoint {
     protected:
-        void setCoords();
+        void setCoords();        
         const double getRadFromPos(const double localX, const double localY, const double localZ);
         static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
     public:
@@ -114,7 +127,7 @@ class ArmElbow : public ArmPoint {
         static const double getLength(ArmShoulder shoulder, const double x, const double y, const double z);
         static const bool isAngleValid(const double angle);
         const double getAngleFromPos(ArmShoulder shoulder, const double x, const double y, const double z);        
-        void setPos(const double x, const double y, const double z);
+        void setPosLocal(const double localX, const double localY, const double localZ);
         void setRotate(ArmRotate rotate);
         const double getLocalRad(ArmShoulder shoulder);
         const double getLength() override {
@@ -146,7 +159,7 @@ class ArmWrist : public ArmPoint {
         const double getAngle(ArmElbow elbow, const bool validate = true);
         static const double getLength(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
         const double getLocalRad(ArmElbow elbow);
-        void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
+        void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);        
         const double getLength() override {
             return WRIST_LENGTH;
         };

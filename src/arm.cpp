@@ -6,7 +6,25 @@
 
 using namespace std;
 
-//----ArmPoint-----
+//------Coords------
+
+Coords::Coords(const double length, const double XZRad, const double XYRad) : 
+    length(length),
+    x(length * cos(XZRad) * cos(XYRad)),
+    y(length * cos(XZRad) * sin(XYRad)),
+    z(length * sin(XZRad))    
+{}
+
+const bool Coords::isEqual(const double x, const double y, const double z, const double tolerance) {
+    const double deltaX = this->x - x;
+    const double deltaY = this->y - y;
+    const double deltaZ = this->z - z;
+    return (deltaX < tolerance) && (deltaX > -tolerance) &&
+           (deltaY < tolerance) && (deltaY > -tolerance) &&
+           (deltaZ < tolerance) && (deltaZ > -tolerance);
+}
+
+//------ArmPoint-------
 
 const double ArmPoint::getRad(const double angle) {    
     return (this->getScale() * angle + this->getBase()) * PI / 180.0;    
@@ -40,61 +58,27 @@ const double ArmPoint::getRadFromXY(const double x, const double y) {
     return res;
 }
 
-const double ArmPoint::getRadFromPos(const double localX, const double localY, const double localZ) {                
+
+const double ArmPoint::getRadFromPos(const double localX, const double localY, const double localZ) {                    
     const double length = this->getLength();    
     const double sinz = (length > 0) ? localZ / length : 0;
-    const double sina = asin(sinz);      
-    const int rx = round(localX);
-    const int ry = round(localY);    
-    const int rz = round(localZ);        
-    const double dPI = PI / 2;
-    const double qPI = PI / 4;
+    const double sina = asin(sinz);  
+    const double asina = abs(sina);
     
-    const int sign = (XYRad > PI + dPI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 : 1 :
-                            (ry < 0) ?  1 : 1 :
-                     (XYRad > PI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 :
-                     (XYRad > dPI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 :
-                     (XYRad >= 0) ?
-                        (rx < 0) ? 
-                            (ry < 0) ? -1 : -1 :
-                            (ry < 0) ? -1 :  1 :
-                     (XYRad >= -dPI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 : -1 :
-                            (ry < 0) ?  1 : -1 :
-                     (XYRad >= -dPI - qPI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 :
-                     (XYRad >= -PI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 : -1 :                     
-                     (XYRad >= -PI - dPI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 :
-                     //(XYRad > 2PI) ?
-                        (rx < 0) ? 
-                            (ry < 0) ?  1 :  1 :
-                            (ry < 0) ?  1 :  1 ;
 
-                                                                            
-    Serial.printf("rx: %d, ry: %d, rz: %d\n", rx, ry, rz);
-    Serial.printf("XYRad: %f, sign: %d\n", XYRad, sign);    
-    const double tsina = (sign < 0) ?
-                            (rz < 0) ? PI + abs(sina) : PI - abs(sina) :           
-                        sina;    
-
-    return tsina;    
+    Serial.printf("length: %f, XYRad: %f, sina: %f\n", length, XYRad, sina);    
+    Coords coord = Coords(length, sina, XYRad);
+    Serial.printf("coord.x: %f(%f), coord.y: %f(%f), coord.z: %f(%f)\n", coord.x, localX, coord.y, localY, coord.z, localZ);
+    if (coord.isEqual(localX, localY, localZ)) return sina;
+    const double a1 =  PI + asina;
+    Coords coord2 = Coords(length, a1, XYRad);
+    Serial.printf("coord2.x: %f(%f), coord2.y: %f(%f), coord2.z: %f(%f)\n", coord2.x, localX, coord2.y, localY, coord2.z, localZ);
+    if (coord2.isEqual(localX, localY, localZ)) return a1;
+    const double a2 =  PI - asina;
+    Coords coord3 = Coords(length, a2, XYRad);
+    Serial.printf("coord3.x: %f(%f), coord3.y: %f(%f), coord3.z: %f(%f)\n", coord3.x, localX, coord3.y, localY, coord3.z, localZ);
+    if (coord3.isEqual(localX, localY, localZ)) return a2;
+    return NAN;    
 }
 
 const bool ArmPoint::isValid() {
@@ -271,10 +255,11 @@ const double ArmElbow::getAngleFromPos(ArmShoulder shoulder, const double x, con
     return this->getAngleFromRad(erad - shoulder.XZRad);    
 }
 
-void ArmElbow::setPos(const double x, const double y, const double z) {    
+void ArmElbow::setPosLocal(const double localX, const double localY, const double localZ) {    
     Serial.printf("Elbow set pos\n");
-    const double erad = getRadFromPos(x, y, z);    
+    const double erad = getRadFromPos(localX, localY, localZ);    
     setPoints(XYRad, erad);    
+    Serial.printf("Elbow XZRad: %f, x: %f(%f), y: %f(%f), z: %f(%f)\n", XZRad, localX, x, localY, y, localZ, z);
 }
 
 void ArmElbow::setRotate(ArmRotate rotate) {
@@ -331,13 +316,20 @@ const double ArmWrist::getLocalRad(ArmElbow elbow) {
 
 
 void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z) {    
-    Serial.printf("Wrist set pos\n");
-    const double wx = x - shoulder.x - elbow.x;        
-    const double wy = y - shoulder.y - elbow.y;
-    const double wz = z - shoulder.z - elbow.z - BASE_HEIGHT;
-    const double wrad = getRadFromPos(wx, wy, wz);        
+    Serial.printf("Wrist set pos\n");    
+    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);
+    Serial.printf("Shoulder.x: %f, Shoulder.y: %f, Shoulder.z: %f\n", shoulder.x, shoulder.y, shoulder.z);
+    Serial.printf("Elbow.x: %f, Elbow.y: %f, Elbow.z: %f\n", elbow.x, elbow.y, elbow.z);
+    const double wx = x - (shoulder.x + elbow.x);
+    const double wy = y - (shoulder.y + elbow.y);
+    const double wz = z - (shoulder.z + elbow.z + BASE_HEIGHT);
+    double wrad = getRadFromPos(wx, wy, wz);
     setPoints(wrad, elbow.XYRad);
+    Serial.printf("Wrist XZRad: %f, x: %f -> %f(%f), y: %f -> %f(%f), z: %f -> %f(%f)\n", XZRad, x, wx, this->x, y, wy, this->y, z, wz, this->z);
 }
+
+//-------ArmClaw-------
+
 
 ArmClaw::ArmClaw(ArmWrist wrist, const double clawAngle) {
     const double cRad = this->getRad(clawAngle);
