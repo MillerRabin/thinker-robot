@@ -77,9 +77,10 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
 }
 
 const bool ArmPoint::isValid() {
-    if (isnan(XZRad)) return false;
+    if (isnan(XZRad)) return false;    
     const double minRad = getRad(getMinAngle());
     const double maxRad = getRad(getMaxAngle());
+    Serial.printf("XZRad: %f, minRad: %f, maxRad: %f\n", XZRad, minRad, maxRad);
     if (XZRad < minRad) return false;            
     if (XZRad > maxRad) return false;            
     return true;
