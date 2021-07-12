@@ -8,6 +8,8 @@
 #define ELBOW_ENGINE 5
 #define WRIST_ENGINE 6
 
+//ESP32 WROOM GPIO PINS
+
 #define GRIPPER_PIN 25
 #define GRIPPER_ROTATE_PIN 26
 #define ROTATE_PIN 27
@@ -15,7 +17,13 @@
 #define WRIST_PIN 12
 #define ELBOW_PIN 13
 
+//Physical length of shoulder
 #define SHOULDER_LENGTH 105
+
+//Conversion between logical angle and physical servo angle for shoulder
+//Calculated by formula
+//logAngle = scale * physAngle + base;
+//physAngle = (logicalAngle - base) / scale
 #define SHOULDER_BASE 0
 #define SHOULDER_SCALE 1
 #define SHOULDER_MIN 0
