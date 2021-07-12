@@ -1,4 +1,4 @@
-const char* appVersion = "0.0.3";
+const char* appVersion = "1.0.0";
 
 #define COUNT_LOW 1638
 #define COUNT_HIGH 7864
