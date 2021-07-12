@@ -96,6 +96,7 @@ class ArmShoulder : public ArmPoint {
         static const double getLength(const double x, const double y, const double z);
         void setXZRad(const double rad);
         void setRotate(ArmRotate rotate);
+        const bool isValid();
         const double getLength() override {
             return SHOULDER_LENGTH;
         };
@@ -130,6 +131,7 @@ class ArmElbow : public ArmPoint {
         void setPosLocal(const double localX, const double localY, const double localZ);
         void setRotate(ArmRotate rotate);
         const double getLocalRad(ArmShoulder shoulder);
+        const bool isValid(ArmShoulder shoulder);
         const double getLength() override {
             return ELBOW_LENGTH;
         };
@@ -160,6 +162,8 @@ class ArmWrist : public ArmPoint {
         static const double getLength(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);
         const double getLocalRad(ArmElbow elbow);
         void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);        
+        const bool isValid(ArmElbow elbow);
+        
         const double getLength() override {
             return WRIST_LENGTH;
         };

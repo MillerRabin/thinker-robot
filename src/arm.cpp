@@ -76,16 +76,6 @@ const double ArmPoint::getRadFromPos(const double localX, const double localY, c
     return NAN;    
 }
 
-const bool ArmPoint::isValid() {
-    if (isnan(XZRad)) return false;    
-    const double minRad = getRad(getMinAngle());
-    const double maxRad = getRad(getMaxAngle());
-    Serial.printf("XZRad: %f, minRad: %f, maxRad: %f\n", XZRad, minRad, maxRad);
-    if (XZRad < minRad) return false;            
-    if (XZRad > maxRad) return false;            
-    return true;
-}
-
 const bool ArmPoint::isEqual(const double op1, const double op2, const double tolerance) {
     const double delta = op1 - op2;
     return (delta < tolerance) && (delta > -tolerance);
@@ -207,17 +197,25 @@ void ArmShoulder::setXZRad(const double rad) {
     setCoords();
 }
 
+const bool ArmShoulder::isValid() {
+    if (isnan(XZRad)) return false;    
+    const double minRad = getRad(getMinAngle());
+    const double maxRad = getRad(getMaxAngle());    
+    if (XZRad < minRad) return false;            
+    if (XZRad > maxRad) return false;            
+    return true;
+}
 
 //------ArmElbow------
 
 
 ArmElbow::ArmElbow(ArmShoulder shoulder, const double elbowAngle) {    
-    const double eRad = this->getRad(elbowAngle) + shoulder.XZRad;
-    this->setPoints(shoulder.XYRad, eRad);
+    const double eRad = getRad(elbowAngle) + shoulder.XZRad;
+    setPoints(shoulder.XYRad, eRad);
 }
 
 const double ArmElbow::getAngle(ArmShoulder shoulder, const bool validate) {    
-    const double angle = getAngleFromRad(this->XZRad - shoulder.XZRad);
+    const double angle = getAngleFromRad(XZRad - shoulder.XZRad);
     if (!validate)
         return angle;
     return ArmElbow::validateAngle(angle);    
@@ -231,9 +229,9 @@ const double ArmElbow::validateAngle(const double angle) {
 }
 
 void ArmElbow::setPoints(const double rotateRad, const double elbowRad) {
-    this->XZRad = elbowRad;
-    this->XYRad = rotateRad;    
-    this->setCoords();
+    XZRad = elbowRad;
+    XYRad = rotateRad;    
+    setCoords();
 }
 
 const double ArmElbow::getLength(ArmShoulder shoulder, const double x, const double y, const double z) {    
@@ -248,7 +246,7 @@ const double ArmElbow::getLength(ArmShoulder shoulder, const double x, const dou
 
 const double ArmElbow::getAngleFromPos(ArmShoulder shoulder, const double x, const double y, const double z) {        
     const double erad = getRadFromPos(x, y, z);    
-    return this->getAngleFromRad(erad - shoulder.XZRad);    
+    return getAngleFromRad(erad - shoulder.XZRad);    
 }
 
 void ArmElbow::setPosLocal(const double localX, const double localY, const double localZ) {    
@@ -265,6 +263,14 @@ void ArmElbow::setRotate(ArmRotate rotate) {
 
 const double ArmElbow::getLocalRad(ArmShoulder shoulder) {            
     return XZRad - shoulder.XZRad;
+}
+
+const bool ArmElbow::isValid(ArmShoulder shoulder) {    
+    const double angle = getAngle(shoulder);
+    if (angle < 0) return false;
+    const double tz = z + shoulder.z + BASE_HEIGHT;
+    if (tz < 0) return false;
+    return true;
 }
 
 
@@ -318,6 +324,13 @@ void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, cons
     double wrad = getRadFromPos(wx, wy, wz);
     setPoints(wrad, elbow.XYRad);    
 }
+
+const bool ArmWrist::isValid(ArmElbow elbow) {    
+    const double angle = getAngle(elbow);
+    if (angle < 0) return false;
+    return true;
+}
+
 
 //-------ArmClaw-------
 
