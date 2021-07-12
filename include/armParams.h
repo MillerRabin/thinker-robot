@@ -29,6 +29,7 @@
 #define SHOULDER_MIN 0
 #define SHOULDER_MAX 180
 
+
 #define ELBOW_LENGTH 95
 #define ELBOW_BASE 140
 #define ELBOW_SCALE -1
