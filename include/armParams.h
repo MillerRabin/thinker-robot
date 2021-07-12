@@ -20,7 +20,7 @@
 //Physical length of shoulder
 #define SHOULDER_LENGTH 105
 
-//Conversion between logical angle and physical servo angle for shoulder
+//Conversion between logical angle and physical servo angle
 //Calculated by formula
 //logAngle = scale * physAngle + base;
 //physAngle = (logicalAngle - base) / scale
@@ -28,7 +28,6 @@
 #define SHOULDER_SCALE 1
 #define SHOULDER_MIN 0
 #define SHOULDER_MAX 180
-
 
 #define ELBOW_LENGTH 95
 #define ELBOW_BASE 140
