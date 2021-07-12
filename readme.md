@@ -1,4 +1,4 @@
-# Intention Network Roboarm
+# 6DOF Roboarm manipulator software
 
 ## Description
 This project is intended to make a complex things with manipulator in Intention Network environment.
