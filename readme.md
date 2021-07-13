@@ -21,7 +21,7 @@ For autotest system nodejs and mocha are used.
 1. Install nodejs [nodejs](https://nodejs.org "nodejs")
 2. cd /tests
 3. npm install
-4  npm run test
+4. npm run test
    
 ## Information API
 
