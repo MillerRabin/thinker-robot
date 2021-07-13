@@ -2,12 +2,12 @@
 #define arm_params_h
 
 //Your wi-fi credentials
-#define WIFI_SSID "DragonSlayer"
-#define WIFI_PASSWORD "ifyouwanttohave"
+#define WIFI_SSID "Your-ssid-here"
+#define WIFI_PASSWORD "Your-password-here"
 
-//Login and password for http
+//Login and password for http update
 #define HTTP_USERNAME "admin"
-#define HTTP_PASSWORD "ifyouwanttohave"
+#define HTTP_PASSWORD "your-update-password-here"
 
 
 #define GRIPPER_ENGINE 1
