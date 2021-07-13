@@ -11,11 +11,12 @@ const char* appVersion = "1.0.0";
 #include "updateHandler.h"
 #include "initServer.h"
 #include "engineHandler.h"
+#include "armParams.h"
 
-const char* ssid = "DragonSlayer";
-const char* password = "ifyouwanttohave";
-const char* http_username = "admin";
-const char* http_password = "ifyouwanttohave";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
+const char* http_username = HTTP_USERNAME;
+const char* http_password = HTTP_PASSWORD;
 
 bool enableWIFI() {
    WiFi.mode(WIFI_STA);

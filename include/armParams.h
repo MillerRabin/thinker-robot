@@ -1,6 +1,15 @@
 #ifndef arm_params_h
 #define arm_params_h
 
+//Your wi-fi credentials
+#define WIFI_SSID "DragonSlayer"
+#define WIFI_PASSWORD "ifyouwanttohave"
+
+//Login and password for http
+#define HTTP_USERNAME "admin"
+#define HTTP_PASSWORD "ifyouwanttohave"
+
+
 #define GRIPPER_ENGINE 1
 #define GRIPPER_ROTATE_ENGINE 2
 #define ROTATE_ENGINE 3
