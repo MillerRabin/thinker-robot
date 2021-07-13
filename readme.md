@@ -23,9 +23,10 @@ For autotest system nodejs and mocha are used.
 3. npm install
 4  npm run test
    
-## API
+## Information API
 
-### /move
+## Positioning API
+### POST /move
 Using angles to manipulate roboarm
 
 Move to home
@@ -40,7 +41,7 @@ Move to home
 }
 ```
 
-### /position
+### POST /position
 Pick a point in 3D coordinate system and roboarm evaluates engine angles to move at specific point
 
 Move to home
@@ -51,6 +52,20 @@ Move to home
   "z": 25
 }
 ```
+
+### GET /version
+Returns current version of software 
+
+### GET /heap
+Returns free heap
+
+## Update API
+### GET /update
+Returns simple web interface to upload new firmware
+
+### POST /update
+Send firmware directly through POST request
+
 
 
 
