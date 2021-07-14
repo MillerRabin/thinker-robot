@@ -67,9 +67,9 @@ void sendSuccess(AsyncWebServerRequest* request) {
     root["elbow"] = gElbow;
     root["wrist"] = gWrist;
     Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);        
-    root["length-x"] = pos.getX();
-    root["length-y"] = pos.getY();
-    root["length-z"] = pos.getZ();        
+    root["claw-x"] = pos.getX();
+    root["claw-y"] = pos.getY();
+    root["claw-z"] = pos.getZ();        
     JsonArray &errors = root.createNestedArray("errors");
     for(std::string error : gErrors) {  
         const char* elem = error.c_str(); 
@@ -112,7 +112,7 @@ void setGripperRotate(JsonObject& jsonObj) {
 void setRotate(JsonObject& jsonObj) {
     const int tRotate = getValue(jsonObj, "rotate", COUNT_LOW, COUNT_HIGH);    
     if (tRotate >= 0 ) {
-        const uint tDeg = degToCount(tRotate, ROTATE_MAX);
+        const uint tDeg = degToCount(tRotate, ROTATE_Z_MAX);
         gRotate = tRotate;        
         ledcWrite(ROTATE_ENGINE, tDeg);
     }
@@ -192,10 +192,12 @@ AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("
     try {
         JsonObject& jsonObj = json.as<JsonObject>();        
         Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);
-        const double tx = getDoubleDef(jsonObj, "x", -360, 360, pos.getX());    
-        const double ty = getDoubleDef(jsonObj, "y", -360, 360, pos.getY());    
-        const double tz = getDoubleDef(jsonObj, "z", 25, 440, pos.getZ());    
-        Strategy moveStrategy(pos, tx, ty, tz);
+        const double tx = getDoubleDef(jsonObj, "claw-x", -360, 360, pos.getX());    
+        const double ty = getDoubleDef(jsonObj, "claw-y", -360, 360, pos.getY());    
+        const double tz = getDoubleDef(jsonObj, "claw-z", 25, 440, pos.getZ());    
+        const double cy = getDoubleDef(jsonObj, "claw-angle-y", WRIST_Y_MIN, WRIST_Y_MAX, NAN);    
+        const double cx = getDoubleDef(jsonObj, "claw-angle-x", CLAW_X_MIN, CLAW_X_MAX, NAN);    
+        Strategy moveStrategy(pos, tx, ty, tz, cx, cy);
         apply(moveStrategy);
         sendSuccess(request);        
     } catch (const std::exception& e) {

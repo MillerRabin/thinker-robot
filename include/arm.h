@@ -15,7 +15,7 @@ class Coords {
         const double x;
         const double y;
         const double z;
-        Coords(const double length, const double XZRad, const double XYRad);
+        Coords(const double length, const double YRad, const double ZRad);
         const bool isEqual(const double x, const double y, const double z, const double tolerance = 0.00001);
 };
 
@@ -28,31 +28,58 @@ class ArmPoint {
         const double getRadFromPos(const double localX, const double localY, const double localZ);
         static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
     public:
-        double XZRad;
-        double XYRad;        
+        double YRad;
+        double ZRad;        
         double x;
         double y;
         double z;
         const double virtual getLength() {
             return 0;
         };
-        const double virtual getBase()  {
+        const double virtual getXBase()  {
             return 0;
         };
-        const double virtual getScale() {
+        const double virtual getYBase()  {
+            return 0;
+        };
+        const double virtual getZBase()  {
+            return 0;
+        };
+        const double virtual getXScale() {
+            return 1;
+        };
+        const double virtual getYScale() {
+            return 1;
+        };
+        const double virtual getZScale()  {
             return 1;
         };
         const double virtual getWidth()  {
             return 0;
         };
-        const double virtual getMaxAngle()  {
+        const double virtual getXMaxAngle()  {
             return 270;
         };
-        const double virtual getMinAngle()  {
+        const double virtual getXMinAngle()  {
             return 0;
         };
-        const double getRad(const double angle);
-        const double getAngleFromRad(const double rad);
+        const double virtual getYMaxAngle()  {
+            return 270;
+        };
+        const double virtual getYMinAngle()  {
+            return 0;
+        };
+        const double virtual getZMaxAngle()  {
+            return 270;
+        };
+        const double virtual getZMinAngle()  {
+            return 0;
+        };
+        const double getXRad(const double angle);
+        const double getYRad(const double angle);
+        const double getZRad(const double angle);
+        const double getYAngleFromRad(const double rad);
+        const double getZAngleFromRad(const double rad);
         static const double getRadFromXY(const double x, const double y);
         const bool isValid();
 };
@@ -69,17 +96,17 @@ class ArmRotate : public ArmPoint {
         const double getLength() override {
             return 0;
         };
-        const double getBase() override {
-            return ROTATE_BASE;
+        const double getZBase() override {
+            return ROTATE_Z_BASE;
         };
-        const double getScale() override {
+        const double getZScale() override {
             return 1;
         };
-        const double getMaxAngle() override {
-            return ROTATE_MAX;
+        const double getZMaxAngle() override {
+            return ROTATE_Z_MAX;
         };
-        const double getMinAngle() override {
-            return ROTATE_MIN;
+        const double getZMinAngle() override {
+            return ROTATE_Z_MIN;
         };
 };
 
@@ -94,23 +121,23 @@ class ArmShoulder : public ArmPoint {
         void setAvailableLength(const double maxLength, const double x, const double y, const double z);        
         const double getAngle(const bool validate = true);
         static const double getLength(const double x, const double y, const double z);
-        void setXZRad(const double rad);
+        void setYRad(const double rad);
         void setRotate(ArmRotate rotate);
         const bool isValid();
         const double getLength() override {
             return SHOULDER_LENGTH;
         };
-        const double getBase() override {
-            return SHOULDER_BASE;
+        const double getYBase() override {
+            return SHOULDER_Y_BASE;
         };
-        const double getScale() override {
-            return SHOULDER_SCALE;
+        const double getYScale() override {
+            return SHOULDER_Y_SCALE;
         };
-        const double getMaxAngle() override {
-            return SHOULDER_MAX;
+        const double getYMaxAngle() override {
+            return SHOULDER_Y_MAX;
         };
-        const double getMinAngle() override {
-            return SHOULDER_MIN;
+        const double getYMinAngle() override {
+            return SHOULDER_Y_MIN;
         };
 
 };
@@ -135,17 +162,17 @@ class ArmElbow : public ArmPoint {
         const double getLength() override {
             return ELBOW_LENGTH;
         };
-        const double getBase() override {
-            return ELBOW_BASE;
+        const double getYBase() override {
+            return ELBOW_Y_BASE;
         };
-        const double getScale() override {
-            return ELBOW_SCALE;
+        const double getYScale() override {
+            return ELBOW_Y_SCALE;
         };
-        const double getMaxAngle() override {
-            return ELBOW_MAX;
+        const double getYMaxAngle() override {
+            return ELBOW_Y_MAX;
         };
-        const double getMinAngle() override {
-            return ELBOW_MIN;
+        const double getYMinAngle() override {
+            return ELBOW_Y_MIN;
         };
     
 };
@@ -167,17 +194,17 @@ class ArmWrist : public ArmPoint {
         const double getLength() override {
             return WRIST_LENGTH;
         };
-        const double getBase() override {
-            return WRIST_BASE;
+        const double getYBase() override {
+            return WRIST_Y_BASE;
         };
-        const double getScale() override {
-            return WRIST_SCALE;
+        const double getYScale() override {
+            return WRIST_Y_SCALE;
         };
-        const double getMaxAngle() override {
-            return WRIST_MAX;
+        const double getYMaxAngle() override {
+            return WRIST_Y_MAX;
         };
-        const double getMinAngle() override {
-            return WRIST_MIN;
+        const double getYMinAngle() override {
+            return WRIST_Y_MIN;
         };
 
 };
@@ -194,8 +221,8 @@ class ArmClaw : public ArmPoint {
         const double getLength() override {
             return CLAW_LENGTH;
         };
-        const double getBase() override {
-            return CLAW_BASE;
+        const double getXBase() override {
+            return CLAW_X_BASE;
         };
         const double getWidth() override {
             return CLAW_WIDTH;

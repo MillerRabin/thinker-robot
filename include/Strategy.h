@@ -11,7 +11,7 @@ class ArmRoot {
         const double y;
         const double z;        
         const bool isValid();
-        ArmRoot(const double XYRad = NAN, const double l = NAN, const double z = NAN);
+        ArmRoot(const double ZRad = NAN, const double l = NAN, const double z = NAN);
 };
 
 class ArmRoots {
@@ -31,6 +31,7 @@ class EngineControl {
 class Strategy {
     private:
         void freeAngle(const double x, const double y, const double z);
+        void fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle);
         static ArmRoots getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
         static ArmRoot getValidElbowRoot(ArmElbow elbow, ArmShoulder shoulder, ArmRoots roots);
         Position tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z);
@@ -41,7 +42,7 @@ class Strategy {
         Position getArmPosition(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z);
         Position position;
     public:
-        Strategy(Position pos, double x, double y, double z);
+        Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle);
         std::vector<EngineControl> sequence;
         std::vector<std::string> errors;
 };

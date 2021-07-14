@@ -1,18 +1,19 @@
-const char* appVersion = "1.0.0";
+#include <Arduino.h>
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
+
+#include "updateHandler.h"
+#include "initServer.h"
+#include "engineHandler.h"
+#include "armParams.h"
 
 #define COUNT_LOW 1638
 #define COUNT_HIGH 7864
 
 #define TIMER_WIDTH 16
 
-#include <Arduino.h>
-#include <WiFi.h>
-#include <ESPAsyncWebServer.h>
-#include "updateHandler.h"
-#include "initServer.h"
-#include "engineHandler.h"
-#include "armParams.h"
-
+const char* appVersion = APP_VERSION;
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 const char* http_username = HTTP_USERNAME;
@@ -33,8 +34,14 @@ bool enableWIFI() {
 }
 
 void enableVersion() {
-  Server.on("/version", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/plain", String(appVersion));
+  Server.on("/version", HTTP_POST, [](AsyncWebServerRequest *request){
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["version"] = appVersion; 
+    root["free-heap"] = ESP.getFreeHeap();
+    root.printTo(*response);
+    request->send(response);
   });
 }
 

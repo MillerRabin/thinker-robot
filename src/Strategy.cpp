@@ -4,9 +4,9 @@
 #include <arm.h>
 
 //------ArmRoot------
-ArmRoot::ArmRoot(const double XYRad, const double l, const double z) : 
-    x(l * cos(XYRad)),
-    y(l * sin(XYRad)),
+ArmRoot::ArmRoot(const double ZRad, const double l, const double z) : 
+    x(l * cos(ZRad)),
+    y(l * sin(ZRad)),
     z(z)
 {}
 
@@ -73,7 +73,7 @@ Position Strategy::tryShoulderLength(ArmRotate rotate, ArmShoulder shoulder, con
 
 Position Strategy::tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const double rad, const double x, const double y, const double z) {
     ArmShoulder tShoulder = shoulder;
-    tShoulder.setXZRad(rad);
+    tShoulder.setYRad(rad);
     //const double sAngle = tShoulder.getAngle(false);
     //Serial.printf("Start Shoulder angle is: %f\n", sAngle);    
     
@@ -100,9 +100,9 @@ Position Strategy::tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot 
         //Serial.printf("Wrist is invalid\n");    
         return Position();   
     }
-    /*Serial.printf("shoulder.XZRad: %f, shoulder.XYRad: %f, shoulder x: %f, shoulder.y: %f, shoulder z: %f, angle: %f\n", shoulder.XZRad, shoulder.XYRad, shoulder.x, shoulder.y, shoulder.z, shoulder.getAngle(false));
-    Serial.printf("elbow.XZRad: %f, elbow.XYRad: %f, elbow x: %f, elbow.y: %f, elbow z: %f, angle: %f\n", elbow.XZRad, elbow.XYRad, elbow.x, elbow.y, elbow.z, elbow.getAngle(shoulder, false));
-    Serial.printf("wrist.XZRad: %f, wrist.XYRad: %f, wrist x: %f, wrist.y: %f, wrist z: %f, angle: %f\n", wrist.XZRad, wrist.XYRad, wrist.x, wrist.y, wrist.z, wrist.getAngle(elbow, false));    */
+    /*Serial.printf("shoulder.YRad: %f, shoulder.ZRad: %f, shoulder x: %f, shoulder.y: %f, shoulder z: %f, angle: %f\n", shoulder.YRad, shoulder.ZRad, shoulder.x, shoulder.y, shoulder.z, shoulder.getAngle(false));
+    Serial.printf("elbow.YRad: %f, elbow.ZRad: %f, elbow x: %f, elbow.y: %f, elbow z: %f, angle: %f\n", elbow.YRad, elbow.ZRad, elbow.x, elbow.y, elbow.z, elbow.getAngle(shoulder, false));
+    Serial.printf("wrist.YRad: %f, wrist.ZRad: %f, wrist x: %f, wrist.y: %f, wrist z: %f, angle: %f\n", wrist.YRad, wrist.ZRad, wrist.x, wrist.y, wrist.z, wrist.getAngle(elbow, false));    */
     return Position(rotate, shoulder, elbow, wrist, position.claw);    
 }
 
@@ -168,7 +168,7 @@ void Strategy::freeAngle(const double x, const double y, const double z) {
             
     ArmRotate rotate = position.rotate;
     rotate.setRadFromPos(x, y);
-    //Serial.printf("Rotate rad is: %f\n", rotate.XYRad);
+    //Serial.printf("Rotate rad is: %f\n", rotate.ZRad);
     ArmShoulder shoulder = position.shoulder;
     shoulder.setRotate(rotate);
     Position fPos = getArmPosition(rotate, shoulder, x, y, z);
@@ -178,7 +178,7 @@ void Strategy::freeAngle(const double x, const double y, const double z) {
         return;    
     }
 
-    //Serial.printf("fPos.rotate.XYRad is: %f\n", fPos.rotate.XYRad);
+    //Serial.printf("fPos.rotate.ZRad is: %f\n", fPos.rotate.ZRad);
     const double drAngle = fPos.getRotateAngle();
     const double dsAngle = fPos.getShoulderAngle();
     const double deAngle = fPos.getElbowAngle();
@@ -199,8 +199,33 @@ void Strategy::freeAngle(const double x, const double y, const double z) {
     this->sequence.push_back(sEngine);
 }
   
-Strategy::Strategy(Position pos, const double x, const double y, const double z) : position(pos) {
-    freeAngle(x, y, z);
+void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle) {        
+    Serial.printf("\nSTART WRIST: source x: %f, y: %f, z: %f\n", position.getX(), position.getY(), position.getZ());
+    Serial.printf("target x: %f, y: %f, z: %f, clawYAngle: %f\n", x, y, z, clawYAngle);    
+    ArmRotate rotate = position.rotate;
+    rotate.setRadFromPos(x, y);
+
+    const double wRad = clawYAngle / 180 * PI;        
+    const double wxl = WRIST_LENGTH * cos(wRad) * cos(rotate.ZRad);
+    const double wyl = WRIST_LENGTH * cos(wRad) * sin(rotate.ZRad);
+    const double wzl = WRIST_LENGTH * sin(wRad);
+    const double ex = x - wxl;
+    const double ey = x - wyl;
+    const double ez = z - wzl;
+    
+    ArmShoulder shoulder = position.shoulder;
+    shoulder.setRotate(rotate);
+    Serial.printf("ex: %f, ey: %f, ez: %f\n", ex, ey, ez);
+}
+
+Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle) : position(pos) {
+    if (isnan(clawYAngle)) {
+        freeAngle(x, y, z);
+        return;
+    }
+        
+    fixedAngle(x, y, z, clawXAngle, clawYAngle);
+    return;
 }
 
 
@@ -238,12 +263,12 @@ ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const dou
         const double l2 = pos0L - h / d * sz;
         const double z2 = pos0Z + h / d * sl;        
         const double dPI = PI / 2;
-        const double sRad = (shoulder.XYRad > dPI) ? shoulder.XYRad + PI :
-                            (shoulder.XYRad > 0) ? shoulder.XYRad :
-                            (shoulder.XYRad >= -dPI) ? shoulder.XYRad :
-                            (shoulder.XYRad > -PI) ? shoulder.XYRad + PI:
-                            shoulder.XYRad;        
-        //Serial.printf("shoulder.XYRad: %f, sRad: %f\n", shoulder.XYRad, sRad);
+        const double sRad = (shoulder.ZRad > dPI) ? shoulder.ZRad + PI :
+                            (shoulder.ZRad > 0) ? shoulder.ZRad :
+                            (shoulder.ZRad >= -dPI) ? shoulder.ZRad :
+                            (shoulder.ZRad > -PI) ? shoulder.ZRad + PI:
+                            shoulder.ZRad;        
+        //Serial.printf("shoulder.ZRad: %f, sRad: %f\n", shoulder.ZRad, sRad);
         return ArmRoots(ArmRoot(sRad, l1, z1), ArmRoot(sRad, l2, z2));
     }
         

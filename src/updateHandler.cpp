@@ -6,11 +6,6 @@
 bool shouldReboot = false;
 
 void enableUpdate() {
-  // respond to GET requests on URL /heap
-  Server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "text/plain", String(ESP.getFreeHeap()));
-  });
-
   // Simple Firmware Update Form
   Server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/html", "<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>");

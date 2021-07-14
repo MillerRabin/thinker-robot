@@ -47,17 +47,16 @@ Pick a point in 3D coordinate system and roboarm evaluates engine angles to move
 Move to home
 ```json
 {
-  "x": 95,
-  "y": 0,
-  "z": 25
+  "claw-x": 95,
+  "claw-y": 0,
+  "claw-z": 25
 }
 ```
 
-### GET /version
-Returns current version of software 
+Additional test cases can be found at [tests](/tests "tests")
 
-### GET /heap
-Returns free heap
+### GET /version
+Returns current version of software and additional info like free heap 
 
 ## Update API
 ### GET /update
