@@ -1,9 +1,9 @@
 #ifndef strategy_h
 #define strategy_h
 
-
 #include <position.h>
 #include <Arduino.h>
+#include "armError.h"
 
 class ArmRoot {
     public:    
@@ -40,11 +40,12 @@ class Strategy {
         Position tryHalfLength(ArmRotate rotate, ArmShoulder shoulder, const double length, const double x, const double y, const double z);
         Position tryShoulderRad(ArmRotate rotate, ArmShoulder shoulder, const double rad, const double x, const double y, const double z);
         Position getArmPosition(ArmRotate rotate, ArmShoulder shoulder, const double x, const double y, const double z);
+        void addPositionToSequence(Position pos);
         Position position;
     public:
         Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle);
         std::vector<EngineControl> sequence;
-        std::vector<std::string> errors;
+        ArmError errors;
 };
 
 #endif

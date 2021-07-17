@@ -4,6 +4,7 @@
 #include <armParams.h>
 #include <math.h>
 #include <string>
+#include <Arduino.h>
 
 using namespace std;
 
@@ -19,14 +20,12 @@ class Coords {
         const bool isEqual(const double x, const double y, const double z, const double tolerance = 0.00001);
 };
 
-
 //------ArmPoint------
 
 class ArmPoint {
     protected:
         void setCoords();        
-        const double getRadFromPos(const double localX, const double localY, const double localZ);
-        static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
+        const double getRadFromPos(const double localX, const double localY, const double localZ);        
     public:
         double YRad;
         double ZRad;        
@@ -75,6 +74,7 @@ class ArmPoint {
         const double virtual getZMinAngle()  {
             return 0;
         };
+        static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
         const double getXRad(const double angle);
         const double getYRad(const double angle);
         const double getZRad(const double angle);
@@ -113,16 +113,17 @@ class ArmRotate : public ArmPoint {
 //------ArmShoulder------
 
 class ArmShoulder : public ArmPoint {
-    private:
-        void setPoints(const double rotateRad, const double shoulderRad);        
+    private:        
         static const double validateAngle(const double angle);
     public: 
         ArmShoulder(ArmRotate rotate, const double shoulderAngle);                
-        void setAvailableLength(const double maxLength, const double x, const double y, const double z);        
+        vector<double> getAvailableRads(const double maxLength, const double x, const double y, const double z);
+        const bool isAvailableRadValid(const double rad, const double targetLength);
         const double getAngle(const bool validate = true);
         static const double getLength(const double x, const double y, const double z);
         void setYRad(const double rad);
-        void setRotate(ArmRotate rotate);
+        void setRotate(ArmRotate rotate);        
+        void setRads(const double rotateRad, const double shoulderRad);        
         const bool isValid();
         const double getLength() override {
             return SHOULDER_LENGTH;
@@ -156,6 +157,7 @@ class ArmElbow : public ArmPoint {
         static const bool isAngleValid(const double angle);
         const double getAngleFromPos(ArmShoulder shoulder, const double x, const double y, const double z);        
         void setPosLocal(const double localX, const double localY, const double localZ);
+        void setPos(ArmShoulder shoulder, const double x, const double y, const double z);
         void setRotate(ArmRotate rotate);
         const double getLocalRad(ArmShoulder shoulder);
         const bool isValid(ArmShoulder shoulder);
@@ -190,7 +192,7 @@ class ArmWrist : public ArmPoint {
         const double getLocalRad(ArmElbow elbow);
         void setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, const double y, const double z);        
         const bool isValid(ArmElbow elbow);
-        
+        void setRotate(ArmRotate rotate);        
         const double getLength() override {
             return WRIST_LENGTH;
         };

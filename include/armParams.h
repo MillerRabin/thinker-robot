@@ -1,16 +1,15 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.0.1"
+#define APP_VERSION "1.1.0"
 
 //Your wi-fi credentials
-#define WIFI_SSID "Your-ssid"
-#define WIFI_PASSWORD "Your-password"
+#define WIFI_SSID "DragonSlayer"
+#define WIFI_PASSWORD "ifyouwanttohave"
 
 //Login and password for http update
 #define HTTP_USERNAME "admin"
-#define HTTP_PASSWORD "your-firmware-update-password"
-
+#define HTTP_PASSWORD "ifyouwanttohave"
 
 #define GRIPPER_ENGINE 1
 #define GRIPPER_ROTATE_ENGINE 2

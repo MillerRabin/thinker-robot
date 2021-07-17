@@ -20,7 +20,7 @@ double gRotate = 135;
 double gShoulder = 90;
 double gElbow = 230;
 double gWrist = 235;
-std::vector<std::string> gErrors;
+ArmError gErrors;
 
 int getValue(JsonObject& jsonObj, const char* key, const unsigned int min, const unsigned int max) {
     if (!jsonObj.containsKey(key)) return -1;
@@ -71,11 +71,7 @@ void sendSuccess(AsyncWebServerRequest* request) {
     root["claw-y"] = pos.getY();
     root["claw-z"] = pos.getZ();        
     JsonArray &errors = root.createNestedArray("errors");
-    for(std::string error : gErrors) {  
-        const char* elem = error.c_str(); 
-        Serial.printf("error %s\n", elem);
-        errors.add((char *)elem);
-    }    
+    gErrors.addToJsonArray(errors);
     root.printTo(*response);
     request->send(response);
     gErrors.clear();
