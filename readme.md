@@ -23,8 +23,6 @@ For autotest system nodejs and mocha are used.
 3. npm install
 4. npm run test
    
-## Information API
-
 ## Positioning API
 ### POST /move
 Using physical angles to manipulate roboarm
@@ -146,6 +144,7 @@ It`s usefull to mix sugar and water
 
 Additional test cases can be found at [tests](/tests "tests")
 
+## Information API
 ### GET /version
 Returns current version of software and additional info like free heap 
 
