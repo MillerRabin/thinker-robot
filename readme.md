@@ -140,7 +140,7 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
 ```
 
 The claw will describe a circle with radius 10.
-It`s usefull to mix sugar and water
+It`s useful to mix sugar and water
 
 Additional test cases can be found at [tests](/tests "tests")
 
