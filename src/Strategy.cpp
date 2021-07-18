@@ -136,8 +136,6 @@ void Strategy::addPositionToSequence(Position pos) {
     const double deAngle = pos.getElbowAngle();
     const double dwAngle = pos.getWristAngle();
 
-    Serial.printf("Rotate angle: %f, Shoulder angle: %f, elbow angle: %f, wrist angle: %f\n", drAngle, dsAngle, deAngle, dwAngle);    
-
     if (!pos.isValid()) {            
         errors.addUnreachableError();
         return;    
@@ -157,13 +155,10 @@ void Strategy::addPositionToSequence(Position pos) {
 }
   
 void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle) {        
-    Serial.printf("\nSTART WRIST: source x: %f, y: %f, z: %f\n", position.getX(), position.getY(), position.getZ());
-    Serial.printf("target x: %f, y: %f, z: %f, clawYAngle: %f\n", x, y, z, clawYAngle);    
     ArmRotate rotate = position.rotate;
     rotate.setRadFromPos(x, y);
     const double rRad = ArmPoint::getRadFromXY(x, y);
-    Serial.printf("rotate.ZRad: %f, rRad: %f\n", rotate.ZRad, rRad);
-    
+        
     const double wRad = clawYAngle / 180 * PI;        
     const double wxl = WRIST_LENGTH * cos(wRad) * cos(rRad);
     const double wyl = WRIST_LENGTH * cos(wRad) * sin(rRad);
@@ -171,9 +166,19 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     const double ex = x - wxl;
     const double ey = y - wyl;
     const double ez = z - wzl;
-
+    
+    if (ez < MIN_Z) {
+        errors.addElbowZError(ez, MIN_Z);
+        return;
+    }
+            
     const double el = sqrt(ex*ex + ey*ey);
     const double wl = sqrt(x*x + y*y);
+    if (el > SHOULDER_LENGTH + ELBOW_LENGTH) {
+        errors.addMaxLengthError(el, SHOULDER_LENGTH + ELBOW_LENGTH);
+        return;
+    }
+
     if ((z <= BASE_HEIGHT) && 
         ((wl < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2) || 
          (ex * x < 0) || (ey * y < 0))) {    
@@ -185,13 +190,12 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     shoulder.setRotate(rotate);
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
     if (rads.size() == 0) {
-        errors.addUnreachableError();
+        errors.addShoulderError();
         return;
     }
-    for(double rad : rads) {  
-        Serial.printf("rad is: %f", rad);
-        shoulder.setRads(shoulder.ZRad, rad);
-        Serial.printf("eLength: %f\n", ArmElbow::getLength(shoulder, ex, ey, ez));
+
+    for(double rad : rads) {          
+        shoulder.setRads(shoulder.ZRad, rad);        
         if (!shoulder.isValid()) continue;
         ArmElbow elbow = position.elbow;
         elbow.setRotate(rotate);
@@ -200,9 +204,6 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
         wrist.setRotate(rotate);
         wrist.setPos(shoulder, elbow, x, y, z);
 
-        Serial.printf("shoulder.x: %f, shoulder.y: %f, shoulder.z: %f\n", shoulder.x, shoulder.y, shoulder.z);
-        Serial.printf("elbow.x: %f, elbow.y: %f, elbow.z: %f\n", elbow.x, elbow.y, elbow.z);
-        Serial.printf("wrist.x: %f, wrist.y: %f, wrist.z: %f\n", wrist.x, wrist.y, wrist.z);
         Position pos = Position(rotate, shoulder, elbow, wrist, position.claw);
         if (pos.isValid()) {
             addPositionToSequence(pos);

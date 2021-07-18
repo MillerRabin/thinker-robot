@@ -174,8 +174,6 @@ vector<double> ArmShoulder::getAvailableRads(const double maxLength, const doubl
     
     const double sinh = h / c;
     const double trad = asin(sinh);
-    Serial.printf("a: %f, b: %f, c: %f\n", a, b, c);
-    Serial.printf("pa: %f, pb: %f, pc: %f, trad: %f\n", pa, pb, pc, trad);
     RadsList radsList;
     if (isnan(trad)) {        
         return radsList.getRads(NAN);

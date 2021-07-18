@@ -53,6 +53,97 @@ Move to home
 }
 ```
 
+#### Move claw parallel floor
+
+If "claw-angle-y" is defined the arm will try to move to specific point with specific claw Y angle.
+
+The claw will be parallel floor.
+```json
+{
+  "claw-x": 250,
+  "claw-y": 0,
+  "claw-z": 80,
+  "claw-angle-y": 0
+}
+```
+The arm will be moved back but claw stays parallel floor  
+```json
+{
+  "claw-x": 60,
+  "claw-y": 0,
+  "claw-z": 80,
+  "claw-angle-y": 0
+}
+```
+It`s useful to grab teaspoon with sugar and move it without scattering 
+
+#### Move claw vertical
+
+If you set "claw-angle-y" to 90 degrees when claw will be vertical 
+
+```json
+{
+  "claw-x": 95,
+  "claw-y": 0,
+  "claw-z": 300,
+  "claw-angle-y": 90
+}
+```
+
+The arm will move forward, but claw stays vertical
+
+```json
+{
+  "claw-x": 150,
+  "claw-y": 0,
+  "claw-z": 300,
+  "claw-angle-y": 90
+}
+```
+
+#### Move claw perpendicular floor
+
+Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
+
+```json
+{
+  "claw-x": 130,
+  "claw-y": 0,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+```json
+{
+  "claw-x": 135,
+  "claw-y": 10,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+```json
+{
+  "claw-x": 140,
+  "claw-y": 0,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+```json
+{
+  "claw-x": 135,
+  "claw-y": -10,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+The claw will describe a circle with radius 10.
+It`s usefull to mix sugar and water
+
 Additional test cases can be found at [tests](/tests "tests")
 
 ### GET /version

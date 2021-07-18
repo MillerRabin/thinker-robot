@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "position.h"
 
 class ArmError {
     private:
@@ -10,7 +11,9 @@ class ArmError {
     public:    
         void addBaseError(const double x, const double y, const double z);
         void addMaxLengthError(const double length, const double maxLength);
+        void addShoulderError();
         void addUnreachableError();
+        void addElbowZError(const double z, const double minZ);
         void addToJsonArray(JsonArray &arr);
         size_t size();
         void clear();

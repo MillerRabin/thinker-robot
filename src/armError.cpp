@@ -1,6 +1,7 @@
 #include "armError.h"
 #include "string.h"
 #include <ArduinoJson.h>
+#include "position.h"
 
 void ArmError::addBaseError(const double x, const double y, const double z) {
     char sx[25]; 
@@ -22,8 +23,22 @@ void ArmError::addMaxLengthError(const double length, const double maxLength) {
     errors.push_back(rString);
 }
 
-void ArmError::addUnreachableError() {
-    std::string rString = "EUNREACHABLE: The point is unreachable";        
+void ArmError::addUnreachableError() {    
+    std::string rString = "EUNREACHABLE: The point is unreachable"; 
+    errors.push_back(rString);
+}
+
+void ArmError::addShoulderError() {    
+    std::string rString = "EUNREACHABLE: The shoulder angle is not found to achieve specific point"; 
+    errors.push_back(rString);
+}
+
+void ArmError::addElbowZError(const double z, const double minZ) {    
+    char mz[25]; 
+    dtostrf(minZ, 1, 3, mz);    
+    char sz[25]; 
+    dtostrf(z, 1, 3, sz);
+    std::string rString = std::string("EOUTOFRANGE: The elbow z: ") + sz + std::string(" is below minimum: ") + mz;        
     errors.push_back(rString);
 }
 

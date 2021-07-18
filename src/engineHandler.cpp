@@ -70,6 +70,9 @@ void sendSuccess(AsyncWebServerRequest* request) {
     root["claw-x"] = pos.getX();
     root["claw-y"] = pos.getY();
     root["claw-z"] = pos.getZ();        
+    root["elbow-x"] = pos.shoulder.x + pos.elbow.x;
+    root["elbow-y"] = pos.shoulder.y + pos.elbow.y;
+    root["elbow-z"] = pos.shoulder.z + pos.elbow.z + BASE_HEIGHT;
     JsonArray &errors = root.createNestedArray("errors");
     gErrors.addToJsonArray(errors);
     root.printTo(*response);
