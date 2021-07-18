@@ -27,7 +27,7 @@ For autotest system nodejs and mocha are used.
 
 ## Positioning API
 ### POST /move
-Using angles to manipulate roboarm
+Using physical angles to manipulate roboarm
 
 Move to home
 ```json
@@ -107,6 +107,24 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
 
 ```json
 {
+  "claw-x": 120,
+  "claw-y": 0,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+```json
+{
+  "claw-x": 125,
+  "claw-y": 10,
+  "claw-z": 60,
+  "claw-angle-y": 270
+}
+```
+
+```json
+{
   "claw-x": 130,
   "claw-y": 0,
   "claw-z": 60,
@@ -116,25 +134,7 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
 
 ```json
 {
-  "claw-x": 135,
-  "claw-y": 10,
-  "claw-z": 60,
-  "claw-angle-y": 270
-}
-```
-
-```json
-{
-  "claw-x": 140,
-  "claw-y": 0,
-  "claw-z": 60,
-  "claw-angle-y": 270
-}
-```
-
-```json
-{
-  "claw-x": 135,
+  "claw-x": 125,
   "claw-y": -10,
   "claw-z": 60,
   "claw-angle-y": 270
