@@ -176,15 +176,15 @@ Open claw
 }
 ```
 
-```json
 Close claw
+```json
 {
 "claw-x": 130,
 "claw-y": 0,
 "claw-z": 60,
 "claw-angle-y": -90,
 "claw-angle-x": 0,
-"claw-angle": 0,
+"claw-angle": 0
 }
 ```
 
