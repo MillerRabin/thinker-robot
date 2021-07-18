@@ -46,6 +46,17 @@ void ArmPoint::setCoords() {
     this->z = length * sin(this->YRad);
 }
 
+const double ArmPoint::getXAngleFromRad(const double rad) {
+    if (rad == NAN) return NAN;
+    const double sdeg = rad / PI * 180.0;
+    double sAngle = (sdeg - this->getXBase()) / this->getXScale();        
+    if (sAngle < 0)
+        sAngle = 360 + sAngle;
+    const double tAngle = sAngle - (trunc(sAngle / 360) * 360);
+    return tAngle;
+}
+
+
 const double ArmPoint::getYAngleFromRad(const double rad) {
     if (rad == NAN) return NAN;
     const double sdeg = rad / PI * 180.0;
@@ -358,22 +369,47 @@ void ArmWrist::setRotate(ArmRotate rotate) {
 
 //-------ArmClaw-------
 
-
-ArmClaw::ArmClaw(ArmWrist wrist, const double clawAngle) {
-    const double cRad = this->getYRad(clawAngle);
-    setPoints(wrist.YRad, cRad, wrist.ZRad);
+ArmClaw::ArmClaw(ArmWrist wrist, const double clawXAngle) {
+    const double cRad = this->getXRad(clawXAngle);
+    setRads(wrist.ZRad, wrist.YRad, cRad);
 }
 
-ArmClaw::ArmClaw(const double rotateRad, const double wristRad, const double clawRad) {    
-    setPoints(wristRad, clawRad, rotateRad);
+ArmClaw::ArmClaw(const double zRad, const double yRad, const double xRad) {    
+    setRads(zRad, yRad, xRad);
 }
 
-void ArmClaw::setPoints(const double rotateRad, const double wristRad, const double clawRad) {
-    this->YRad = wristRad;;
-    this->ZRad = clawRad;
+void ArmClaw::setRads(const double zRad, const double yRad, const double xRad) {
+    this->YRad = yRad;
+    this->ZRad = zRad;
+    this->XRad = xRad;
     this->setCoords();    
 }
 
-const double ArmClaw::getAngle() {
-    return this->getZAngleFromRad(this->ZRad);
+const double ArmClaw::getXAngle(const bool validate) {     
+     const double angle = getXAngleFromRad(XRad);
+    if (!validate)
+        return angle;
+    return ArmClaw::validateXAngle(angle);    
+
+}
+
+const double ArmClaw::getYAngle(ArmWrist wrist, const bool validate) {
+    const double angle = getYAngleFromRad(wrist.YRad);
+    if (!validate)
+        return angle;
+    return ArmClaw::validateYAngle(angle);    
+}
+
+const double ArmClaw::validateYAngle(const double angle) {    
+    if (isnan(angle)) return ERROR_WRIST_Y_ANGLE_IS_NAN;        
+    if (angle < WRIST_Y_MIN) return ERROR_WRIST_Y_ANGLE_LESS_MIN;     
+    if (angle > WRIST_Y_MAX) return ERROR_WRIST_Y_ANGLE_ABOVE_MAX;            
+    return angle;      
+}
+
+const double ArmClaw::validateXAngle(const double angle) {        
+    if (isnan(angle)) return ERROR_CLAW_X_ANGLE_IS_NAN;            
+    if (angle < CLAW_X_MIN) return ERROR_CLAW_X_ANGLE_LESS_MIN;     
+    if (angle > CLAW_X_MAX) return ERROR_CLAW_X_ANGLE_ABOVE_MAX;            
+    return angle;      
 }

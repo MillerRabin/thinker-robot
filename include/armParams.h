@@ -1,7 +1,7 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.1.0"
+#define APP_VERSION "1.1.1"
 
 //Your wi-fi credentials
 #define WIFI_SSID "DragonSlayer"
@@ -11,8 +11,8 @@
 #define HTTP_USERNAME "admin"
 #define HTTP_PASSWORD "ifyouwanttohave"
 
-#define GRIPPER_ENGINE 1
-#define GRIPPER_ROTATE_ENGINE 2
+#define CLAW_ENGINE 1
+#define CLAW_X_ENGINE 2
 #define ROTATE_ENGINE 3
 #define SHOULDER_ENGINE 4
 #define ELBOW_ENGINE 5
@@ -20,8 +20,8 @@
 
 //ESP32 WROOM GPIO PINS
 
-#define GRIPPER_PIN 25
-#define GRIPPER_ROTATE_PIN 26
+#define CLAW_PIN 25
+#define CLAW_ROTATE_PIN 26
 #define ROTATE_PIN 27
 #define SHOULDER_PIN 14
 #define WRIST_PIN 12
@@ -53,7 +53,8 @@
 
 #define CLAW_LENGTH 100
 #define CLAW_WIDTH -35
-#define CLAW_X_BASE -45
+#define CLAW_X_BASE -135
+#define CLAW_X_SCALE 1
 #define CLAW_X_MIN 0
 #define CLAW_X_MAX 270
 
@@ -70,7 +71,6 @@
 #define MAX_LENGTH SHOULDER_LENGTH + ELBOW_LENGTH + WRIST_LENGTH
 #define MAX_SUM_ANGLE 240
 
-
 #define ERROR_SHOULDER_Y_ANGLE_IS_NAN -1;
 #define ERROR_SHOULDER_Y_ANGLE_LESS_MIN -2;
 #define ERROR_SHOULDER_Y_ANGLE_ABOVE_MAX -3;
@@ -80,5 +80,9 @@
 #define ERROR_WRIST_Y_ANGLE_IS_NAN -7;
 #define ERROR_WRIST_Y_ANGLE_LESS_MIN -8;
 #define ERROR_WRIST_Y_ANGLE_ABOVE_MAX -9;
+#define ERROR_CLAW_X_ANGLE_IS_NAN -10;
+#define ERROR_CLAW_X_ANGLE_LESS_MIN -11;
+#define ERROR_CLAW_X_ANGLE_ABOVE_MAX -12;
+
 
 #endif

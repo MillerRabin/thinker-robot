@@ -131,19 +131,23 @@ void Strategy::freeAngle(const double x, const double y, const double z) {
 }
 
 void Strategy::addPositionToSequence(Position pos) {
-    const double drAngle = pos.getRotateAngle();
-    const double dsAngle = pos.getShoulderAngle();
-    const double deAngle = pos.getElbowAngle();
-    const double dwAngle = pos.getWristAngle();
-
     if (!pos.isValid()) {            
         errors.addUnreachableError();
         return;    
     }
     
+    const double drAngle = pos.getRotateAngle();
+    const double dsAngle = pos.getShoulderAngle();
+    const double deAngle = pos.getElbowAngle();
+    const double dwAngle = pos.getWristAngle();
+    const double cxAngle = pos.getClawXAngle();
+    
     EngineControl rEngine(ROTATE_ENGINE, round(drAngle));
     sequence.push_back(rEngine);
     
+    EngineControl cEngine(CLAW_X_ENGINE, round(cxAngle));
+    sequence.push_back(cEngine);
+
     EngineControl wEngine(WRIST_ENGINE, round(dwAngle));
     sequence.push_back(wEngine);
     
@@ -160,6 +164,7 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     const double rRad = ArmPoint::getRadFromXY(x, y);
         
     const double wRad = clawYAngle / 180 * PI;        
+        
     const double wxl = WRIST_LENGTH * cos(wRad) * cos(rRad);
     const double wyl = WRIST_LENGTH * cos(wRad) * sin(rRad);
     const double wzl = WRIST_LENGTH * sin(wRad);
@@ -186,6 +191,7 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
             return;
     }
 
+    
     ArmShoulder shoulder = position.shoulder;
     shoulder.setRotate(rotate);
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
@@ -194,6 +200,8 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
         return;
     }
 
+    const double cxRad = clawXAngle / 180 * PI;
+    
     for(double rad : rads) {          
         shoulder.setRads(shoulder.ZRad, rad);        
         if (!shoulder.isValid()) continue;
@@ -203,8 +211,10 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
         ArmWrist wrist = position.wrist;
         wrist.setRotate(rotate);
         wrist.setPos(shoulder, elbow, x, y, z);
+        ArmClaw claw = position.claw;
+        claw.setRads(wrist.ZRad, wrist.YRad, cxRad);
 
-        Position pos = Position(rotate, shoulder, elbow, wrist, position.claw);
+        Position pos = Position(rotate, shoulder, elbow, wrist, claw);
         if (pos.isValid()) {
             addPositionToSequence(pos);
             return;

@@ -52,15 +52,16 @@ const double Position::getWristAngle() {
     return wrist.getAngle(elbow);
 }
 
-const double Position::getClawAngle() {
-    return claw.getAngle();
+const double Position::getClawXAngle() {
+    return claw.getXAngle();
 }
 
 const bool Position::isValid() {        
     const double dsAngle = getShoulderAngle();
     const double deAngle = getElbowAngle();
     const double dwAngle = getWristAngle();        
-    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0)) {        
+    const double cxAngle = getClawXAngle();        
+    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0) || (cxAngle < 0)) {        
         return false;
     }    
     const double eRad = abs(elbow.getLocalRad(shoulder));

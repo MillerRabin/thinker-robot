@@ -101,14 +101,14 @@ The arm will move forward, but claw stays vertical
 
 #### Move claw perpendicular floor
 
-Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
+Set "claw-angle-y" to -90 and claw will be rotated perpendicular floor
 
 ```json
 {
   "claw-x": 120,
   "claw-y": 0,
   "claw-z": 60,
-  "claw-angle-y": 270
+  "claw-angle-y": -90
 }
 ```
 
@@ -117,7 +117,7 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
   "claw-x": 125,
   "claw-y": 10,
   "claw-z": 60,
-  "claw-angle-y": 270
+  "claw-angle-y": -90
 }
 ```
 
@@ -126,7 +126,7 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
   "claw-x": 130,
   "claw-y": 0,
   "claw-z": 60,
-  "claw-angle-y": 270
+  "claw-angle-y": -90
 }
 ```
 
@@ -135,7 +135,7 @@ Set "claw-angle-y" to 270 and claw will be rotated perpendicular floor
   "claw-x": 125,
   "claw-y": -10,
   "claw-z": 60,
-  "claw-angle-y": 270
+  "claw-angle-y": -90
 }
 ```
 

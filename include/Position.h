@@ -31,7 +31,7 @@ class Position {
         const double getShoulderAngle();
         const double getElbowAngle();
         const double getWristAngle();
-        const double getClawAngle();
+        const double getClawXAngle();
 };
 
 #endif

@@ -27,11 +27,12 @@ class ArmPoint {
         void setCoords();        
         const double getRadFromPos(const double localX, const double localY, const double localZ);        
     public:
-        double YRad;
-        double ZRad;        
-        double x;
-        double y;
-        double z;
+        double YRad = NAN;
+        double ZRad = NAN;
+        double XRad = NAN;
+        double x = NAN;
+        double y = NAN;
+        double z = NAN;
         const double virtual getLength() {
             return 0;
         };
@@ -77,7 +78,8 @@ class ArmPoint {
         static const bool isEqual(const double op1, const double op2, const double tolerance = 0.00001);
         const double getXRad(const double angle);
         const double getYRad(const double angle);
-        const double getZRad(const double angle);
+        const double getZRad(const double angle);        
+        const double getXAngleFromRad(const double rad);
         const double getYAngleFromRad(const double rad);
         const double getZAngleFromRad(const double rad);
         static const double getRadFromXY(const double x, const double y);
@@ -214,12 +216,16 @@ class ArmWrist : public ArmPoint {
 //------ArmClaw------
 
 class ArmClaw : public ArmPoint {
-    private:        
-        void setPoints(const double rotateRad, const double wristRad, const double clawRad);
+    private:
+        static const double validateYAngle(const double angle);
+        static const double validateXAngle(const double angle);
     public:    
-        ArmClaw(ArmWrist wrist, const double clawAngle);
-        ArmClaw(const double rotateRad, const double wristRad, const double clawRad);
-        const double getAngle();
+        ArmClaw(ArmWrist wrist, const double clawXAngle);
+        ArmClaw(const double zRad, const double yRad, const double xRad);
+        const double getXAngle(const bool validate = true);
+        const double getYAngle(ArmWrist wrist, const bool validate = true);
+        void setRads(const double zRad, const double yRad, const double xRad);
+        
         const double getLength() override {
             return CLAW_LENGTH;
         };
@@ -229,7 +235,9 @@ class ArmClaw : public ArmPoint {
         const double getWidth() override {
             return CLAW_WIDTH;
         };
-
+        const double getXScale() override {
+            return CLAW_X_SCALE;
+        };
 };
 
 #endif

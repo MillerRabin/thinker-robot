@@ -95,7 +95,7 @@ void setGripper(JsonObject& jsonObj) {
     if (tGripper >= 0 ) {
         const uint tDeg = degToCount(tGripper, 270);
         gGripper = tGripper;
-        ledcWrite(GRIPPER_ENGINE, tDeg);
+        ledcWrite(CLAW_ENGINE, tDeg);
     }
 }
 
@@ -104,7 +104,7 @@ void setGripperRotate(JsonObject& jsonObj) {
     if (tGripperRotate >= 0 ) {
         const uint tDeg = degToCount(tGripperRotate, 270);
         gGripperRotate = tGripperRotate;
-        ledcWrite(GRIPPER_ROTATE_ENGINE, tDeg);
+        ledcWrite(CLAW_X_ENGINE, tDeg);
     }
 }
 
@@ -183,6 +183,10 @@ void apply(Strategy strategy) {
             continue;
         }
 
+        if (control.engine == CLAW_X_ENGINE) {
+            gGripperRotate = setEngine(CLAW_X_ENGINE, control.angle);
+            continue;
+        }
     }    
 }
 
@@ -194,8 +198,8 @@ AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("
         const double tx = getDoubleDef(jsonObj, "claw-x", -360, 360, pos.getX());    
         const double ty = getDoubleDef(jsonObj, "claw-y", -360, 360, pos.getY());    
         const double tz = getDoubleDef(jsonObj, "claw-z", 25, 440, pos.getZ());    
-        const double cy = getDoubleDef(jsonObj, "claw-angle-y", WRIST_Y_MIN, WRIST_Y_MAX, NAN);    
-        const double cx = getDoubleDef(jsonObj, "claw-angle-x", CLAW_X_MIN, CLAW_X_MAX, NAN);    
+        const double cy = getDoubleDef(jsonObj, "claw-angle-y", -360, 360, NAN);
+        const double cx = getDoubleDef(jsonObj, "claw-angle-x", -360, 360, NAN);    
         Strategy moveStrategy(pos, tx, ty, tz, cx, cy);
         apply(moveStrategy);
         sendSuccess(request);        
@@ -207,14 +211,14 @@ AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("
 });
 
 void enableEngines() {    
-    ledcSetup(GRIPPER_ENGINE, 50, TIMER_WIDTH);
-    ledcSetup(GRIPPER_ROTATE_ENGINE, 50, TIMER_WIDTH);
+    ledcSetup(CLAW_ENGINE, 50, TIMER_WIDTH);
+    ledcSetup(CLAW_X_ENGINE, 50, TIMER_WIDTH);
     ledcSetup(ROTATE_ENGINE, 50, TIMER_WIDTH);
     ledcSetup(SHOULDER_ENGINE, 50, TIMER_WIDTH);
     ledcSetup(ELBOW_ENGINE, 50, TIMER_WIDTH);
     ledcSetup(WRIST_ENGINE, 50, TIMER_WIDTH);
-    ledcAttachPin(GRIPPER_PIN, GRIPPER_ENGINE);
-    ledcAttachPin(GRIPPER_ROTATE_PIN, GRIPPER_ROTATE_ENGINE);
+    ledcAttachPin(CLAW_PIN, CLAW_ENGINE);
+    ledcAttachPin(CLAW_ROTATE_PIN, CLAW_X_ENGINE);
     ledcAttachPin(ROTATE_PIN, ROTATE_ENGINE);
     ledcAttachPin(SHOULDER_PIN, SHOULDER_ENGINE);
     ledcAttachPin(ELBOW_PIN, ELBOW_ENGINE);
