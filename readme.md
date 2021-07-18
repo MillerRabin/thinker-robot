@@ -1,7 +1,10 @@
 # 6DOF Roboarm manipulator software
 
-This project is intended to make a complex things with manipulator through Wi-Fi
+This project is intended to make a complex things with roboarm manipulator through Wi-Fi
 Like positioning in 3D unit system, grab objects by specific angles and more.
+
+* Manipulate roboarm by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
+* You can grab and move object by specific claw angle 
 
 
 I used 6DOF Robotic arm with parameters on sheme below.
@@ -147,28 +150,33 @@ It`s useful to mix sugar and water
 
 Set "claw-angle-x" parameter to rotate claw over the X axis
 
+```json
 {
 "claw-x": 130,
 "claw-y": 0,
 "claw-z": 60,
 "claw-angle-y": -90,
-"claw-angle-x": -90,
+"claw-angle-x": -90
 }
+```
 
 #### Rotate open and close claw
 
 Set "claw-angle" parameter to open or close claw
 
 Open claw
+```json
 {
 "claw-x": 130,
 "claw-y": 0,
 "claw-z": 60,
 "claw-angle-y": -90,
 "claw-angle-x": 0,
-"claw-angle": 140,
+"claw-angle": 140
 }
+```
 
+```json
 Close claw
 {
 "claw-x": 130,
@@ -178,7 +186,7 @@ Close claw
 "claw-angle-x": 0,
 "claw-angle": 0,
 }
-
+```
 
 Additional test cases can be found at [tests](/tests "tests")
 
