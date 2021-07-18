@@ -139,8 +139,46 @@ Set "claw-angle-y" to -90 and claw will be rotated perpendicular floor
 }
 ```
 
+
 The claw will describe a circle with radius 10.
 It`s useful to mix sugar and water
+
+#### Rotate claw over X axis
+
+Set "claw-angle-x" parameter to rotate claw over the X axis
+
+{
+"claw-x": 130,
+"claw-y": 0,
+"claw-z": 60,
+"claw-angle-y": -90,
+"claw-angle-x": -90,
+}
+
+#### Rotate open and close claw
+
+Set "claw-angle" parameter to open or close claw
+
+Open claw
+{
+"claw-x": 130,
+"claw-y": 0,
+"claw-z": 60,
+"claw-angle-y": -90,
+"claw-angle-x": 0,
+"claw-angle": 140,
+}
+
+Close claw
+{
+"claw-x": 130,
+"claw-y": 0,
+"claw-z": 60,
+"claw-angle-y": -90,
+"claw-angle-x": 0,
+"claw-angle": 0,
+}
+
 
 Additional test cases can be found at [tests](/tests "tests")
 

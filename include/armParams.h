@@ -1,7 +1,7 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.1.1"
+#define APP_VERSION "1.1.2"
 
 //Your wi-fi credentials
 #define WIFI_SSID "DragonSlayer"
@@ -58,6 +58,10 @@
 #define CLAW_X_MIN 0
 #define CLAW_X_MAX 270
 
+#define CLAW_BASE 0
+#define CLAW_SCALE 1
+#define CLAW_MIN 0
+#define CLAW_MAX 140
 
 #define ROTATE_Z_BASE -135
 #define ROTATE_Z_MIN 0
@@ -83,6 +87,8 @@
 #define ERROR_CLAW_X_ANGLE_IS_NAN -10;
 #define ERROR_CLAW_X_ANGLE_LESS_MIN -11;
 #define ERROR_CLAW_X_ANGLE_ABOVE_MAX -12;
-
+#define ERROR_CLAW_ANGLE_IS_NAN -13;
+#define ERROR_CLAW_ANGLE_LESS_MIN -14;
+#define ERROR_CLAW_ANGLE_ABOVE_MAX -15;
 
 #endif

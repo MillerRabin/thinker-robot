@@ -30,8 +30,8 @@ class EngineControl {
 
 class Strategy {
     private:
-        void freeAngle(const double x, const double y, const double z);
-        void fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle);
+        void freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
+        void fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle);
         static ArmRoots getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
         static ArmRoot getValidElbowRoot(ArmElbow elbow, ArmShoulder shoulder, ArmRoots roots);
         Position tryElbowRoot(ArmRotate rotate, ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z);
@@ -43,7 +43,7 @@ class Strategy {
         void addPositionToSequence(Position pos);
         Position position;
     public:
-        Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle);
+        Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle);
         std::vector<EngineControl> sequence;
         ArmError errors;
 };

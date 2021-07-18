@@ -4,12 +4,12 @@
 #include <position.h>
 #include <arm.h>
 
-Position::Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawAngle) :
+Position::Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawXAngle, const double clawAngle) :
     rotate(rotateAngle),    
     shoulder(rotate, shoulderAngle),
     elbow(shoulder, elbowAngle),
     wrist(elbow, wristAngle),
-    claw(wrist, clawAngle)
+    claw(wrist, clawXAngle, clawAngle)
 {    
 
 }
@@ -56,12 +56,17 @@ const double Position::getClawXAngle() {
     return claw.getXAngle();
 }
 
+const double Position::getClawAngle() {
+    return claw.getAngle();
+}
+
 const bool Position::isValid() {        
     const double dsAngle = getShoulderAngle();
     const double deAngle = getElbowAngle();
     const double dwAngle = getWristAngle();        
     const double cxAngle = getClawXAngle();        
-    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0) || (cxAngle < 0)) {        
+    const double clawAngle = getClawAngle();        
+    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0) || (cxAngle < 0 || (clawAngle < 0))) {        
         return false;
     }    
     const double eRad = abs(elbow.getLocalRad(shoulder));

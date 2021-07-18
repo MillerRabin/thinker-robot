@@ -14,9 +14,10 @@ async function checkPosition(pos, tolerance = config.tolerance) {
         body: JSON.stringify(pos)
     });
     const obj = await res.json();
-    const lengthX = obj['claw-x'];
-    const lengthY = obj['claw-y'];
-    const lengthZ = obj['claw-z'];
+    const ps = obj.positions;
+    const lengthX = ps['claw-x'];
+    const lengthY = ps['claw-y'];
+    const lengthZ = ps['claw-z'];
     assert.strictEqual(isEqual(lengthX, pos["claw-x"], tolerance), true, `X ${lengthX} is incorrect`);
     assert.strictEqual(isEqual(lengthY, pos["claw-y"], tolerance), true, `Y ${lengthY} is incorrect`);
     assert.strictEqual(isEqual(lengthZ, pos["claw-z"], tolerance), true, `Z ${lengthZ} is incorrect`);

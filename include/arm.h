@@ -219,12 +219,17 @@ class ArmClaw : public ArmPoint {
     private:
         static const double validateYAngle(const double angle);
         static const double validateXAngle(const double angle);
+        static const double validateClawAngle(const double angle);
+        const double getClawRad(const double angle);
+        const double getClawAngleFromRad(const double rad);
     public:    
-        ArmClaw(ArmWrist wrist, const double clawXAngle);
-        ArmClaw(const double zRad, const double yRad, const double xRad);
-        const double getXAngle(const bool validate = true);
-        const double getYAngle(ArmWrist wrist, const bool validate = true);
-        void setRads(const double zRad, const double yRad, const double xRad);
+        double clawRad = NAN;
+        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawAngle);
+        ArmClaw(const double zRad, const double yRad, const double xRad, const double clawRad);
+        const double getAngle(const bool validate = true);
+        const double getXAngle(const bool validate = true);        
+        const double getYAngle(ArmWrist wrist, const bool validate = true);        
+        void setRads(const double zRad, const double yRad, const double xRad, const double clawRad);
         
         const double getLength() override {
             return CLAW_LENGTH;

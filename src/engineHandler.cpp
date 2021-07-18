@@ -15,7 +15,7 @@
 #define GRIPPER_MAX_ANGLE 4000
 
 double gGripper = 0;
-double gGripperRotate = 0;
+double gGripperRotate = 135;
 double gRotate = 135;
 double gShoulder = 90;
 double gElbow = 230;
@@ -60,19 +60,21 @@ void sendSuccess(AsyncWebServerRequest* request) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
-    root["gripper"] = gGripper;
-    root["gripper-rotate"] = gGripperRotate;
-    root["rotate"] = gRotate;
-    root["shoulder"] = gShoulder;
-    root["elbow"] = gElbow;
-    root["wrist"] = gWrist;
+    JsonObject &pAngles = root.createNestedObject("physicalAngles");
+    pAngles["claw"] = gGripper;
+    pAngles["claw-x"] = gGripperRotate;
+    pAngles["rotate"] = gRotate;
+    pAngles["shoulder"] = gShoulder;
+    pAngles["elbow"] = gElbow;
+    pAngles["wrist"] = gWrist;
     Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);        
-    root["claw-x"] = pos.getX();
-    root["claw-y"] = pos.getY();
-    root["claw-z"] = pos.getZ();        
-    root["elbow-x"] = pos.shoulder.x + pos.elbow.x;
-    root["elbow-y"] = pos.shoulder.y + pos.elbow.y;
-    root["elbow-z"] = pos.shoulder.z + pos.elbow.z + BASE_HEIGHT;
+    JsonObject &positions = root.createNestedObject("positions");
+    positions["claw-x"] = pos.getX();
+    positions["claw-y"] = pos.getY();
+    positions["claw-z"] = pos.getZ();        
+    positions["elbow-x"] = pos.shoulder.x + pos.elbow.x;
+    positions["elbow-y"] = pos.shoulder.y + pos.elbow.y;
+    positions["elbow-z"] = pos.shoulder.z + pos.elbow.z + BASE_HEIGHT;
     JsonArray &errors = root.createNestedArray("errors");
     gErrors.addToJsonArray(errors);
     root.printTo(*response);
@@ -182,9 +184,12 @@ void apply(Strategy strategy) {
             gRotate = setEngine(ROTATE_ENGINE, control.angle);
             continue;
         }
-
         if (control.engine == CLAW_X_ENGINE) {
             gGripperRotate = setEngine(CLAW_X_ENGINE, control.angle);
+            continue;
+        }
+        if (control.engine == CLAW_ENGINE) {
+            gGripper = setEngine(CLAW_ENGINE, control.angle);
             continue;
         }
     }    
@@ -194,13 +199,14 @@ void apply(Strategy strategy) {
 AsyncCallbackJsonWebHandler* positionHandler = new AsyncCallbackJsonWebHandler("/position", [](AsyncWebServerRequest *request, JsonVariant &json) {    
     try {
         JsonObject& jsonObj = json.as<JsonObject>();        
-        Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate);
+        Position pos(gShoulder, gElbow, gWrist, gRotate, gGripperRotate, gGripper);
         const double tx = getDoubleDef(jsonObj, "claw-x", -360, 360, pos.getX());    
         const double ty = getDoubleDef(jsonObj, "claw-y", -360, 360, pos.getY());    
         const double tz = getDoubleDef(jsonObj, "claw-z", 25, 440, pos.getZ());    
         const double cy = getDoubleDef(jsonObj, "claw-angle-y", -360, 360, NAN);
-        const double cx = getDoubleDef(jsonObj, "claw-angle-x", -360, 360, NAN);    
-        Strategy moveStrategy(pos, tx, ty, tz, cx, cy);
+        const double cx = getDoubleDef(jsonObj, "claw-angle-x", -360, 360, NAN);         
+        const double claw = getDoubleDef(jsonObj, "claw-angle", 0, 140, NAN);    
+        Strategy moveStrategy(pos, tx, ty, tz, cx, cy, claw);
         apply(moveStrategy);
         sendSuccess(request);        
     } catch (const std::exception& e) {

@@ -109,7 +109,7 @@ Position Strategy::tryElbow(ArmRotate rotate, ArmShoulder shoulder, const double
 }
 
 
-void Strategy::freeAngle(const double x, const double y, const double z) {        
+void Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {        
     const double vl = sqrt(x*x + y*y);
     if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
         errors.addBaseError(x, y, z);
@@ -141,12 +141,16 @@ void Strategy::addPositionToSequence(Position pos) {
     const double deAngle = pos.getElbowAngle();
     const double dwAngle = pos.getWristAngle();
     const double cxAngle = pos.getClawXAngle();
+    const double clawAngle = pos.getClawAngle();
     
+    EngineControl clawEngine(CLAW_ENGINE, round(clawAngle));
+    sequence.push_back(clawEngine);
+
     EngineControl rEngine(ROTATE_ENGINE, round(drAngle));
     sequence.push_back(rEngine);
     
-    EngineControl cEngine(CLAW_X_ENGINE, round(cxAngle));
-    sequence.push_back(cEngine);
+    EngineControl cxEngine(CLAW_X_ENGINE, round(cxAngle));
+    sequence.push_back(cxEngine);
 
     EngineControl wEngine(WRIST_ENGINE, round(dwAngle));
     sequence.push_back(wEngine);
@@ -158,12 +162,11 @@ void Strategy::addPositionToSequence(Position pos) {
     sequence.push_back(sEngine);
 }
   
-void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle) {        
+void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) {        
     ArmRotate rotate = position.rotate;
     rotate.setRadFromPos(x, y);
-    const double rRad = ArmPoint::getRadFromXY(x, y);
-        
-    const double wRad = clawYAngle / 180 * PI;        
+    const double rRad = ArmPoint::getRadFromXY(x, y);        
+    const double wRad = clawYAngle / 180 * PI;
         
     const double wxl = WRIST_LENGTH * cos(wRad) * cos(rRad);
     const double wyl = WRIST_LENGTH * cos(wRad) * sin(rRad);
@@ -200,7 +203,8 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
         return;
     }
 
-    const double cxRad = clawXAngle / 180 * PI;
+    const double cxRad = clawXAngle / 180 * PI;    
+    const double clawRad = clawAngle / 180 * PI;
     
     for(double rad : rads) {          
         shoulder.setRads(shoulder.ZRad, rad);        
@@ -212,7 +216,7 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
         wrist.setRotate(rotate);
         wrist.setPos(shoulder, elbow, x, y, z);
         ArmClaw claw = position.claw;
-        claw.setRads(wrist.ZRad, wrist.YRad, cxRad);
+        claw.setRads(wrist.ZRad, wrist.YRad, cxRad, clawRad);
 
         Position pos = Position(rotate, shoulder, elbow, wrist, claw);
         if (pos.isValid()) {
@@ -223,13 +227,13 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     errors.addUnreachableError();
 }
 
-Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle) : position(pos) {
+Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) : position(pos) {
     if (isnan(clawYAngle)) {
-        freeAngle(x, y, z);
+        freeAngle(x, y, z, clawXAngle, clawAngle);
         return;
     }
         
-    fixedAngle(x, y, z, clawXAngle, clawYAngle);
+    fixedAngle(x, y, z, clawXAngle, clawYAngle, clawAngle);
     return;
 }
 
