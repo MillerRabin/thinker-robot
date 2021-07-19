@@ -243,8 +243,8 @@ Strategy::Strategy(Position pos, const double x, const double y, const double z,
 }
 
 
-ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {        
-    const double rRad = shoulder.ZRad;
+ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {
+    Serial.printf("zRad is: %f\n", shoulder.ZRad);
     const double sx = x - shoulder.x;
     const double sy = y - shoulder.y;
     const double sz = z - (shoulder.z + BASE_HEIGHT);
@@ -278,11 +278,11 @@ ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const dou
         const double l2 = pos0L - h / d * sz;
         const double z2 = pos0Z + h / d * sl;        
         const double dPI = PI / 2;
-        const double sRad = (rRad > dPI) ? rRad + PI :
-                            (rRad > 0) ? rRad :
-                            (rRad >= -dPI) ? rRad :
-                            (rRad > -PI) ? rRad + PI:
-                            rRad;                
+        const double sRad = (shoulder.ZRad > dPI) ? shoulder.ZRad + PI :
+                            (shoulder.ZRad > 0) ? shoulder.ZRad :
+                            (shoulder.ZRad >= -dPI) ? shoulder.ZRad :
+                            (shoulder.ZRad > -PI) ? shoulder.ZRad + PI:
+                            shoulder.ZRad;                
         return ArmRoots(ArmRoot(sRad, l1, z1), ArmRoot(sRad, l2, z2));
     }
         
