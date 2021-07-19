@@ -4,18 +4,19 @@
 #include <position.h>
 #include <arm.h>
 
-Position::Position(const double shoulderAngle, const double elbowAngle, const double wristAngle, const double rotateAngle, const double clawXAngle, const double clawAngle) :
-    rotate(rotateAngle),    
-    shoulder(rotate, shoulderAngle),
-    elbow(shoulder, elbowAngle),
-    wrist(elbow, wristAngle),
+Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle) : 
+    shoulder(shoulderYAngle, shoulderZAngle),
+    elbow(shoulder, elbowYAngle),
+    wrist(elbow, wristYAngle),
     claw(wrist, clawXAngle, clawAngle)
-{    
-
+{
+    Serial.printf("shoulderYAngle: %f, shoulderZAngle: %f, elbowYAngle: %f, wristYAngle: %f, clawXAngle: %f, clawAngle: %f\n", shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawAngle);  
+    Serial.printf("shoulder.x: %f, shoulder.y: %f, shoulder.z: %f, YRad: %f, ZRad: %f\n", shoulder.x, shoulder.y, shoulder.z, shoulder.YRad, shoulder.ZRad);  
+    Serial.printf("elbow.x: %f, elbow.y: %f, elbow.z: %f, YRad: %f, ZRad: %f\n", elbow.x, elbow.y, elbow.z, elbow.YRad, elbow.ZRad);  
+    Serial.printf("wrist.x: %f, wrist.y: %f, wrist.z: %f, YRad: %f, ZRad: %f\n", wrist.x, wrist.y, wrist.z, wrist.YRad, wrist.ZRad);  
 }
 
-Position::Position(ArmRotate rotate, ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw) :
-    rotate(rotate),
+Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw) :    
     shoulder(shoulder),
     elbow(elbow),
     wrist(wrist),
@@ -36,20 +37,20 @@ const double Position::getZ() {
     return shoulder.z + elbow.z + wrist.z + BASE_HEIGHT;
 }
 
-const double Position::getRotateAngle() {
-    return rotate.getAngle();
+const double Position::getShoulderZAngle() {
+    return shoulder.getZAngle();
 }
 
-const double Position::getShoulderAngle() {
-    return shoulder.getAngle();
+const double Position::getShoulderYAngle() {
+    return shoulder.getYAngle();
 }
 
-const double Position::getElbowAngle() {
-    return elbow.getAngle(shoulder);
+const double Position::getElbowYAngle() {
+    return elbow.getYAngle(shoulder);
 }
 
-const double Position::getWristAngle() {
-    return wrist.getAngle(elbow);
+const double Position::getWristYAngle() {
+    return wrist.getYAngle(elbow);
 }
 
 const double Position::getClawXAngle() {
@@ -61,9 +62,9 @@ const double Position::getClawAngle() {
 }
 
 const bool Position::isValid() {        
-    const double dsAngle = getShoulderAngle();
-    const double deAngle = getElbowAngle();
-    const double dwAngle = getWristAngle();        
+    const double dsAngle = getShoulderYAngle();
+    const double deAngle = getElbowYAngle();
+    const double dwAngle = getWristYAngle();        
     const double cxAngle = getClawXAngle();        
     const double clawAngle = getClawAngle();        
     if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0) || (cxAngle < 0 || (clawAngle < 0))) {        

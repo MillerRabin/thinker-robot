@@ -6,22 +6,21 @@
 #include <arm.h>
 
 class Position {
-    public: 
-        ArmRotate rotate;
+    public:         
         ArmShoulder shoulder;
         ArmElbow elbow;
         ArmWrist wrist;
         ArmClaw claw;        
-        Position(const double shoulderAngle = NAN, const double elbowAngle = NAN, const double wristAngle = NAN, const double rotateAngle = NAN, const double clawXAngle = NAN, const double clawAngle = NAN);
-        Position(ArmRotate rotate, ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw);        
+        Position(const double shoulderYAngle = NAN, const double shoulderZAngle = NAN, const double elbowYAngle = NAN, const double wristYAngle = NAN, const double clawXAngle = NAN, const double clawAngle = NAN);
+        Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw);        
         const bool isValid();
         const double getX();
         const double getY();
         const double getZ();
-        const double getRotateAngle();
-        const double getShoulderAngle();
-        const double getElbowAngle();
-        const double getWristAngle();
+        const double getShoulderZAngle();
+        const double getShoulderYAngle();
+        const double getElbowYAngle();
+        const double getWristYAngle();
         const double getClawXAngle();
         const double getClawAngle();
 };
