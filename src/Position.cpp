@@ -9,12 +9,7 @@ Position::Position(const double shoulderYAngle, const double shoulderZAngle, con
     elbow(shoulder, elbowYAngle),
     wrist(elbow, wristYAngle),
     claw(wrist, clawXAngle, clawAngle)
-{
-    Serial.printf("shoulderYAngle: %f, shoulderZAngle: %f, elbowYAngle: %f, wristYAngle: %f, clawXAngle: %f, clawAngle: %f\n", shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawAngle);  
-    Serial.printf("shoulder.x: %f, shoulder.y: %f, shoulder.z: %f, YRad: %f, ZRad: %f\n", shoulder.x, shoulder.y, shoulder.z, shoulder.YRad, shoulder.ZRad);  
-    Serial.printf("elbow.x: %f, elbow.y: %f, elbow.z: %f, YRad: %f, ZRad: %f\n", elbow.x, elbow.y, elbow.z, elbow.YRad, elbow.ZRad);  
-    Serial.printf("wrist.x: %f, wrist.y: %f, wrist.z: %f, YRad: %f, ZRad: %f\n", wrist.x, wrist.y, wrist.z, wrist.YRad, wrist.ZRad);  
-}
+{}
 
 Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw) :    
     shoulder(shoulder),

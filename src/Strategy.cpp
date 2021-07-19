@@ -57,10 +57,12 @@ Position Strategy::getArmPosition(ArmShoulder shoulder, const double x, const do
 Position Strategy::tryShoulderLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
     ArmShoulder tShoulder = shoulder;
     vector<double> rads = tShoulder.getAvailableRads(length, x, y, z);
-    if (rads.size() == 0)
+    if (rads.size() == 0) {        
         return Position();    
+    }
+        
     for (double rad : rads) {
-        tShoulder.setRads(tShoulder.ZRad, rad);        
+        tShoulder.setRads(rad, tShoulder.ZRad);        
         Position pos = tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);    
         if (pos.isValid()) return pos;
     }
@@ -69,12 +71,10 @@ Position Strategy::tryShoulderLength(ArmShoulder shoulder, const double length, 
 
 Position Strategy::tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
     ArmShoulder tShoulder = shoulder;
-    tShoulder.setRads(rad, tShoulder.ZRad);    
-    Serial.printf("rad: %f, shoulder.x: %f, shoulder.y: %f, shoulder.z: %f, YRad: %f, ZRad: %f\n", rad, tShoulder.x, tShoulder.y, tShoulder.z, tShoulder.YRad, tShoulder.ZRad);  
+    tShoulder.setRads(rad, tShoulder.ZRad);        
     if (!tShoulder.isValid()) {
         return Position();
-    }
-    Serial.printf("valid\n");  
+    }   
     return tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);    
 }
 
@@ -83,13 +83,14 @@ Position Strategy::tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double
     ArmElbow elbow = position.elbow;    
     elbow.setRads(elbow.YRad, shoulder.ZRad);    
     elbow.setPosLocal(root.x, root.y, root.z);      
+    
     if (!elbow.isValid(shoulder))
         return Position();
     ArmWrist wrist = position.wrist;    
     wrist.setPos(shoulder, elbow, x, y, z);     
     if (!wrist.isValid(elbow)) {
         return Position();   
-    }    
+    }        
     ArmClaw claw = position.claw;
     const double cxRad = clawXAngle / 180 * PI;    
     const double clawRad = clawAngle / 180 * PI;
@@ -99,8 +100,6 @@ Position Strategy::tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double
 
 Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
     ArmRoots roots = Strategy::getElbowRoots(shoulder, x, y, z, WRIST_LENGTH);
-    Serial.printf("root1 roots.r1.x: %f, roots.r1.y: %f, roots.r1.z: %f\n", roots.r1.x, roots.r1.y, roots.r1.z);
-    Serial.printf("root2 roots.r2.x: %f, roots.r2.y: %f, roots.r2.z: %f\n", roots.r2.x, roots.r2.y, roots.r2.z);
     if (roots.r1.isValid()) {
         Position fPos = tryElbowRoot(shoulder, roots.r1, x, y, z, clawXAngle, clawAngle);
         if (fPos.isValid()) return fPos;        
@@ -127,8 +126,7 @@ void Strategy::freeAngle(const double x, const double y, const double z, const d
     }
                         
     ArmShoulder shoulder = position.shoulder;  
-    const double zRad = shoulder.getZRadFromXY(x, y);
-    Serial.printf("zRad is: %f\n", zRad);
+    const double zRad = shoulder.getZRadFromXY(x, y);    
     shoulder.setRads(shoulder.YRad, zRad);    
     Position pos = getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle);
     addPositionToSequence(pos);
@@ -147,7 +145,6 @@ void Strategy::addPositionToSequence(Position pos) {
     const double cxAngle = pos.getClawXAngle();
     const double clawAngle = pos.getClawAngle();
     
-    Serial.printf("szAngle: %f, syAngle: %f, eyAngle: %f, wyAngle: %f, cxAngle: %f, clawAngle: %f\n", szAngle, syAngle, eyAngle, wyAngle, cxAngle, clawAngle);  
     
     EngineControl clawEngine(CLAW_ENGINE, clawAngle);
     sequence.push_back(clawEngine);
@@ -230,9 +227,7 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     errors.addUnreachableError();
 }
 
-Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) : position(pos) {
-    Serial.printf("\nx: %f, y: %f, z: %f, clawXAngle: %f, clawYAngle: %f, clawAngle: %f\n", x, y, z, clawXAngle, clawYAngle, clawAngle);
-    
+Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) : position(pos) {    
     if (isnan(clawYAngle)) {
         freeAngle(x, y, z, clawXAngle, clawAngle);
         return;
@@ -243,8 +238,7 @@ Strategy::Strategy(Position pos, const double x, const double y, const double z,
 }
 
 
-ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {
-    Serial.printf("zRad is: %f\n", shoulder.ZRad);
+ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {    
     const double sx = x - shoulder.x;
     const double sy = y - shoulder.y;
     const double sz = z - (shoulder.z + BASE_HEIGHT);

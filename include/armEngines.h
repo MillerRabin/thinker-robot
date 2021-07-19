@@ -3,7 +3,7 @@
 
 #define COUNT_LOW 1638
 #define COUNT_HIGH 7864
-#define COUNT_RANGE COUNT_HIGH - COUNT_LOW
+#define COUNT_RANGE (COUNT_HIGH - COUNT_LOW)
 #define TIMER_WIDTH 16
 
 #include "armError.h"
