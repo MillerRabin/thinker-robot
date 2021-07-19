@@ -3,15 +3,13 @@
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
 
+//Set your wi-fi credentials in credentials.h
+#include "credentials.h"
 #include "updateHandler.h"
 #include "initServer.h"
 #include "engineHandler.h"
 #include "armParams.h"
 
-#define COUNT_LOW 1638
-#define COUNT_HIGH 7864
-
-#define TIMER_WIDTH 16
 
 const char* appVersion = APP_VERSION;
 const char* ssid = WIFI_SSID;

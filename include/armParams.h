@@ -1,31 +1,31 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.1.2"
-
-//Your wi-fi credentials
-#define WIFI_SSID "DragonSlayer"
-#define WIFI_PASSWORD "ifyouwanttohave"
-
-//Login and password for http update
-#define HTTP_USERNAME "admin"
-#define HTTP_PASSWORD "ifyouwanttohave"
+#define APP_VERSION "1.2.0"
 
 #define CLAW_ENGINE 1
 #define CLAW_X_ENGINE 2
-#define ROTATE_ENGINE 3
-#define SHOULDER_ENGINE 4
-#define ELBOW_ENGINE 5
-#define WRIST_ENGINE 6
+#define SHOULDER_Z_ENGINE 3
+#define SHOULDER_Y_ENGINE 4
+#define ELBOW_Y_ENGINE 5
+#define WRIST_Y_ENGINE 6
 
 //ESP32 WROOM GPIO PINS
 
 #define CLAW_PIN 25
-#define CLAW_ROTATE_PIN 26
-#define ROTATE_PIN 27
-#define SHOULDER_PIN 14
-#define WRIST_PIN 12
-#define ELBOW_PIN 13
+#define CLAW_X_PIN 26
+#define SHOULDER_Z_PIN 27
+#define SHOULDER_Y_PIN 14
+#define WRIST_Y_PIN 12
+#define ELBOW_Y_PIN 13
+
+//Home point. Physical angles of engines
+#define SHOULDER_Z_PHYSICAL_ANGLE 135
+#define SHOULDER_Y_PHYSICAL_ANGLE 90
+#define ELBOW_Y_PHYSICAL_ANGLE 230
+#define WRIST_Y_PHYSICAL_ANGLE 235
+#define CLAW_X_PHYSICAL_ANGLE 135
+#define CLAW_PHYSICAL_ANGLE 0
 
 //Physical length of shoulder
 #define SHOULDER_LENGTH 105
@@ -38,6 +38,11 @@
 #define SHOULDER_Y_SCALE 1
 #define SHOULDER_Y_MIN 0
 #define SHOULDER_Y_MAX 180
+
+#define SHOULDER_Z_BASE -135
+#define SHOULDER_Z_SCALE 1
+#define SHOULDER_Z_MIN 0
+#define SHOULDER_Z_MAX 270
 
 #define ELBOW_LENGTH 95
 #define ELBOW_Y_BASE 140
@@ -63,10 +68,6 @@
 #define CLAW_MIN 0
 #define CLAW_MAX 140
 
-#define ROTATE_Z_BASE -135
-#define ROTATE_Z_MIN 0
-#define ROTATE_Z_MAX 270
-
 #define BASE_HEIGHT 80
 #define BASE_WIDTH 120
 
@@ -78,17 +79,20 @@
 #define ERROR_SHOULDER_Y_ANGLE_IS_NAN -1;
 #define ERROR_SHOULDER_Y_ANGLE_LESS_MIN -2;
 #define ERROR_SHOULDER_Y_ANGLE_ABOVE_MAX -3;
-#define ERROR_ELBOW_Y_ANGLE_IS_NAN -4;
-#define ERROR_ELBOW_Y_ANGLE_LESS_MIN -5;
-#define ERROR_ELBOW_Y_ANGLE_ABOVE_MAX -6;
-#define ERROR_WRIST_Y_ANGLE_IS_NAN -7;
-#define ERROR_WRIST_Y_ANGLE_LESS_MIN -8;
-#define ERROR_WRIST_Y_ANGLE_ABOVE_MAX -9;
-#define ERROR_CLAW_X_ANGLE_IS_NAN -10;
-#define ERROR_CLAW_X_ANGLE_LESS_MIN -11;
-#define ERROR_CLAW_X_ANGLE_ABOVE_MAX -12;
-#define ERROR_CLAW_ANGLE_IS_NAN -13;
-#define ERROR_CLAW_ANGLE_LESS_MIN -14;
-#define ERROR_CLAW_ANGLE_ABOVE_MAX -15;
+#define ERROR_SHOULDER_Z_ANGLE_IS_NAN -2;
+#define ERROR_SHOULDER_Z_ANGLE_LESS_MIN -3;
+#define ERROR_SHOULDER_Z_ANGLE_ABOVE_MAX -4;
+#define ERROR_ELBOW_Y_ANGLE_IS_NAN -5;
+#define ERROR_ELBOW_Y_ANGLE_LESS_MIN -6;
+#define ERROR_ELBOW_Y_ANGLE_ABOVE_MAX -7;
+#define ERROR_WRIST_Y_ANGLE_IS_NAN -8;
+#define ERROR_WRIST_Y_ANGLE_LESS_MIN -9;
+#define ERROR_WRIST_Y_ANGLE_ABOVE_MAX -10;
+#define ERROR_CLAW_X_ANGLE_IS_NAN -11;
+#define ERROR_CLAW_X_ANGLE_LESS_MIN -12;
+#define ERROR_CLAW_X_ANGLE_ABOVE_MAX -13;
+#define ERROR_CLAW_ANGLE_IS_NAN -14;
+#define ERROR_CLAW_ANGLE_LESS_MIN -15;
+#define ERROR_CLAW_ANGLE_ABOVE_MAX -16;
 
 #endif

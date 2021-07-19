@@ -42,11 +42,12 @@ void ArmError::addElbowZError(const double z, const double minZ) {
     errors.push_back(rString);
 }
 
-void ArmError::addToJsonArray(JsonArray &arr) {    
+void ArmError::flushToJsonArray(JsonArray& arr) {    
     for(std::string error : errors) {  
         const char* elem = error.c_str();         
         arr.add((char *)elem);
     }    
+    errors.clear();
 }
 
 size_t ArmError::size() {
