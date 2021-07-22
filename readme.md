@@ -4,7 +4,9 @@ This project is intended to make a complex things with roboarm manipulator throu
 Like positioning in 3D unit system, grab objects by specific angles and more.
 
 * Manipulate roboarm by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
-* You can grab and move object by specific claw angle 
+* Queue support
+* Engine synchronization support
+* You can grab and move object using specific claw angle 
 
 
 I used 6DOF Robotic arm with parameters on sheme below.
