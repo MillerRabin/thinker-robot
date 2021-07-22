@@ -9,7 +9,7 @@
 #include "initServer.h"
 #include "engineHandler.h"
 #include "armParams.h"
-
+#include "armEngines.h"
 
 const char* appVersion = APP_VERSION;
 const char* ssid = WIFI_SSID;
@@ -37,7 +37,9 @@ void enableVersion() {
     DynamicJsonBuffer jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["version"] = appVersion; 
+    root["queued-arm-operations"] = ArmEngines::queue.size();
     root["free-heap"] = ESP.getFreeHeap();
+    
     root.printTo(*response);
     request->send(response);
   });
@@ -50,7 +52,7 @@ void setup(){
        
   enableVersion();
   enableUpdate();
-  enableEngines();
+  new EngineHandler;
   serverBegin();
 }
 

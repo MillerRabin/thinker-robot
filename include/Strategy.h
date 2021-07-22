@@ -4,7 +4,6 @@
 #include <position.h>
 #include <Arduino.h>
 #include "arm.h"
-#include "armError.h"
 
 //------EngineControl------
 
@@ -49,12 +48,11 @@ class Strategy {
         Position tryHalfLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        void addPositionToSequence(Position pos);
-        Position position;
+        void addPositionToSequence(Position pos);        
     public:
         Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle);
-        std::vector<EngineControl> sequence;
-        ArmError errors;
+        std::vector<EngineControl> sequence;        
+        Position position;
 };
 
 #endif

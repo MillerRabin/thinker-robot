@@ -6,6 +6,9 @@
 #include <arm.h>
 
 class Position {
+    private:
+        ArmOperationResult lastError;
+        std::string lastErrorText;
     public:         
         ArmShoulder shoulder;
         ArmElbow elbow;
@@ -23,6 +26,9 @@ class Position {
         const double getWristYAngle();
         const double getClawXAngle();
         const double getClawAngle();
+        ArmOperationResult getLastError() { return lastError; };        
+        std::string getLastErrorText() { return lastErrorText; };
+        void setLastError(ArmOperationResult error, std::string text) { lastError = error; lastErrorText = text; };
 };
 
 #endif

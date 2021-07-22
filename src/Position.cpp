@@ -1,15 +1,18 @@
-#include <armParams.h>
 #include <arduino.h>
 #include <math.h>
-#include <position.h>
-#include <arm.h>
+#include "armParams.h"
+#include "position.h"
+#include "arm.h"
+#include "armError.h"
 
 Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle) : 
     shoulder(shoulderYAngle, shoulderZAngle),
     elbow(shoulder, elbowYAngle),
     wrist(elbow, wristYAngle),
-    claw(wrist, clawXAngle, clawAngle)
-{}
+    claw(wrist, clawXAngle, clawAngle)    
+{
+    isValid();
+}
 
 Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw) :    
     shoulder(shoulder),
@@ -17,7 +20,7 @@ Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw
     wrist(wrist),
     claw(claw)
 {    
-
+    isValid();
 }
 
 const double Position::getX() {    
@@ -57,19 +60,50 @@ const double Position::getClawAngle() {
 }
 
 const bool Position::isValid() {        
+    const double dzAngle = getShoulderZAngle();
     const double dsAngle = getShoulderYAngle();
     const double deAngle = getElbowYAngle();
     const double dwAngle = getWristYAngle();        
     const double cxAngle = getClawXAngle();        
-    const double clawAngle = getClawAngle();        
-    if ((dsAngle < 0) || (deAngle < 0) || (dwAngle < 0) || (cxAngle < 0 || (clawAngle < 0))) {        
+    const double clawAngle = getClawAngle();    
+    if (dzAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)dzAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }       
+    if (dsAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)dsAngle;
+        setLastError(res, ArmError::getErrorText(res));
         return false;
     }    
+    if (deAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)deAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }    
+    if (dwAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)dwAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }        
+    if (cxAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)cxAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }
+    if (clawAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)clawAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }
+        
     const double eRad = abs(elbow.getLocalRad(shoulder));
     const double wRad = abs(wrist.getLocalRad(elbow));
     const double sum = (eRad + wRad) / PI * 180;    
     if (sum > MAX_SUM_ANGLE) {                
+        setLastError(ERROR_SUM_OF_ANGLES_ABOVE_MAX, ArmError::getErrorText(ERROR_SUM_OF_ANGLES_ABOVE_MAX));
         return false;    
     }
+    setLastError(ARM_OPERATION_SUCCESS, "");
     return true;    
 }

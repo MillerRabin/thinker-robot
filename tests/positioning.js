@@ -7,17 +7,44 @@ function isEqual(source, target, tolerance) {
            (source >= (target - tolerance))
 }
 
-async function checkPosition(pos, tolerance = config.tolerance) {
+async function request(pos) {
     const res = await fetch(config.endpoint + '/position', {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: JSON.stringify(pos)
     });
-    const obj = await res.json();
-    const ps = obj.positions;
+    return await res.json();
+}
+
+function delay(time) {
+    return new Promise((resolve) => {
+       setTimeout(() => {
+           resolve();
+       }, time);
+    });
+}
+
+async function checkPosition(pos, tolerance = config.tolerance) {
+    let obj = await request(pos);
+    if (obj['error'] != null) {
+        console.log(obj['error']);
+        await delay(1000);
+        obj = await request(pos);
+        console.log(pos, obj);
+        if (obj['error'] != null)
+            throw obj['error'];
+    }
+
+    const ps = obj['target-position'];
     const lengthX = ps['claw-x'];
     const lengthY = ps['claw-y'];
     const lengthZ = ps['claw-z'];
+    const tcax = pos['claw-angle-x'];
+    const la = obj['target-logical-angles'];
+    const cax = la['claw-angle-x'];
+    if (tcax != null)
+        assert.strictEqual(isEqual(cax, tcax, tolerance), true, `claw-angle-x ${cax} is incorrect`);
+
     assert.strictEqual(isEqual(lengthX, pos["claw-x"], tolerance), true, `X ${lengthX} is incorrect`);
     assert.strictEqual(isEqual(lengthY, pos["claw-y"], tolerance), true, `Y ${lengthY} is incorrect`);
     assert.strictEqual(isEqual(lengthZ, pos["claw-z"], tolerance), true, `Z ${lengthZ} is incorrect`);
@@ -85,6 +112,15 @@ describe('Positioning', function() {
         it ('-26 26 130', async function () {
             await checkPosition({ "claw-x": -26, "claw-y": 26, "claw-z": 130 });
         });
+
+        it ('95 0 80, 90', async function () {
+            await checkPosition({ "claw-x": 95, "claw-y": 0, "claw-z": 80, "claw-angle-x": 90 });
+        });
+
+        it ('95 0 80, 0', async function () {
+            await checkPosition({ "claw-x": 95, "claw-y": 0, "claw-z": 80, "claw-angle-x": 0 });
+        });
+
     });
 
     describe('Set position angle is 0', function () {
@@ -105,7 +141,7 @@ describe('Positioning', function() {
         });
 
         it ('20 0 180, 0', async function () {
-            await checkPosition({ "claw-x": 60, "claw-y": 0, "claw-z": 180, "claw-angle-y": 0 });
+            await checkPosition({ "claw-x": 20, "claw-y": 0, "claw-z": 180, "claw-angle-y": 0 });
         });
     });
 

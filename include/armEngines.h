@@ -11,26 +11,31 @@
 #include "strategy.h"
 #include "position.h"
 #include "strategy.h"
+#include "armQueue.h"
 
 //------ArmEngines------
 
 class ArmEngines {
     private:              
-        static double shoulderZAngle;
-        static double shoulderYAngle;
-        static double elbowYAngle;
-        static double wristYAngle;         
-        static double clawXAngle;
-        static double clawAngle;  
+        static unsigned int instancesCount;
+        static volatile double shoulderZAngle;
+        static volatile double shoulderYAngle;
+        static volatile double elbowYAngle;
+        static volatile double wristYAngle;         
+        static volatile double clawXAngle;
+        static volatile double clawAngle;  
         static const double setEngine(const uint engine, const double angle);        
-        static const uint degToCount(const double value, const uint maxDeg);        
+        static const uint degToCount(const double value, const uint maxDeg);
+        static TaskHandle_t loopTask;
+        static void loop( void* param );     
     public:    
         ArmEngines();        
-        void set(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle);
-        void set(JsonObject& jsonObj);
-        void applyStrategy(Strategy strategy);
+        ~ArmEngines();
+        Position set(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle);
+        Position set(JsonObject& jsonObj);
+        Position applyStrategy(Strategy strategy);
         static double getDouble(JsonObject& jsonObj, const char* key);
-        ArmError errors;
+        static double getDoubleDef(JsonObject& jsonObj, const char* key, const double def);        
         const double getShoulderZAngle() { return ArmEngines::shoulderZAngle; };
         const double getShoulderYAngle() { return ArmEngines::shoulderYAngle; };
         const double getElbowYAngle() { return ArmEngines::elbowYAngle; };
@@ -38,6 +43,7 @@ class ArmEngines {
         const double getClawXAngle() { return ArmEngines::clawXAngle; };
         const double getClawAngle() { return ArmEngines::clawAngle; };
         Position getPosition();
+        static ArmQueue queue;        
 };
 
 #endif

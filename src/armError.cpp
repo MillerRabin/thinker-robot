@@ -2,59 +2,99 @@
 #include "string.h"
 #include <ArduinoJson.h>
 #include "position.h"
+#include "armParams.h"
 
-void ArmError::addBaseError(const double x, const double y, const double z) {
+std::string ArmError::getBaseError(const double x, const double y, const double z) {
     char sx[25]; 
     dtostrf(x, 1, 3, sx);
     char sy[25]; 
     dtostrf(y, 1, 3, sy);
     char sz[25]; 
     dtostrf(z, 1, 3, sz);
-    std::string rString = std::string("EOUTOFRANGE: The Arm can`t move through it`s base. x: ") + sx + std::string(", y: ") + sy + std::string(", z: ") + sz;        
-    errors.push_back(rString);
+    return std::string("The Arm can`t move through it`s base. x: ") + sx + std::string(", y: ") + sy + std::string(", z: ") + sz;            
 }
 
-void ArmError::addMaxLengthError(const double length, const double maxLength) {
+std::string ArmError::getMaxLengthError(const double length, const double maxLength) {
     char ss[25]; 
     dtostrf(length, 1, 3, ss);
     char ms[25]; 
     dtostrf(maxLength, 1, 3, ms);
-    std::string rString = std::string("EOUTOFRANGE: length: ") + ss + std::string(" is out of range. Max length is: ") + ms;        
-    errors.push_back(rString);
+    return std::string("length: ") + ss + std::string(" is out of range. Max length is: ") + ms;        
+    
 }
 
-void ArmError::addUnreachableError() {    
-    std::string rString = "EUNREACHABLE: The point is unreachable"; 
-    errors.push_back(rString);
+std::string ArmError::getUnreachableError() {    
+    return "EUNREACHABLE: The point is unreachable"; 
+    
 }
 
-void ArmError::addShoulderError() {    
-    std::string rString = "EUNREACHABLE: The shoulder angle is not found to achieve specific point"; 
-    errors.push_back(rString);
+std::string ArmError::getShoulderError() {    
+    return "EUNREACHABLE: The shoulder angle is not found to achieve specific point";     
 }
 
-void ArmError::addElbowZError(const double z, const double minZ) {    
+std::string ArmError::getElbowZError(const double z, const double minZ) {    
     char mz[25]; 
     dtostrf(minZ, 1, 3, mz);    
     char sz[25]; 
     dtostrf(z, 1, 3, sz);
-    std::string rString = std::string("EOUTOFRANGE: The elbow z: ") + sz + std::string(" is below minimum: ") + mz;        
-    errors.push_back(rString);
-}
-
-void ArmError::flushToJsonArray(JsonArray& arr) {    
-    for(std::string error : errors) {  
-        const char* elem = error.c_str();         
-        arr.add((char *)elem);
-    }    
-    errors.clear();
-}
-
-size_t ArmError::size() {
-    return errors.size();
+    return std::string("The elbow z: ") + sz + std::string(" is below minimum: ") + mz;            
 }
 
 
-void ArmError::clear() {
-    errors.clear();
+std::string ArmError::getErrorText(ArmOperationResult res) {
+    switch(res) {
+        case ARM_OPERATION_SUCCESS:
+            return "Success";
+        case ERROR_SHOULDER_Y_ANGLE_IS_NAN:
+            return "Shoulder Y angle is NAN";
+        case ERROR_SHOULDER_Y_ANGLE_LESS_MIN:
+            return "Shoulder Y angle less minimum";
+        case ERROR_SHOULDER_Y_ANGLE_ABOVE_MAX:
+            return "Shoulder Y angle above maximum";
+        case ERROR_SHOULDER_Z_ANGLE_IS_NAN:
+            return "Shoulder Z angle is NAN";
+        case ERROR_SHOULDER_Z_ANGLE_LESS_MIN:
+            return "Shoulder Z angle less minimum";
+        case ERROR_SHOULDER_Z_ANGLE_ABOVE_MAX:
+            return "Shoulder Z angle above maximum";
+        case ERROR_ELBOW_Y_ANGLE_IS_NAN:
+            return "Elbow Y angle is NAN";
+        case ERROR_ELBOW_Y_ANGLE_LESS_MIN:
+            return "Elbow Y angle less minimum";
+        case ERROR_ELBOW_Y_ANGLE_ABOVE_MAX:
+            return "Elbow Y angle above maximum";
+        case ERROR_WRIST_Y_ANGLE_IS_NAN:
+            return "Wrist Y angle is NAN";
+        case ERROR_WRIST_Y_ANGLE_LESS_MIN:
+            return "Wrist Y angle less minimum";
+        case ERROR_WRIST_Y_ANGLE_ABOVE_MAX:
+            return "Wrist Y angle above maximum";
+        case ERROR_CLAW_X_ANGLE_IS_NAN:
+            return "Claw X angle is NAN";
+        case ERROR_CLAW_X_ANGLE_LESS_MIN:
+            return "Claw X angle less minimum";
+        case ERROR_CLAW_X_ANGLE_ABOVE_MAX:
+            return "Claw X angle above maximum";
+        case ERROR_CLAW_ANGLE_IS_NAN:
+            return "Claw angle is NAN";
+        case ERROR_CLAW_ANGLE_LESS_MIN:
+            return "Claw angle less minimum";
+        case ERROR_CLAW_ANGLE_ABOVE_MAX:
+            return "Claw angle above maximum";
+        case ERROR_OUT_OF_RANGE:
+            return "The parameters is out of range";
+        case ERROR_POINT_UNREACHABLE:
+            return "The point is unreachable";
+        case ERROR_SUM_OF_ANGLES_ABOVE_MAX:
+            return "the sum of angles is above maximum";
+        case ERROR_COMMAND_QUEUE_IS_FULL:
+            return "command queue is full";
+        case ERROR_COMMAND_QUEUE_ITEM_IS_INVALID:
+            return "Command in queue is invalid";
+        default:
+            char sz[25]; 
+            itoa(res, sz, 10);
+            return std::string("Unknown error: ") + sz;
+    }
+    
 }

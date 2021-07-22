@@ -22,17 +22,17 @@ class Coords {
 
 //------ArmPoint------
 
-class ArmPoint {
+class ArmPoint {    
     protected:
         void setCoords();        
-        const double getYRadFromPos(const double localX, const double localY, const double localZ);        
+        const double getYRadFromPos(const double localX, const double localY, const double localZ);     
     public:
         double YRad = NAN;
         double ZRad = NAN;
         double XRad = NAN;
         double x = NAN;
         double y = NAN;
-        double z = NAN;
+        double z = NAN;        
         const double virtual getLength() {
             return 0;
         };

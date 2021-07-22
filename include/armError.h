@@ -3,19 +3,16 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "armParams.h"
 
 class ArmError {
-    private:
-        std::vector<std::string> errors;
     public:    
-        void addBaseError(const double x, const double y, const double z);
-        void addMaxLengthError(const double length, const double maxLength);
-        void addShoulderError();
-        void addUnreachableError();
-        void addElbowZError(const double z, const double minZ);
-        void flushToJsonArray(JsonArray& arr);
-        size_t size();
-        void clear();
+        static std::string getBaseError(const double x, const double y, const double z);
+        static std::string getMaxLengthError(const double length, const double maxLength);
+        static std::string getShoulderError();
+        static std::string getUnreachableError();
+        static std::string getElbowZError(const double z, const double minZ);        
+        static std::string getErrorText(ArmOperationResult res);        
 };
 
 
