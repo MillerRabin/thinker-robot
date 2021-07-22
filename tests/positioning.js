@@ -27,10 +27,8 @@ function delay(time) {
 async function checkPosition(pos, tolerance = config.tolerance) {
     let obj = await request(pos);
     if (obj['error'] != null) {
-        console.log(obj['error']);
         await delay(1000);
         obj = await request(pos);
-        console.log(pos, obj);
         if (obj['error'] != null)
             throw obj['error'];
     }
