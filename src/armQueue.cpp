@@ -3,7 +3,7 @@
 
 //--------ArmQueueItem------------
 
-ArmQueueItem::ArmQueueItem(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle, const unsigned int iterations) :     
+ArmQueueItem::ArmQueueItem(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle, const unsigned int iterations, const unsigned int postDelay, const unsigned int iterationDelay) :     
     shoulderZAngle(shoulderZAngle),
     shoulderYAngle(shoulderYAngle),            
     elbowYAngle(elbowYAngle),
@@ -11,17 +11,23 @@ ArmQueueItem::ArmQueueItem(const double shoulderYAngle, const double shoulderZAn
     clawXAngle(clawXAngle),
     clawAngle(clawAngle),
     iterations(iterations),
+    postDelay(postDelay),
+    iterationDelay(iterationDelay),
     valid(isValid())
 {};
 
 const bool ArmQueueItem::isValid() {
-    return (!isnan(shoulderZAngle) &&
-            !isnan(shoulderYAngle) &&
-            !isnan(elbowYAngle)    &&
-            !isnan(wristYAngle)    &&
-            !isnan(clawXAngle)     &&
-            !isnan(clawAngle)      &&
-            (iterations > 0) &&
+    return (!isnan(shoulderZAngle)  &&
+            !isnan(shoulderYAngle)  &&
+            !isnan(elbowYAngle)     &&
+            !isnan(wristYAngle)     &&
+            !isnan(clawXAngle)      &&
+            !isnan(clawAngle)       &&
+            (postDelay > 0)         &&
+            (postDelay < 10000)     &&
+            (iterationDelay > 1)    &&
+            (iterationDelay <= 100) &&
+            (iterations > 0)        &&
             (iterations <= 100));
 }
 
@@ -47,7 +53,9 @@ ArmOperationResult ArmQueue::enqueue(
     const double wristYAngle, 
     const double clawXAngle, 
     const double clawAngle, 
-    const unsigned int iterations
+    const unsigned int iterations,
+    const unsigned int postDelay,
+    const unsigned int iterationDelay
 ) {
     if (isFull()) return ERROR_COMMAND_QUEUE_IS_FULL;    
     ArmQueueItem* item = new ArmQueueItem(
@@ -57,9 +65,11 @@ ArmOperationResult ArmQueue::enqueue(
                                 wristYAngle, 
                                 clawXAngle, 
                                 clawAngle, 
-                                iterations
+                                iterations,
+                                postDelay,
+                                iterationDelay
                          );                             
-    if (!item->valid) {
+    if (!item->valid) {        
         delete item;
         return ERROR_COMMAND_QUEUE_ITEM_IS_INVALID;
     }

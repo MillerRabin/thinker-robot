@@ -1,9 +1,10 @@
 #ifndef strategy_h
 #define strategy_h
 
-#include <position.h>
 #include <Arduino.h>
 #include "arm.h"
+#include "position.h"
+#include "ArmParams.h"
 
 //------EngineControl------
 
@@ -48,11 +49,24 @@ class Strategy {
         Position tryHalfLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        void addPositionToSequence(Position pos);        
+        void addPositionToSequence(Position pos);              
     public:
-        Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle);
+        Strategy(
+                Position pos, 
+                const double x, 
+                const double y, 
+                const double z, 
+                const double clawXAngle, 
+                const double clawYAngle, 
+                const double clawAngle, 
+                const unsigned int iterations = DEFAULT_ITERATIONS, 
+                const unsigned int postDelay = DEFAULT_POST_DELAY, 
+                const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY);
         std::vector<EngineControl> sequence;        
         Position position;
+        const unsigned int iterations;
+        const unsigned int postDelay;
+        const unsigned int iterationDelay;
 };
 
 #endif

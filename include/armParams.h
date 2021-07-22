@@ -1,7 +1,7 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.3.0"
+#define APP_VERSION "1.4.0"
 
 #define CLAW_ENGINE 1
 #define CLAW_X_ENGINE 2
@@ -77,6 +77,15 @@
 #define MAX_SUM_ANGLE 240
 
 #define COMMAND_QUEUE_SIZE 20
+
+//Every engine movement will split into iterations
+//Affects on arm movements smooth and speed. 
+#define DEFAULT_ITERATIONS 50
+//Default delay between commands in queue in ms
+#define DEFAULT_POST_DELAY 500
+
+//Default delay between iterations. Affects on arm movements smooth and speed
+#define DEFAULT_ITERATION_DELAY 15
 
 enum ArmOperationResult {
     ARM_OPERATION_SUCCESS = 0,

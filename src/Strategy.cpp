@@ -229,7 +229,23 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
 }
 
-Strategy::Strategy(Position pos, const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) : position(pos) {        
+Strategy::Strategy(
+    Position pos, 
+    const double x, 
+    const double y, 
+    const double z, 
+    const double clawXAngle, 
+    const double clawYAngle, 
+    const double clawAngle,
+    const unsigned int iterations,
+    const unsigned int postDelay,
+    const unsigned int iterationDelay
+) : 
+    position(pos),
+    iterations(iterations),
+    postDelay(postDelay),
+    iterationDelay(iterationDelay)
+{        
     const double sca = pos.claw.clawRad / PI * 180;
     const double scxa = pos.claw.XRad / PI * 180;
     const double lClawAngle = isnan(clawAngle) ? sca : clawAngle;

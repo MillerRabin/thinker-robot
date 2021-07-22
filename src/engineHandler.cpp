@@ -79,7 +79,10 @@ EngineHandler::EngineHandler() {
                 ArmEngines::getDouble(jsonObj, "claw-z"),
                 ArmEngines::getDouble(jsonObj, "claw-angle-x"),
                 ArmEngines::getDouble(jsonObj, "claw-angle-y"),                
-                ArmEngines::getDouble(jsonObj, "claw-angle")            
+                ArmEngines::getDouble(jsonObj, "claw-angle"),           
+                ArmEngines::getUintDef(jsonObj, "iterations", DEFAULT_ITERATIONS),           
+                ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY),
+                ArmEngines::getUintDef(jsonObj, "iteration-delay", DEFAULT_ITERATION_DELAY)                
             );
             Position rPos = armEngines.applyStrategy(moveStrategy);            
             sendSuccess(request, rPos);

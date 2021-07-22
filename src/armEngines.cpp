@@ -59,32 +59,77 @@ void ArmEngines::loop( void* param ) {
             continue;
         }
 
-        ArmEngines::shoulderYAngle = aq->shoulderYAngle;    
-        ArmEngines::shoulderZAngle = aq->shoulderZAngle;
-        ArmEngines::elbowYAngle = aq->elbowYAngle;    
-        ArmEngines::wristYAngle = aq->wristYAngle;    
-        ArmEngines::clawXAngle = aq->clawXAngle;    
-        ArmEngines::clawAngle = aq->clawAngle;
-    
-        const uint shoulderY = degToCount(ArmEngines::shoulderYAngle, 270);
-        const uint shoulderZ = degToCount(ArmEngines::shoulderZAngle, 270);
-        const uint elbowY = degToCount(ArmEngines::elbowYAngle, 270);
-        const uint wristY = degToCount(ArmEngines::wristYAngle, 270);
-        const uint clawX = degToCount(ArmEngines::clawXAngle, 270);
-        const uint claw = degToCount(ArmEngines::clawAngle, 180);
-    
-        ledcWrite(SHOULDER_Z_ENGINE, shoulderZ);
-        ledcWrite(SHOULDER_Y_ENGINE, shoulderY);
-        ledcWrite(ELBOW_Y_ENGINE, elbowY);
-        ledcWrite(WRIST_Y_ENGINE,wristY);
-        ledcWrite(CLAW_X_ENGINE, clawX);
-        ledcWrite(CLAW_ENGINE, claw);
+        const unsigned int iterations = aq->iterations;
+        const unsigned int iterationDelay = aq->iterationDelay;
+        const unsigned int  postDelay = aq->postDelay;
+
+        const double targetShoulderYAngle = aq->shoulderYAngle;    
+        const double targetShoulderZAngle = aq->shoulderZAngle;
+        const double targetElbowYAngle = aq->elbowYAngle;    
+        const double targetWristYAngle = aq->wristYAngle;    
+        const double targetClawXAngle = aq->clawXAngle;    
+        const double targetClawAngle = aq->clawAngle;
+            
+        const double sourceShoulderYAngle = ArmEngines::shoulderYAngle;
+        const double sourceShoulderZAngle = ArmEngines::shoulderZAngle;
+        const double sourceElbowYAngle = ArmEngines::elbowYAngle;
+        const double sourceWristYAngle = ArmEngines::wristYAngle;;    
+        const double sourceClawXAngle = ArmEngines::clawXAngle;;    
+        const double sourceClawAngle = ArmEngines::clawAngle;;
+                
+        const double shoulderYAngleRange = targetShoulderYAngle - sourceShoulderYAngle;
+        const double shoulderZAngleRange = targetShoulderZAngle - sourceShoulderZAngle;
+        const double elbowYAngleRange = targetElbowYAngle - sourceElbowYAngle;
+        const double wristYAngleRange = targetWristYAngle - sourceWristYAngle;
+        const double clawXAngleRange = targetClawXAngle - sourceClawXAngle;
+        const double clawAngleRange = targetClawAngle - sourceClawAngle;
+
+        for (unsigned int counter = 1; counter <= iterations; counter++) {
+            const double shoulderYAngleInc = shoulderYAngleRange / iterations * counter;
+            const double shoulderZAngleInc = shoulderZAngleRange / iterations * counter;
+            const double elbowYAngleInc = elbowYAngleRange / iterations * counter;
+            const double wristYAngleInc = wristYAngleRange / iterations * counter;
+            const double clawXAngleInc = clawXAngleRange / iterations * counter;
+            const double clawAngleInc = clawAngleRange / iterations * counter;
+
+            ArmEngines::shoulderYAngle = (counter <= iterations) ? sourceShoulderYAngle + shoulderYAngleInc : targetShoulderYAngle;    
+            ArmEngines::shoulderZAngle = (counter <= iterations) ? sourceShoulderZAngle + shoulderZAngleInc : targetShoulderZAngle;
+            ArmEngines::elbowYAngle = (counter <= iterations) ? sourceElbowYAngle + elbowYAngleInc : targetElbowYAngle;    
+            ArmEngines::wristYAngle = (counter <= iterations) ? sourceWristYAngle + wristYAngleInc : targetWristYAngle;    
+            ArmEngines::clawXAngle = (counter <= iterations) ? sourceClawXAngle + clawXAngleInc : targetClawXAngle;    
+            ArmEngines::clawAngle = (counter <= iterations) ? sourceClawAngle + clawAngleInc : targetClawAngle;
+                
+            const unsigned int shoulderY = degToCount(ArmEngines::shoulderYAngle, 270);
+            const unsigned int shoulderZ = degToCount(ArmEngines::shoulderZAngle, 270);
+            const unsigned int elbowY = degToCount(ArmEngines::elbowYAngle, 270);
+            const unsigned int wristY = degToCount(ArmEngines::wristYAngle, 270);
+            const unsigned int clawX = degToCount(ArmEngines::clawXAngle, 270);
+            const unsigned int claw = degToCount(ArmEngines::clawAngle, 180);
         
-        vTaskDelay(1000 / portTICK_RATE_MS);       
+            ledcWrite(SHOULDER_Z_ENGINE, shoulderZ);
+            ledcWrite(SHOULDER_Y_ENGINE, shoulderY);
+            ledcWrite(ELBOW_Y_ENGINE, elbowY);
+            ledcWrite(WRIST_Y_ENGINE,wristY);
+            ledcWrite(CLAW_X_ENGINE, clawX);
+            ledcWrite(CLAW_ENGINE, claw);
+            vTaskDelay(iterationDelay / portTICK_RATE_MS);
+        }                
+        vTaskDelay(postDelay / portTICK_RATE_MS);        
     }
 }
 
-Position ArmEngines::set(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle) {    
+Position ArmEngines::set(
+        const double shoulderYAngle, 
+        const double shoulderZAngle, 
+        const double elbowYAngle, 
+        const double wristYAngle, 
+        const double clawXAngle, 
+        const double clawAngle,
+        const unsigned int iterations,
+        const unsigned int postDelay,
+        const unsigned int iterationDelay
+    ) {    
+
     Position pos = Position(shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawAngle);
     if (!pos.isValid()) return pos;
         
@@ -95,7 +140,9 @@ Position ArmEngines::set(const double shoulderYAngle, const double shoulderZAngl
             wristYAngle, 
             clawXAngle, 
             clawAngle, 
-            100
+            iterations,
+            postDelay,
+            iterationDelay
     );
     pos.setLastError(res, ArmError::getErrorText(res));
     return pos;
@@ -108,7 +155,10 @@ Position ArmEngines::set(JsonObject& jsonObj) {
         getDoubleDef(jsonObj, "elbow-y", ArmEngines::elbowYAngle),
         getDoubleDef(jsonObj, "wrist-y", ArmEngines::wristYAngle),
         getDoubleDef(jsonObj, "claw-x", ArmEngines::clawXAngle),
-        getDoubleDef(jsonObj, "claw", ArmEngines::clawAngle)    
+        getDoubleDef(jsonObj, "claw", ArmEngines::clawAngle),
+        getDoubleDef(jsonObj, "iterations", 100),
+        getDoubleDef(jsonObj, "post-delay", 1000),
+        getDoubleDef(jsonObj, "iteration-delay", 50)    
     );
 }
 
@@ -116,6 +166,12 @@ double ArmEngines::getDouble(JsonObject& jsonObj, const char* key) {
     if (!jsonObj.containsKey(key)) return NAN;
     const char* str = jsonObj[key];
     return atof(str);    
+}
+
+unsigned int ArmEngines::getUintDef(JsonObject& jsonObj, const char* key, unsigned int def) {
+    if (!jsonObj.containsKey(key)) return def;
+    const char* str = jsonObj[key];
+    return atoi(str);    
 }
 
 double ArmEngines::getDoubleDef(JsonObject& jsonObj, const char* key, const double def) {
@@ -172,7 +228,7 @@ Position ArmEngines::applyStrategy(Strategy strategy) {
             continue;
         }
     }
-    return set(shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawAngle);
+    return set(shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawAngle, strategy.iterations, strategy.postDelay, strategy.iterationDelay);
 }
 
 

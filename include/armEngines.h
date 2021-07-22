@@ -31,11 +31,22 @@ class ArmEngines {
     public:    
         ArmEngines();        
         ~ArmEngines();
-        Position set(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle);
+        Position set(
+            const double shoulderYAngle, 
+            const double shoulderZAngle, 
+            const double elbowYAngle, 
+            const double wristYAngle, 
+            const double clawXAngle, 
+            const double clawAngle,
+            const unsigned int iterations = DEFAULT_ITERATIONS,
+            const unsigned int postDelay = DEFAULT_POST_DELAY,
+            const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
+        );
         Position set(JsonObject& jsonObj);
         Position applyStrategy(Strategy strategy);
         static double getDouble(JsonObject& jsonObj, const char* key);
         static double getDoubleDef(JsonObject& jsonObj, const char* key, const double def);        
+        static unsigned int getUintDef(JsonObject& jsonObj, const char* key, const unsigned int def);
         const double getShoulderZAngle() { return ArmEngines::shoulderZAngle; };
         const double getShoulderYAngle() { return ArmEngines::shoulderYAngle; };
         const double getElbowYAngle() { return ArmEngines::elbowYAngle; };
