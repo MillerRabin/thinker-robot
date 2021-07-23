@@ -56,7 +56,7 @@ describe('Positioning', function() {
         });
 
         it ('-95 0 80', async function () {
-            await checkPosition({ "claw-x": -95, "claw-y": 0, "claw-z": 80 });
+            await checkPosition({ "claw-x": -95, "claw-y": 0, "claw-z": 80, "iterations": 60, "iteration-delay": 60 });
         });
 
         it ('-95 80 80', async function () {
@@ -64,11 +64,11 @@ describe('Positioning', function() {
         });
 
         it ('0 95 80', async function () {
-            await checkPosition({ "claw-x": 0, "claw-y": 95, "claw-z": 80 });
+            await checkPosition({ "claw-x": 0, "claw-y": 95, "claw-z": 80, "iterations": 60, "iteration-delay": 60 });
         });
 
         it ('0 -95 80', async function () {
-            await checkPosition({ "claw-x": 0, "claw-y": -95, "claw-z": 80 });
+            await checkPosition({ "claw-x": 0, "claw-y": -95, "claw-z": 80, "iterations": 60, "iteration-delay": 60  });
         });
 
         it ('140 140 80', async function () {
@@ -92,7 +92,7 @@ describe('Positioning', function() {
         });
 
         it ('-26 0 130', async function () {
-            await checkPosition({ "claw-x": -26, "claw-y": 0, "claw-z": 130 });
+            await checkPosition({ "claw-x": -26, "claw-y": 0, "claw-z": 130, "iterations": 60, "iteration-delay": 60 });
         });
 
         it ('0 26 130', async function () {
@@ -108,7 +108,7 @@ describe('Positioning', function() {
         });
 
         it ('-26 26 130', async function () {
-            await checkPosition({ "claw-x": -26, "claw-y": 26, "claw-z": 130 });
+            await checkPosition({ "claw-x": -26, "claw-y": 26, "claw-z": 130, "iterations": 60, "iteration-delay": 60  });
         });
 
         it ('95 0 80, 90', async function () {
@@ -168,6 +168,12 @@ describe('Positioning', function() {
 
         it ('125 -10 300, 270', async function () {
             await checkPosition({ "claw-x": 125, "claw-y": -10, "claw-z": 60, "claw-angle-y": 270 });
+        });
+    });
+
+    describe('Set to home', function () {
+        it ('95 0 25', async function () {
+            await checkPosition({ "claw-x": 95, "claw-y": 0, "claw-z": 25 });
         });
     });
 });
