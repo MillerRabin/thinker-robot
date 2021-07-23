@@ -32,6 +32,11 @@ const bool ArmQueueItem::isValid() {
 }
 
 //----------ArmQueue-----------
+ArmQueue::ArmQueue() :     
+    syncSemaphore(xSemaphoreCreateBinary())
+{    
+    //xSemaphoreGive(syncSemaphore);
+}
 
 unsigned int ArmQueue::inc(const unsigned int val) {
     unsigned int res = val + 1;
@@ -56,8 +61,10 @@ ArmOperationResult ArmQueue::enqueue(
     const unsigned int iterations,
     const unsigned int postDelay,
     const unsigned int iterationDelay
-) {
-    if (isFull()) return ERROR_COMMAND_QUEUE_IS_FULL;    
+) {    
+    if (isFull()) {        
+        return ERROR_COMMAND_QUEUE_IS_FULL;    
+    }
     ArmQueueItem* item = new ArmQueueItem(
                                 shoulderYAngle, 
                                 shoulderZAngle, 
@@ -69,25 +76,33 @@ ArmOperationResult ArmQueue::enqueue(
                                 postDelay,
                                 iterationDelay
                          );                             
-    if (!item->valid) {        
-        delete item;
+    if (!item->valid) {                
+        delete item;        
         return ERROR_COMMAND_QUEUE_ITEM_IS_INVALID;
     }
     
-    if (storage[tail] != NULL) {
-        delete storage[tail];
-        storage[tail] = NULL;
-    }
-    storage[tail] = item;
-    tail = inc(tail);    
+        
+    portENTER_CRITICAL(&qMux);
+        if (storage[tail] != NULL)
+            delete storage[tail];    
+        storage[tail] = item;
+        tail = inc(tail);    
+    portEXIT_CRITICAL(&qMux);
+    
+    xSemaphoreGive(syncSemaphore);
     return ARM_OPERATION_SUCCESS;                    
 }
 
-ArmQueueItem* ArmQueue::dequeue() {
-    if (head == tail) return NULL;
-    ArmQueueItem* res = storage[head];
-    if (res == NULL) return NULL;
+ArmQueueItem* ArmQueue::dequeue() {    
+    if (head == tail) {        
+        xSemaphoreTake(syncSemaphore, portMAX_DELAY);        
+    }
+        
+        
+    portENTER_CRITICAL(&qMux);
+    ArmQueueItem* res = storage[head];    
     head = inc(head);
+    portEXIT_CRITICAL(&qMux);
     return res;
 }
 

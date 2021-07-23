@@ -54,14 +54,15 @@ ArmEngines::~ArmEngines() {
 void ArmEngines::loop( void* param ) {    
     while (true) {
         ArmQueueItem* aq = ArmEngines::queue.dequeue();
+        
         if (aq == NULL) {
-            vTaskDelay(1000 / portTICK_RATE_MS);           
+            vTaskDelay(1000 / portTICK_RATE_MS);            
             continue;
         }
 
         const unsigned int iterations = aq->iterations;
         const unsigned int iterationDelay = aq->iterationDelay;
-        const unsigned int  postDelay = aq->postDelay;
+        const unsigned int postDelay = aq->postDelay;
 
         const double targetShoulderYAngle = aq->shoulderYAngle;    
         const double targetShoulderZAngle = aq->shoulderZAngle;
@@ -69,7 +70,7 @@ void ArmEngines::loop( void* param ) {
         const double targetWristYAngle = aq->wristYAngle;    
         const double targetClawXAngle = aq->clawXAngle;    
         const double targetClawAngle = aq->clawAngle;
-            
+                        
         const double sourceShoulderYAngle = ArmEngines::shoulderYAngle;
         const double sourceShoulderZAngle = ArmEngines::shoulderZAngle;
         const double sourceElbowYAngle = ArmEngines::elbowYAngle;
@@ -113,7 +114,7 @@ void ArmEngines::loop( void* param ) {
             ledcWrite(CLAW_X_ENGINE, clawX);
             ledcWrite(CLAW_ENGINE, claw);
             vTaskDelay(iterationDelay / portTICK_RATE_MS);
-        }                
+        }                        
         vTaskDelay(postDelay / portTICK_RATE_MS);        
     }
 }

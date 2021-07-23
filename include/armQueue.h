@@ -8,7 +8,7 @@
 
 class ArmQueueItem {
     private:
-        const bool isValid();
+        const bool isValid();        
     public:
         const double shoulderZAngle;
         const double shoulderYAngle;
@@ -20,6 +20,7 @@ class ArmQueueItem {
         const unsigned int postDelay;
         const unsigned int iterationDelay;
         const bool valid;
+        
         ArmQueueItem(
             const double shoulderYAngle = NAN, 
             const double shoulderZAngle = NAN, 
@@ -38,8 +39,11 @@ class ArmQueue {
         ArmQueueItem* storage[COMMAND_QUEUE_SIZE];
         unsigned int head = 0;
         unsigned int tail = 0;
-        unsigned int inc(const unsigned int val);        
+        unsigned int inc(const unsigned int val);     
+        const volatile SemaphoreHandle_t syncSemaphore;           
+        portMUX_TYPE qMux = portMUX_INITIALIZER_UNLOCKED;
     public: 
+        ArmQueue();
         const bool isFull();
         const unsigned int size();
         ArmOperationResult enqueue(
@@ -52,7 +56,7 @@ class ArmQueue {
             const unsigned int iterations, 
             const unsigned int postDelay, 
             const unsigned int iterationDelay);
-        ArmQueueItem* dequeue();
+        ArmQueueItem* dequeue();        
 };
 
 #endif
