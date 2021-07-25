@@ -95,16 +95,14 @@ ArmQueueItem* ArmQueue::dequeue() {
     if (head == tail)
         xSemaphoreTake(syncSemaphore, portMAX_DELAY);    
         
+    xSemaphoreGive(syncSemaphore);
     portENTER_CRITICAL(&qMux);
     ArmQueueItem* res = storage[head];    
     head = inc(head);
     portEXIT_CRITICAL(&qMux);
         
-    if (head == tail) {    
-        xSemaphoreTake(syncSemaphore, portMAX_DELAY);            
-    } else {
-        xSemaphoreGive(syncSemaphore);
-    }        
+    if (head == tail)
+        xSemaphoreTake(syncSemaphore, portMAX_DELAY);                
     return res;
 }
 
