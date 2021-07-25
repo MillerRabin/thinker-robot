@@ -189,12 +189,52 @@ Close claw
 "claw-angle": 0
 }
 ```
+## Speed and scenario support
+
+All commands you send to arm will be added to internal queue. The size of queue is defined in 
+[armParams.h](/include/armParams.h "armParams.h") in COMMAND_QUEUE_SIZE. It`s set to 20 by default.
+
+Make two requests
+POST /position
+with following parameters
+
+```json
+{
+  "claw-x": 250,
+  "claw-y": 0,
+  "claw-z": 80,
+  "claw-angle-y": 0,
+  "post-delay": 5000,
+  "iterations": 1
+}
+```
+```json
+{
+  "claw-x": 60,
+  "claw-y": 0,
+  "claw-z": 80,
+  "claw-angle-y": 0,
+  "iterations": 60,
+  "iteration-delay": 50
+}
+```
+
+* The arm will move to position (250, 0, 80) very fast.
+* It waits 5 seconds
+* When moves to position (60, 0, 80) very slow
+
+Whole path will be divided to iterations. By default, it`s set 20 and defined in DEFAULT_ITERATIONS.
+"iteration-delay" is delay between every iteration, 
+so total time of command will be **iterations** * **iteration-delay** (60 * 50) = 3000 milliseconds.
+
+Use **POST /version** to know how much operations queued right now. When *arm-operation-queued* parameter will be 0 it means
+the arm finished current scenario and entered to standby mode.
 
 Additional test cases can be found at [tests](/tests "tests")
 
 ## Information API
-### GET /version
-Returns current version of software and additional info like free heap 
+### POST /version
+Returns current version, the number operations in queue and free heap.
 
 ## Update API
 ### GET /update

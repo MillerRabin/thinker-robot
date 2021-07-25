@@ -13,26 +13,37 @@ async function request(pos) {
         method: 'POST',
         body: JSON.stringify(pos)
     });
-    return await res.json();
+    try {
+        return await res.json();
+    } catch (e) {
+        console.log (await res.text());
+        throw e;
+    }
 }
 
 function delay(time) {
     return new Promise((resolve) => {
-       setTimeout(() => {
-           resolve();
-       }, time);
+        setTimeout(() => {
+            resolve();
+        }, time);
     });
 }
 
-async function checkPosition(pos, tolerance = config.tolerance) {
-    let obj = await request(pos);
-    if (obj['error'] != null) {
-        await delay(2000);
-        obj = await request(pos);
-        if (obj['error'] != null)
-            throw obj['error'];
+async function requestQueue(pos) {
+    while(true) {
+        const obj = await request(pos);
+        const err = obj['error'];
+        if (err == null) return obj;
+        if (err.code == -22) {
+            await delay(500);
+            continue;
+        }
+        throw err;
     }
+}
 
+async function checkPosition(pos, tolerance = config.tolerance) {
+    const obj = await requestQueue(pos);
     const ps = obj['target-position'];
     const lengthX = ps['claw-x'];
     const lengthY = ps['claw-y'];
