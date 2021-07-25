@@ -1,49 +1,9 @@
 const assert = require('assert');
-const fetch = require('node-fetch');
+const position = require("./position.js");
 const config = require('./config.js');
 
-function isEqual(source, target, tolerance) {
-    return (source <= (target + tolerance)) &&
-           (source >= (target - tolerance))
-}
-
-async function request(pos) {
-    const res = await fetch(config.endpoint + '/position', {
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        body: JSON.stringify(pos)
-    });
-    try {
-        return await res.json();
-    } catch (e) {
-        console.log (await res.text());
-        throw e;
-    }
-}
-
-function delay(time) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, time);
-    });
-}
-
-async function requestQueue(pos) {
-    while(true) {
-        const obj = await request(pos);
-        const err = obj['error'];
-        if (err == null) return obj;
-        if (err.code == -22) {
-            await delay(500);
-            continue;
-        }
-        throw err;
-    }
-}
-
 async function checkPosition(pos, tolerance = config.tolerance) {
-    const obj = await requestQueue(pos);
+    const obj = await position.set(pos);
     const ps = obj['target-position'];
     const lengthX = ps['claw-x'];
     const lengthY = ps['claw-y'];
@@ -52,11 +12,11 @@ async function checkPosition(pos, tolerance = config.tolerance) {
     const la = obj['target-logical-angles'];
     const cax = la['claw-angle-x'];
     if (tcax != null)
-        assert.strictEqual(isEqual(cax, tcax, tolerance), true, `claw-angle-x ${cax} is incorrect`);
+        assert.strictEqual(position.isEqual(cax, tcax, tolerance), true, `claw-angle-x ${cax} is incorrect`);
 
-    assert.strictEqual(isEqual(lengthX, pos["claw-x"], tolerance), true, `X ${lengthX} is incorrect`);
-    assert.strictEqual(isEqual(lengthY, pos["claw-y"], tolerance), true, `Y ${lengthY} is incorrect`);
-    assert.strictEqual(isEqual(lengthZ, pos["claw-z"], tolerance), true, `Z ${lengthZ} is incorrect`);
+    assert.strictEqual(position.isEqual(lengthX, pos["claw-x"], tolerance), true, `X ${lengthX} is incorrect`);
+    assert.strictEqual(position.isEqual(lengthY, pos["claw-y"], tolerance), true, `Y ${lengthY} is incorrect`);
+    assert.strictEqual(position.isEqual(lengthZ, pos["claw-z"], tolerance), true, `Z ${lengthZ} is incorrect`);
 }
 
 

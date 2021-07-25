@@ -1,7 +1,7 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "1.4.0"
+#define APP_VERSION "1.4.1"
 
 #define CLAW_ENGINE 1
 #define CLAW_X_ENGINE 2

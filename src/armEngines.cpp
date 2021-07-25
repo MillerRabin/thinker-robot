@@ -70,7 +70,9 @@ void ArmEngines::loop( void* param ) {
         const double targetWristYAngle = aq->wristYAngle;    
         const double targetClawXAngle = aq->clawXAngle;    
         const double targetClawAngle = aq->clawAngle;
-                        
+        
+        delete aq;
+
         const double sourceShoulderYAngle = ArmEngines::shoulderYAngle;
         const double sourceShoulderZAngle = ArmEngines::shoulderZAngle;
         const double sourceElbowYAngle = ArmEngines::elbowYAngle;

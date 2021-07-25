@@ -83,8 +83,6 @@ ArmOperationResult ArmQueue::enqueue(
     
         
     portENTER_CRITICAL(&qMux);
-        if (storage[tail] != NULL)
-            delete storage[tail];    
         storage[tail] = item;
         tail = inc(tail);    
     portEXIT_CRITICAL(&qMux);
@@ -94,15 +92,19 @@ ArmOperationResult ArmQueue::enqueue(
 }
 
 ArmQueueItem* ArmQueue::dequeue() {    
-    if (head == tail) {        
-        xSemaphoreTake(syncSemaphore, portMAX_DELAY);        
-    }
-        
+    if (head == tail)
+        xSemaphoreTake(syncSemaphore, portMAX_DELAY);    
         
     portENTER_CRITICAL(&qMux);
     ArmQueueItem* res = storage[head];    
     head = inc(head);
     portEXIT_CRITICAL(&qMux);
+        
+    if (head == tail) {    
+        xSemaphoreTake(syncSemaphore, portMAX_DELAY);            
+    } else {
+        xSemaphoreGive(syncSemaphore);
+    }        
     return res;
 }
 
