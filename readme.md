@@ -15,9 +15,16 @@ I used 6DOF Robotic arm with parameters on sheme below.
 
 Physical parameters of roboarm can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
+## Scenarios
+For better understanding look at video
+
+[![Make me a coffee Scenario]](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
+
+Scenarios code can be found here [scenarios](/tests/scenarios "scenarios")
+
 ## Build
 
-The project is builded in VSCode using esp32doit-devkit-v1 with arduino framework
+The project was built in VSCode using esp32doit-devkit-v1 with arduino framework
 
 ## Tests
 
@@ -27,13 +34,6 @@ For autotest system nodejs and mocha are used.
 2. cd /tests
 3. npm install
 4. npm run test
-   
-## Scenarios
-For better understanding look at video
-
-[![Make me a coffee Scenario]](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
-
-Scenrario code can be found here [scenarios](/tests/scenarios "scenarios")
 
 ## Positioning API
 ### POST /move
