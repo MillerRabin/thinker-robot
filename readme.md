@@ -18,7 +18,7 @@ Physical parameters of roboarm can be adjusted in [armParams.h](/include/armPara
 ## Scenarios
 For better understanding look at video
 
-![Make me a coffee Scenario](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
+[[Make me a coffee Scenario]](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
 
 Scenarios code can be found here [scenarios](/tests/scenarios "scenarios")
 
