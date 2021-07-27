@@ -28,6 +28,13 @@ For autotest system nodejs and mocha are used.
 3. npm install
 4. npm run test
    
+## Scenarios
+For better understanding look at video
+
+[![Make me a coffee Scenario]](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
+
+Scenrario code can be found here [scenarios](/tests/scenarios "scenarios")
+
 ## Positioning API
 ### POST /move
 Using physical angles to manipulate roboarm
