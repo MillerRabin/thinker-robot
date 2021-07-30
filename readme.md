@@ -1,6 +1,6 @@
-# 6DOF Roboarm manipulator software
+# Open Robot Manipulator System
 
-This project is intended to make a complex things with roboarm manipulator through Wi-Fi
+This project is intended to make a complex things with robot manipulator through Wi-Fi.
 Like positioning in 3D unit system, grab objects by specific angles and more.
 
 * Manipulate roboarm by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
@@ -9,7 +9,7 @@ Like positioning in 3D unit system, grab objects by specific angles and more.
 * You can grab and move object using specific claw angle 
 
 
-I used 6DOF Robotic arm with parameters on sheme below.
+I used 6DOF Robotic arm with parameters on sheme below for tests.
  
 ![Roboarm scheme](/docs/scheme.png "Roboarm scheme")
 
