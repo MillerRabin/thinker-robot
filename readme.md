@@ -39,7 +39,7 @@ For autotest system nodejs and mocha are used.
 ### POST /move
 Using physical angles to manipulate roboarm
 
-Move to home
+At starting point zero
 ```json
 {
   "gripper": 1,
