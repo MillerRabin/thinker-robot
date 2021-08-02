@@ -24,11 +24,14 @@ const waterCup = {
     x: 160,
     y: 140,
     z: 170,
-    mix: 5
+    mix: 15,
+    iterations: 2,
+    postDelay: 50,
+    iterationDelay: 20
 };
 
 
-describe('Give me a coffee', function() {
+describe.only('Give me a coffee', function() {
     it('move to home', async function () {
         await position.set({ "claw-x": 95,  "claw-y": 0,    "claw-z": 25,       "iterations": 60, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30 });
     });
@@ -72,8 +75,9 @@ describe('Give me a coffee', function() {
 
     it('move to coffee cup', async function () {
         await position.set({ "claw-x": coffeeCup.x,      "claw-y": coffeeCup.y, "claw-z": coffeeCup.z,      "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
-        await position.set({ "claw-x": coffeeCup.x + 5, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
-        await position.set({ "claw-x": coffeeCup.x + 5, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z + 30, "claw-angle-x": -90, "claw-angle-y": 0, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x + 10, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z + 30, "claw-angle-x": -90, "claw-angle-y": 0, "claw-angle": 0, "iteration-delay": 30 });
     });
 
     it('move to water cup', async function () {
@@ -84,8 +88,9 @@ describe('Give me a coffee', function() {
 
     it('move to coffee cup', async function () {
         await position.set({ "claw-x": coffeeCup.x,      "claw-y": coffeeCup.y, "claw-z": coffeeCup.z,      "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
-        await position.set({ "claw-x": coffeeCup.x + 5, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
-        await position.set({ "claw-x": coffeeCup.x + 5, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z + 30, "claw-angle-x": -90, "claw-angle-y": 0, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z - 50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": coffeeCup.x + 10, "claw-y": coffeeCup.y, "claw-z": coffeeCup.z + 30, "claw-angle-x": -90, "claw-angle-y": 0, "claw-angle": 0, "iteration-delay": 30 });
     });
 
     it('move to water cup', async function () {
@@ -95,30 +100,51 @@ describe('Give me a coffee', function() {
     });
 
     it('mix coffee', async function () {
-        const mcz = waterCup.z - 50;
+        const mcz = waterCup.z - 60;
         await position.set({ "claw-x": waterCup.x - 40, "claw-y": waterCup.y - 40, "claw-z": waterCup.z, "claw-angle-y": 0, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
 
-        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y ,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30, "post-delay": 100  });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
 
-        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y ,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100  });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
 
-        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y ,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100  });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
 
-        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y ,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100  });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - 10, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
-        await position.set({ "claw-x": waterCup.x,                "claw-y": waterCup.y, "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": 30, "iterations": 1, "post-delay": 100 });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
 
-        await position.set({ "claw-x": waterCup.x - 40, "claw-y": waterCup.y - 40,  "claw-z": waterCup.z + 30, "claw-angle-y": 0, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": 30 });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x, "claw-y": waterCup.y + waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x + waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+        await position.set({ "claw-x": waterCup.x - waterCup.mix, "claw-y": waterCup.y - waterCup.mix,               "claw-z": mcz, "claw-angle-y": -50, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay, "iterations": waterCup.iterations, "post-delay": waterCup.postDelay  });
+
+        await position.set({ "claw-x": waterCup.x - 40, "claw-y": waterCup.y - 40,  "claw-z": waterCup.z, "claw-angle-y": 0, "claw-angle-x": -45, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay });
+        await position.set({ "claw-x": waterCup.x - 40, "claw-y": waterCup.y - 40,  "claw-z": waterCup.z + 30, "claw-angle-y": 0, "claw-angle-x": -90, "claw-angle": 0, "iteration-delay": waterCup.iterationDelay });
     });
 
     it('return a spoon', async function () {

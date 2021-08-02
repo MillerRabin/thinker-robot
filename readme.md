@@ -3,7 +3,7 @@
 This project is intended to make a complex things with robot manipulator through Wi-Fi.
 Like positioning in 3D unit system, grab objects by specific angles and more.
 
-* Manipulate roboarm by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
+* robot manipulator by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
 * Queue support
 * Engine synchronization support
 * You can grab and move object using specific claw angle 
