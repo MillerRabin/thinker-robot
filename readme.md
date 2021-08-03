@@ -1,21 +1,17 @@
-# Open Robot Manipulator System
+# Open Thinker Robot Manipulator System
 
-This project is intended to make a complex things with robot manipulator through Wi-Fi.
-Like positioning in 3D unit system, grab objects by specific angles and more.
+Repetitive robots repeats sequence of commands received. It operates with sequence of commands.
+Thinker robots operates with sequence of tasks. It evaluates how task can be done. It uses a list of known objects to make 
+a valid route. It tries to evaluate different route if current route is blocked. It stops the sequence of tasks if no 
+route is available.
 
-* robot manipulator by picking point in 3D environment. Controller evaluates engine angle to achieve that point.
-* Queue support
-* Engine synchronization support
-* You can grab and move object using specific claw angle 
+## Connect your manipulator to Open Thinker Robot 
 
+I used 6 DOF robot-manipulator to perform test. But you can use manipulators with different amount of engines.
+Use information on scheme below.
+Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
-I used 6DOF Robotic arm with parameters on sheme below for tests.
-
-Test
- 
 ![Roboarm scheme](/docs/scheme.png "Roboarm scheme")
-
-Physical parameters of roboarm can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
 ## Scenarios
 For better understanding look at video
