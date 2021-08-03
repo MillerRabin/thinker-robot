@@ -22,7 +22,7 @@ Scenarios code can be found here [scenarios](/tests/scenarios "scenarios")
 
 ## Build
 
-The project was built in VSCode using esp32doit-devkit-v1 with arduino framework
+The project was built in VSCode using esp32doit-devkit-v1 platform
 
 ## Tests
 
