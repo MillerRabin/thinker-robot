@@ -10,6 +10,8 @@ Like positioning in 3D unit system, grab objects by specific angles and more.
 
 
 I used 6DOF Robotic arm with parameters on sheme below for tests.
+
+Test
  
 ![Roboarm scheme](/docs/scheme.png "Roboarm scheme")
 
