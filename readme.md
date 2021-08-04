@@ -51,8 +51,8 @@ Physical parameters of robot-manipulator can be adjusted in [armParams.h](/inclu
 
 ## Negative planes
 
-Look at make me a coffee scenario.
-![home](/docs/images/home.png "home")
+Look at **Make me a coffee** scenario.
+![home](/docs/images/home.jpg "home")
 
 In my case engine with 270 degree limit is installed as rotate engine (shoulder-z). The offset has been adjusted 
 so that the 90 degree of dead zone is exactly behind the arm.
@@ -62,7 +62,7 @@ What happens if I give a task to take something from behind?
 In case of 360 degree engine installed the robot will just rotate arm to that position, but in my case the robot decided to 
 set available degree of shoulder-z and rotate elbow to behind. 
 
-![negative plane](/docs/images/negative-plane.png "Negative plane")
+![negative plane](/docs/images/negative-plane.jpg "Negative plane")
 
 ## Scenarios
 For better understanding look at video
