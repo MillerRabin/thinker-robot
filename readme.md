@@ -34,7 +34,7 @@ Means: Move arm from current position to new position with the following conditi
 * The claw y must be at 0 mm from arm center
 * The claw z must be at 25 mm from arm base
 
-![Positioning](/docs/images/engine-mapping.png "Positioning")
+![Positioning](/docs/images/positioning.png "Positioning")
 
 Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
