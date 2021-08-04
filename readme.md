@@ -59,7 +59,7 @@ so that the 90 degree of dead zone is exactly behind the arm.
 
 What happens if I give a task to take something from behind?
 
-In case of 360 degree engine installed the robot just rotate arm to that position, but in my case the robot decided to 
+In case of 360 degree engine installed the robot will just rotate arm to that position, but in my case the robot decided to 
 set available degree of shoulder-z and rotate elbow to behind. 
 
 ![negative plane](/docs/images/negative-plane.png "Negative plane")
