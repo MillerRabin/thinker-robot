@@ -86,20 +86,6 @@ For autotest system nodejs and mocha are used.
 4. npm run test
 
 ## Positioning API
-### POST /move
-Using physical angles to manipulate roboarm
-
-At starting point zero
-```json
-{
-  "gripper": 1,
-  "gripper_rotate": 135,
-  "rotate": 135,
-  "shoulder": 90,
-  "elbow": 230,
-  "wrist": 235
-}
-```
 
 ### POST /position
 Pick a point in 3D coordinate system and roboarm evaluates engine angles to move at specific point
@@ -288,6 +274,21 @@ Use **POST /version** to know how much operations queued right now. When *arm-op
 the arm finished current scenario and entered to standby mode.
 
 Additional test cases can be found at [tests](/tests "tests")
+
+### POST /move
+Using physical angles to manipulate the robot. Used for debugging purposes.
+
+At starting point zero
+```json
+{
+  "gripper": 1,
+  "gripper_rotate": 135,
+  "rotate": 135,
+  "shoulder": 90,
+  "elbow": 230,
+  "wrist": 235
+}
+```
 
 ## Information API
 ### POST /version
