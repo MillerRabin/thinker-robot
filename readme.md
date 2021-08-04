@@ -5,6 +5,16 @@ Thinker robots operates with sequence of tasks. It evaluates how task can be don
 a valid route. It tries to evaluate different route if current route is blocked. It stops the sequence of tasks if no 
 route is available.
 
+## What Thinker Robot can do?
+
+ * You pick a point at 3D environment and conditions. The robot will decide how to move arm to achieve the goal.
+ * Using engines physical constraints to evaluate a valid movement strategy
+ * Using negative planes to achieve positions which inaccessible by normal way.
+ * Engine synchronization support. As example, it makes possible to move a teaspoon with sugar without scattering.
+ * Speed and delays supports.
+ * Queue supports
+
+
 ## Connect your manipulator to Open Thinker Robot 
 
 ### Engine mapping
@@ -12,13 +22,14 @@ route is available.
 Physically, the robot-manipulator is amount of leverages connected together.
 Every leverage can has 3 Degrees of Freedom by default. X, Y and Z. But for every leverage amount of DoF can be customized.
 Every engine of robot-manipulator can be mapped to DoF of specific leverage.
-  
+
 I used 6 DoF robot-manipulator to perform the test. Look how it was mapped in my case.
 
 ![6 DoF engine mapping example](/docs/images/engine-mapping.png "6 DoF engine mapping example")
 
 ### Units
-The units are millimeters with zero point at the center of robot
+The units are millimeters. 
+The zero point is the center of robot
 
 As example the task:
 ```json
@@ -37,6 +48,21 @@ Means: Move arm from current position to new position with the following conditi
 ![Positioning](/docs/images/positioning.png "Positioning")
 
 Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
+
+## Negative planes
+
+Look at make me a coffee scenario.
+![home](/docs/images/home.png "home")
+
+In my case engine with 270 degree limit is installed as rotate engine (shoulder-z). The offset has been adjusted 
+so that the 90 degree of dead zone is exactly behind the arm.
+
+What happens if I give a task to take something from behind?
+
+In case of 360 degree engine installed the robot just rotate arm to that position, but in my case the robot decided to 
+set available degree of shoulder-z and rotate elbow to behind. 
+
+![negative plane](/docs/images/negative-plane.png "Negative plane")
 
 ## Scenarios
 For better understanding look at video
