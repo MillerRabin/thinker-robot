@@ -7,11 +7,36 @@ route is available.
 
 ## Connect your manipulator to Open Thinker Robot 
 
-I used 6 DOF robot-manipulator to perform test. But you can use manipulators with different amount of engines.
-Use information on scheme below.
-Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
+### Engine mapping
 
-![Roboarm scheme](/docs/scheme.png "Roboarm scheme")
+Physically, the robot-manipulator is amount of leverages connected together.
+Every leverage can has 3 Degrees of Freedom by default. X, Y and Z. But for every leverage amount of DoF can be customized.
+Every engine of robot-manipulator can be mapped to DoF of specific leverage.
+  
+I used 6 DoF robot-manipulator to perform the test. Look how it was mapped in my case.
+
+![6 DoF engine mapping example](/docs/images/engine-mapping.png "6 DoF engine mapping example")
+
+### Units
+The units are millimeters with zero point at the center of robot
+
+As example the task:
+```json
+{
+  "claw-x": 95,
+  "claw-y": 0,
+  "claw-z": 25
+}
+```
+
+Means: Move arm from current position to new position with the following conditions
+* The claw x must be at 95 mm from arm center
+* The claw y must be at 0 mm from arm center
+* The claw z must be at 25 mm from arm base
+
+![Positioning](/docs/images/engine-mapping.png "Positioning")
+
+Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
 ## Scenarios
 For better understanding look at video
