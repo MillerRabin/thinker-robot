@@ -65,6 +65,22 @@ set available degree of shoulder-z and rotate elbow to back.
 
 ![negative plane](/docs/images/negative-plane.jpg "Negative plane")
 
+
+## Physical and logical angle model
+
+Physical angle is the angle you finally set to engine.
+
+Look at home position of robot.
+The physical wrist-y angle is 235 deg. The logical is -90 deg.
+The physical shoulder-y angle is 90 deg. The logical is the same.
+
+What happens if we set physical shoulder-y angle to 180 deg.
+The physical wrist-y angle stays same 235 deg. But the logical angle will be 0 deg.
+ 
+
+
+
+
 ## Scenarios
 For better understanding look at video
 
