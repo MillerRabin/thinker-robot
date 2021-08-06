@@ -63,10 +63,9 @@ so that the 90 degree of dead zone is exactly behind the arm.
 What happens if I give a task to take something from behind?
 
 In case of 360 degree engine installed the robot will just rotate arm to that position, but in my case the robot decided to 
-set available degree of shoulder-z and rotate elbow to back. 
+set available counterside degree of shoulder-z and rotate elbow to back. 
 
 ![negative plane](/docs/images/negative-plane.jpg "Negative plane")
-
 
 ## Physical and logical angle model
 
@@ -104,7 +103,7 @@ For autotest system nodejs and mocha are used.
 ## Positioning API
 
 ### POST /position
-Pick a point in 3D coordinate system and roboarm evaluates engine angles to move at specific point
+Pick a point in 3D coordinate system and the robot evaluates engine angles to move at specific point
 
 Move to home
 ```json
