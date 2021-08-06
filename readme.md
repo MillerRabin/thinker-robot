@@ -85,7 +85,7 @@ The physical wrist-y angle stays same 235 deg. But the logical angle will be 0 d
 ## Scenarios
 For better understanding look at video
 
-[![Make me a coffee Scenario](/docs/images/making-coffee.jpg)](https://raintech.su/video/roboarm-coffee.mp4 "Making a coffee")
+[![Make me a coffee Scenario](/docs/images/making-coffee.jpg)](https://www.youtube.com/watch?v=157Qt-6Y_ss "Making a coffee")
 
 Scenarios code can be found here [scenarios](/tests/scenarios "scenarios")
 
