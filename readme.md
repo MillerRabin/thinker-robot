@@ -71,7 +71,7 @@ set available counterside degree of shoulder-z and rotate elbow to back.
 
 Physical angle is the angle you finally set to engine.
 
-![angles](/docs/images/angles.jpg "Angles")
+![angles](/docs/images/angles.png "Angles")
 
 Look at home position of robot.
 The physical wrist-y angle is 235 deg. The logical is -90 deg.
