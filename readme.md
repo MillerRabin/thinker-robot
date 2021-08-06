@@ -36,7 +36,8 @@ As example the task:
 {
   "claw-x": 95,
   "claw-y": 0,
-  "claw-z": 25
+  "claw-z": 25,
+  "claw-angle-y": -90
 }
 ```
 
@@ -44,6 +45,7 @@ Means: Move arm from current position to new position with the following conditi
 * The claw x must be at 95 mm from arm center
 * The claw y must be at 0 mm from arm center
 * The claw z must be at 25 mm from arm base
+* The claw y logical angle must be -90 degrees
 
 ![Positioning](/docs/images/positioning.png "Positioning")
 
@@ -70,6 +72,8 @@ set available degree of shoulder-z and rotate elbow to back.
 
 Physical angle is the angle you finally set to engine.
 
+![angles](/docs/images/angles.jpg "Angles")
+
 Look at home position of robot.
 The physical wrist-y angle is 235 deg. The logical is -90 deg.
 The physical shoulder-y angle is 90 deg. The logical is the same.
@@ -77,10 +81,6 @@ The physical shoulder-y angle is 90 deg. The logical is the same.
 What happens if we set physical shoulder-y angle to 180 deg.
 The physical wrist-y angle stays same 235 deg. But the logical angle will be 0 deg.
  
-
-
-
-
 ## Scenarios
 For better understanding look at video
 
