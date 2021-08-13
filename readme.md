@@ -20,7 +20,7 @@ route is available.
 ### Engine mapping
 
 Physically, the robot-manipulator is amount of leverages connected together.
-Every leverage can has 3 Degrees of Freedom by default. X, Y and Z. But for every leverage amount of DoF can be customized.
+Every leverage may have 3 Degrees of Freedom by default. X, Y and Z. But for every leverage amount of DoF can be customized.
 Every engine of robot-manipulator can be mapped to DoF of specific leverage.
 
 I used 6 DoF robot-manipulator to perform the test. Look how it was mapped in my case.
@@ -51,7 +51,7 @@ Means: Move arm from current position to new position with the following conditi
 
 Physical parameters of robot-manipulator can be adjusted in [armParams.h](/include/armParams.h "armParams.h")
 
-## Negative planes
+## Back plane
 
 Look at **Make me a coffee** scenario.
 
@@ -65,7 +65,7 @@ What happens if I give a task to take something from behind?
 In case of 360 degree engine installed the robot will just rotate arm to that position, but in my case the robot decided to 
 set available counterside degree of shoulder-z and rotate elbow to back. 
 
-![negative plane](/docs/images/negative-plane.jpg "Negative plane")
+![back plane](/docs/images/negative-plane.jpg "Negative plane")
 
 ## Physical and logical angle model
 
