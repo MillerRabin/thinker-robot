@@ -15,6 +15,7 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos) {
     pAngles["claw-angle"] = pos.getClawAngle();
     pAngles["claw-angle-x"] = pos.getClawXAngle();    
     pAngles["claw-angle-y"] = pos.getWristYAngle(); 
+    pAngles["claw-angle-z"] = pos.getClawZAngle(); 
     pAngles["shoulder-angle-y"] = pos.getShoulderYAngle();
     pAngles["shoulder-angle-z"] = pos.getShoulderZAngle();
     pAngles["elbow-angle-y"] = pos.getElbowYAngle();    
@@ -78,7 +79,8 @@ EngineHandler::EngineHandler() {
                 ArmEngines::getDouble(jsonObj, "claw-y"),
                 ArmEngines::getDouble(jsonObj, "claw-z"),
                 ArmEngines::getDouble(jsonObj, "claw-angle-x"),
-                ArmEngines::getDouble(jsonObj, "claw-angle-y"),                
+                ArmEngines::getDouble(jsonObj, "claw-angle-y"),
+                ArmEngines::getDouble(jsonObj, "claw-angle-z"),
                 ArmEngines::getDouble(jsonObj, "claw-angle"),           
                 ArmEngines::getUintDef(jsonObj, "iterations", DEFAULT_ITERATIONS),           
                 ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY),

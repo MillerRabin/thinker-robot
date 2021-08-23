@@ -15,6 +15,7 @@ class ArmQueueItem {
         const double elbowYAngle;
         const double wristYAngle;         
         const double clawXAngle;
+        const double clawZAngle;
         const double clawAngle; 
         const unsigned int iterations;
         const unsigned int postDelay;
@@ -27,6 +28,7 @@ class ArmQueueItem {
             const double elbowYAngle = NAN, 
             const double wristYAngle = NAN, 
             const double clawXAngle = NAN, 
+            const double clawZAngle = NAN, 
             const double clawAngle = NAN, 
             const unsigned int iterations = DEFAULT_ITERATIONS, 
             const unsigned int postDelay = DEFAULT_POST_DELAY,
@@ -52,6 +54,7 @@ class ArmQueue {
             const double elbowYAngle, 
             const double wristYAngle, 
             const double clawXAngle, 
+            const double clawZAngle, 
             const double clawAngle, 
             const unsigned int iterations, 
             const unsigned int postDelay, 

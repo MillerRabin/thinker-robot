@@ -201,20 +201,22 @@ class ArmWrist : public ArmPoint {
 
 class ArmClaw : public ArmPoint {
     private:
-        static const double validateYAngle(const double angle);
         static const double validateXAngle(const double angle);
+        static const double validateYAngle(const double angle);
+        static const double validateZAngle(const double angle);
         static const double validateClawAngle(const double angle);
         const double getClawRad(const double angle);
         const double getClawAngleFromRad(const double rad);
     public:    
         double clawRad = NAN;
-        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawAngle);
+        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawZAngle, const double clawAngle);
         ArmClaw(const double xRad, const double yRad, const double zRad, const double clawRad);
         const double getAngle(const bool validate = true);
         const double getXAngle(const bool validate = true);        
+        const double getZAngle(const bool validate = true);        
         const double getYAngle(ArmWrist wrist, const bool validate = true);        
         void setRads(const double xRad, const double yRad, const double zRad, const double clawRad);
-        
+        void setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z);        
         const double getLength() override {
             return CLAW_LENGTH;
         };
@@ -226,6 +228,12 @@ class ArmClaw : public ArmPoint {
         };
         const double getXScale() override {
             return CLAW_X_SCALE;
+        };
+        const double getZBase() override {
+            return CLAW_Z_BASE;
+        };
+        const double getZScale() override {
+            return CLAW_Z_SCALE;
         };
 };
 

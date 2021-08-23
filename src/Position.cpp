@@ -5,11 +5,11 @@
 #include "arm.h"
 #include "armError.h"
 
-Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle) : 
+Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawZAngle, const double clawAngle) : 
     shoulder(shoulderYAngle, shoulderZAngle),
     elbow(shoulder, elbowYAngle),
     wrist(elbow, wristYAngle),
-    claw(wrist, clawXAngle, clawAngle)    
+    claw(wrist, clawXAngle, clawZAngle, clawAngle)    
 {
     isValid();
 }
@@ -24,15 +24,15 @@ Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw
 }
 
 const double Position::getX() {    
-    return shoulder.x + elbow.x + wrist.x;
+    return shoulder.x + elbow.x + wrist.x + claw.x;
 }
 
 const double Position::getY() {
-    return shoulder.y + elbow.y + wrist.y;
+    return shoulder.y + elbow.y + wrist.y + claw.y;
 }
 
 const double Position::getZ() {                
-    return shoulder.z + elbow.z + wrist.z + BASE_HEIGHT;
+    return shoulder.z + elbow.z + wrist.z + claw.z + BASE_HEIGHT;
 }
 
 const double Position::getShoulderZAngle() {
@@ -55,6 +55,10 @@ const double Position::getClawXAngle() {
     return claw.getXAngle();
 }
 
+const double Position::getClawZAngle() {
+    return claw.getZAngle();
+}
+
 const double Position::getClawAngle() {
     return claw.getAngle();
 }
@@ -65,6 +69,7 @@ const bool Position::isValid() {
     const double deAngle = getElbowYAngle();
     const double dwAngle = getWristYAngle();        
     const double cxAngle = getClawXAngle();        
+    const double czAngle = getClawZAngle();        
     const double clawAngle = getClawAngle();    
     if (dzAngle < 0) {
         ArmOperationResult res = (ArmOperationResult)dzAngle;
@@ -91,6 +96,12 @@ const bool Position::isValid() {
         setLastError(res, ArmError::getErrorText(res));
         return false;
     }
+    if (czAngle < 0) {
+        ArmOperationResult res = (ArmOperationResult)czAngle;
+        setLastError(res, ArmError::getErrorText(res));
+        return false;
+    }
+
     if (clawAngle < 0) {
         ArmOperationResult res = (ArmOperationResult)clawAngle;
         setLastError(res, ArmError::getErrorText(res));

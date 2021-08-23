@@ -40,7 +40,7 @@ class ArmRoots {
 class Strategy {
     private:
         void freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        void fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle);
+        void fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle, const double clawAngle);
         static ArmRoots getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
         static ArmRoot getValidElbowRoot(ArmElbow elbow, ArmShoulder shoulder, ArmRoots roots);
         Position tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
@@ -58,6 +58,7 @@ class Strategy {
                 const double z, 
                 const double clawXAngle, 
                 const double clawYAngle, 
+                const double clawZAngle, 
                 const double clawAngle, 
                 const unsigned int iterations = DEFAULT_ITERATIONS, 
                 const unsigned int postDelay = DEFAULT_POST_DELAY, 

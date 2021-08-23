@@ -145,6 +145,7 @@ void Strategy::addPositionToSequence(Position pos) {
     const double eyAngle = pos.getElbowYAngle();
     const double wyAngle = pos.getWristYAngle();
     const double cxAngle = pos.getClawXAngle();
+    const double czAngle = pos.getClawZAngle();
     const double clawAngle = pos.getClawAngle();
         
     EngineControl clawEngine(CLAW_ENGINE, clawAngle);
@@ -156,6 +157,9 @@ void Strategy::addPositionToSequence(Position pos) {
     EngineControl cxEngine(CLAW_X_ENGINE, cxAngle);
     sequence.push_back(cxEngine);
 
+    EngineControl czEngine(CLAW_Z_ENGINE, czAngle);
+    sequence.push_back(czEngine);
+
     EngineControl wEngine(WRIST_Y_ENGINE, wyAngle);
     sequence.push_back(wEngine);
     
@@ -166,41 +170,57 @@ void Strategy::addPositionToSequence(Position pos) {
     sequence.push_back(sEngine);
 }
   
-void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawAngle) {                
-    const double rRad = ArmPoint::getRadFromXY(x, y);       
-    const double wRad = clawYAngle / 180 * PI;
+void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
+    const double rRad = clawZAngle / 180 * PI;    
+    const double cRad = clawYAngle / 180 * PI;
     
-    const double wxl = WRIST_LENGTH * cos(wRad) * cos(rRad);
-    const double wyl = WRIST_LENGTH * cos(wRad) * sin(rRad);
-    const double wzl = WRIST_LENGTH * sin(wRad);
-    const double ex = x - wxl;
-    const double ey = y - wyl;
-    const double ez = z - wzl;
-    
+    const double cxl = CLAW_LENGTH * cos(cRad) * cos(rRad);
+    const double cyl = CLAW_LENGTH * cos(cRad) * sin(rRad);
+    const double czl = CLAW_LENGTH * sin(cRad);
+    const double wx = x - cxl;
+    const double wy = y - cyl;
+    const double wz = z - czl;
+        
+    const double wRad = ArmPoint::getRadFromXY(wx, wy);
+    const double wxl = WRIST_LENGTH * cos(cRad) * cos(wRad);
+    const double wyl = WRIST_LENGTH * cos(cRad) * sin(wRad);
+    const double wzl = WRIST_LENGTH * sin(cRad);
+
+    const double ex = wx - wxl;
+    const double ey = wy - wyl;
+    const double ez = wz - wzl;
+
     if (ez < MIN_Z) {
         position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getElbowZError(ez, MIN_Z));        
         return;
     }
             
     const double el = sqrt(ex*ex + ey*ey);
-    const double wl = sqrt(x*x + y*y);
+    const double cl = sqrt(x*x + y*y);
+
     if (el > SHOULDER_LENGTH + ELBOW_LENGTH) {        
-        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(el, SHOULDER_LENGTH + ELBOW_LENGTH));        
+        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(el,  SHOULDER_LENGTH + ELBOW_LENGTH + WRIST_LENGTH));        
         return;
     }
 
     if ((z <= BASE_HEIGHT) && 
-        ((wl < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2) || 
+        ((el < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2) || 
          (ex * x < 0) || (ey * y < 0))) {    
             position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
             return;
     }
 
     
+    Serial.printf("fixed angle: x: %f, y: %f, z: %f\n", x, y, z);
+    Serial.printf("fixed angle: wx: %f, wy: %f, wz: %f\n", wx, wy, wz);
+    Serial.printf("fixed angle: ex: %f, ey: %f, ez: %f\n", ex, ey, ez);
+    Serial.printf("fixed angle: wristLength: %f, clawLength: %f\n", el, cl);
+
     ArmShoulder shoulder = position.shoulder;
-    const double zRad = shoulder.getZRadFromXY(x, y);        
+    const double zRad = shoulder.getZRadFromXY(ex, ey);    
     shoulder.setRads(shoulder.YRad, zRad);    
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
+    Serial.printf("fixed angle: rads.size: %d\n", rads.size());
     if (rads.size() == 0) {
         position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getShoulderError());
         return;
@@ -210,16 +230,18 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     const double clawRad = clawAngle / 180 * PI;
     
     for(double rad : rads) {         
+        Serial.printf("fixed angle: rad: %f\n", rad);
         shoulder.setRads(rad, shoulder.ZRad);
         if (!shoulder.isValid()) continue;        
+        Serial.printf("shoulder is valid\n");
         ArmElbow elbow = position.elbow;        
         elbow.setRads(elbow.YRad, shoulder.ZRad);
         elbow.setPos(shoulder, ex, ey, ez);
         ArmWrist wrist = position.wrist;        
-        wrist.setPos(shoulder, elbow, x, y, z);
+        wrist.setPos(shoulder, elbow, wx, wy, wz);
         ArmClaw claw = position.claw;
         claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);
-
+        claw.setPos(shoulder, elbow, wrist, x, y, z);
         Position pos = Position(shoulder, elbow, wrist, claw);
         if (pos.isValid()) {
             addPositionToSequence(pos);
@@ -236,6 +258,7 @@ Strategy::Strategy(
     const double z, 
     const double clawXAngle, 
     const double clawYAngle, 
+    const double clawZAngle, 
     const double clawAngle,
     const unsigned int iterations,
     const unsigned int postDelay,
@@ -248,15 +271,17 @@ Strategy::Strategy(
 {        
     const double sca = pos.claw.clawRad / PI * 180;
     const double scxa = pos.claw.XRad / PI * 180;
+    const double scza = pos.claw.ZRad / PI * 180;
     const double lClawAngle = isnan(clawAngle) ? sca : clawAngle;
     const double lClawXAngle = isnan(clawXAngle) ? scxa : clawXAngle;
+    const double lClawZAngle = isnan(clawZAngle) ? scza : clawZAngle;
 
     if (isnan(clawYAngle)) {
         freeAngle(x, y, z, lClawXAngle, lClawAngle);
         return;
     }
         
-    fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawAngle);
+    fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
     return;
 }
 

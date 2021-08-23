@@ -3,12 +3,24 @@
 
 //--------ArmQueueItem------------
 
-ArmQueueItem::ArmQueueItem(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawAngle, const unsigned int iterations, const unsigned int postDelay, const unsigned int iterationDelay) :     
+ArmQueueItem::ArmQueueItem(
+        const double shoulderYAngle, 
+        const double shoulderZAngle, 
+        const double elbowYAngle, 
+        const double wristYAngle, 
+        const double clawXAngle, 
+        const double clawZAngle, 
+        const double clawAngle, 
+        const unsigned int iterations, 
+        const unsigned int postDelay, 
+        const unsigned int iterationDelay
+    ) :     
     shoulderZAngle(shoulderZAngle),
     shoulderYAngle(shoulderYAngle),            
     elbowYAngle(elbowYAngle),
     wristYAngle(wristYAngle),
     clawXAngle(clawXAngle),
+    clawZAngle(clawZAngle),
     clawAngle(clawAngle),
     iterations(iterations),
     postDelay(postDelay),
@@ -22,6 +34,7 @@ const bool ArmQueueItem::isValid() {
             !isnan(elbowYAngle)     &&
             !isnan(wristYAngle)     &&
             !isnan(clawXAngle)      &&
+            !isnan(clawZAngle)      &&
             !isnan(clawAngle)       &&
             (postDelay > 0)         &&
             (postDelay < 10000)     &&
@@ -57,6 +70,7 @@ ArmOperationResult ArmQueue::enqueue(
     const double elbowYAngle, 
     const double wristYAngle, 
     const double clawXAngle, 
+    const double clawZAngle, 
     const double clawAngle, 
     const unsigned int iterations,
     const unsigned int postDelay,
@@ -71,6 +85,7 @@ ArmOperationResult ArmQueue::enqueue(
                                 elbowYAngle, 
                                 wristYAngle, 
                                 clawXAngle, 
+                                clawZAngle, 
                                 clawAngle, 
                                 iterations,
                                 postDelay,

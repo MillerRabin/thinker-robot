@@ -23,6 +23,7 @@ class ArmEngines {
         static volatile double elbowYAngle;
         static volatile double wristYAngle;         
         static volatile double clawXAngle;
+        static volatile double clawZAngle;
         static volatile double clawAngle;  
         static const double setEngine(const uint engine, const double angle);        
         static const uint degToCount(const double value, const uint maxDeg);
@@ -37,6 +38,7 @@ class ArmEngines {
             const double elbowYAngle, 
             const double wristYAngle, 
             const double clawXAngle, 
+            const double clawZAngle, 
             const double clawAngle,
             const unsigned int iterations = DEFAULT_ITERATIONS,
             const unsigned int postDelay = DEFAULT_POST_DELAY,
