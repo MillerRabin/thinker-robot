@@ -56,7 +56,7 @@ const double Position::getClawXAngle() {
 }
 
 const double Position::getClawZAngle() {
-    return claw.getZAngle();
+    return claw.getZAngle(wrist);
 }
 
 const double Position::getClawAngle() {

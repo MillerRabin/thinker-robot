@@ -211,16 +211,10 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     }
 
     
-    Serial.printf("fixed angle: x: %f, y: %f, z: %f\n", x, y, z);
-    Serial.printf("fixed angle: wx: %f, wy: %f, wz: %f\n", wx, wy, wz);
-    Serial.printf("fixed angle: ex: %f, ey: %f, ez: %f\n", ex, ey, ez);
-    Serial.printf("fixed angle: wristLength: %f, clawLength: %f\n", el, cl);
-
     ArmShoulder shoulder = position.shoulder;
     const double zRad = shoulder.getZRadFromXY(ex, ey);    
     shoulder.setRads(shoulder.YRad, zRad);    
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
-    Serial.printf("fixed angle: rads.size: %d\n", rads.size());
     if (rads.size() == 0) {
         position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getShoulderError());
         return;
@@ -229,11 +223,9 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     const double cxRad = clawXAngle / 180 * PI;    
     const double clawRad = clawAngle / 180 * PI;
     
-    for(double rad : rads) {         
-        Serial.printf("fixed angle: rad: %f\n", rad);
+    for(double rad : rads) {                 
         shoulder.setRads(rad, shoulder.ZRad);
-        if (!shoulder.isValid()) continue;        
-        Serial.printf("shoulder is valid\n");
+        if (!shoulder.isValid()) continue;                
         ArmElbow elbow = position.elbow;        
         elbow.setRads(elbow.YRad, shoulder.ZRad);
         elbow.setPos(shoulder, ex, ey, ez);

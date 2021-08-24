@@ -308,7 +308,7 @@ const double ArmWrist::validateYAngle(const double angle) {
     return angle;      
 }
 
-const double ArmWrist::getYAngle(ArmElbow elbow, const bool validate) {
+const double ArmWrist::getYAngle(ArmElbow elbow, const bool validate) {    
     const double angle = getYAngleFromRad(this->YRad - elbow.YRad);
     if (!validate)
         return angle;
@@ -340,7 +340,6 @@ void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, cons
     const double wx = x - (shoulder.x + elbow.x);
     const double wy = y - (shoulder.y + elbow.y);
     const double wz = z - (shoulder.z + elbow.z + BASE_HEIGHT);
-    //Serial.printf("wx: %f, wy: %f, wz: %f\n", wx, wy, wz);    
     setRads(YRad, elbow.ZRad);
     const double wrad = getYRadFromPos(wx, wy, wz);
     setRads(wrad, elbow.ZRad);
@@ -382,18 +381,9 @@ void ArmClaw::setRads(const double xRad, const double yRad, const double zRad, c
 void ArmClaw::setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z) {        
     const double cx = x - (shoulder.x + elbow.x + wrist.x);
     const double cy = y - (shoulder.y + elbow.y + wrist.y);
-    const double cz = z - (shoulder.z + elbow.z + wrist.z + BASE_HEIGHT);
-    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);
-    Serial.printf("shoulder.x: %f, shoulder.y: %f, shoulder.z: %f\n", shoulder.x, shoulder.y, shoulder.z);
-    Serial.printf("elbow.x: %f, elbow.y: %f, elbow.z: %f\n", elbow.x, elbow.y, elbow.z);
-    Serial.printf("wrist.x: %f, wrist.y: %f, wrist.z: %f\n", wrist.x, wrist.y, wrist.z);
-    Serial.printf("cx: %f, cy: %f, cz: %f\n", cx, cy, cz);    
+    //const double cz = z - (shoulder.z + elbow.z + wrist.z + BASE_HEIGHT);
     const double zRad = getRadFromXY(cx, cy);
-    Serial.printf("zRad: %f\n", zRad);
-    Serial.printf("XRad: %f, YRad: %f, zRad: %f\n", XRad, YRad, zRad);    
     setRads(XRad, YRad, zRad, clawRad);
-    Serial.printf("cx: %f, cy: %f, cz: %f\n", cx, cy, cz);    
-    Serial.printf("claw.x: %f, claw.y: %f, claw.z: %f\n", this->x, this->y, this->z);    
 }
 
 
@@ -422,8 +412,8 @@ const double ArmClaw::getXAngle(const bool validate) {
     return ArmClaw::validateXAngle(angle);    
 }
 
-const double ArmClaw::getZAngle(const bool validate) {     
-     const double angle = getZAngleFromRad(ZRad);
+const double ArmClaw::getZAngle(ArmWrist wrist, const bool validate) {     
+     const double angle = getZAngleFromRad(this->ZRad - wrist.ZRad);
     if (!validate)
         return angle;
     return ArmClaw::validateZAngle(angle);    

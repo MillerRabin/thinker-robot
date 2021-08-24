@@ -212,8 +212,8 @@ class ArmClaw : public ArmPoint {
         ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawZAngle, const double clawAngle);
         ArmClaw(const double xRad, const double yRad, const double zRad, const double clawRad);
         const double getAngle(const bool validate = true);
-        const double getXAngle(const bool validate = true);        
-        const double getZAngle(const bool validate = true);        
+        const double getXAngle(const bool validate = true);                
+        const double getZAngle(ArmWrist wrist, const bool validate = true);
         const double getYAngle(ArmWrist wrist, const bool validate = true);        
         void setRads(const double xRad, const double yRad, const double zRad, const double clawRad);
         void setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z);        

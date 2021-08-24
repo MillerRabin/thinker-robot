@@ -31,13 +31,13 @@
 #define CLAW_PHYSICAL_ANGLE 0
 
 //Physical length of shoulder
-#define SHOULDER_LENGTH 90
+#define SHOULDER_LENGTH 87
 
 //Conversion between logical angle and physical servo angle
 //Calculated by formula
 //logAngle = scale * physAngle + base;
 //physAngle = (logicalAngle - base) / scale
-#define SHOULDER_Y_BASE 245
+#define SHOULDER_Y_BASE 225
 #define SHOULDER_Y_SCALE -1
 #define SHOULDER_Y_MIN 0
 #define SHOULDER_Y_MAX 270
@@ -54,7 +54,7 @@
 #define ELBOW_Y_MAX 280
 
 #define WRIST_LENGTH 70
-#define WRIST_Y_BASE 145
+#define WRIST_Y_BASE 135
 #define WRIST_Y_SCALE -1
 #define WRIST_Y_MIN 0
 #define WRIST_Y_MAX 270
@@ -76,7 +76,7 @@
 #define CLAW_MIN 0
 #define CLAW_MAX 140
 
-#define BASE_HEIGHT 160
+#define BASE_HEIGHT 140
 #define BASE_WIDTH 120
 
 #define MIN_Z 0
