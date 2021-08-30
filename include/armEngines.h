@@ -44,6 +44,12 @@ class ArmEngines {
             const unsigned int postDelay = DEFAULT_POST_DELAY,
             const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
         );
+        Position set(
+            Position pos,
+            const unsigned int iterations = DEFAULT_ITERATIONS,
+            const unsigned int postDelay = DEFAULT_POST_DELAY,
+            const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
+        );
         Position set(JsonObject& jsonObj);
         Position applyStrategy(Strategy strategy);
         static double getDouble(JsonObject& jsonObj, const char* key);

@@ -94,7 +94,7 @@ EngineHandler::EngineHandler() {
                 ArmEngines::getUintDef(jsonObj, "iterations", DEFAULT_ITERATIONS),           
                 ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY),
                 ArmEngines::getUintDef(jsonObj, "iteration-delay", DEFAULT_ITERATION_DELAY)                
-            );
+            );            
             Position rPos = armEngines.applyStrategy(moveStrategy);            
             sendSuccess(request, rPos);
         } catch (const std::exception& e) {

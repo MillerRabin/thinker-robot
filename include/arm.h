@@ -24,8 +24,7 @@ class Coords {
 
 class ArmPoint {    
     protected:
-        void setCoords();        
-        const double getYRadFromPos(const double localX, const double localY, const double localZ);     
+        void setCoords();            
     public:
         double YRad = NAN;
         double ZRad = NAN;
@@ -33,6 +32,7 @@ class ArmPoint {
         double x = NAN;
         double y = NAN;
         double z = NAN;        
+        const double getYRadFromPos(const double localX, const double localY, const double localZ, const double length = NAN);     
         const double virtual getLength() {
             return 0;
         };

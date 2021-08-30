@@ -88,24 +88,20 @@ const double ArmPoint::getRadFromXY(const double x, const double y) {
 }
 
 
-const double ArmPoint::getYRadFromPos(const double localX, const double localY, const double localZ) {                    
-    const double length = getLength();        
-    const double sinz = (length > 0) ? localZ / length : 0;
+const double ArmPoint::getYRadFromPos(const double localX, const double localY, const double localZ, const double length) {        
+    const double tLength = isnan(length) ? getLength() : length;        
+    
+    const double sinz = (tLength > 0) ? localZ / tLength : 0;    
     const double sina = asin(sinz);  
     const double asina = abs(sina);
         
-    //Serial.printf("ZRad: %F\n", ZRad);
-    //Serial.printf("localX: %f, localY: %f, localZ: %f\n", localX, localY, localZ);    
-    Coords coord = Coords(length, sina, ZRad); 
-    //Serial.printf("coord.x: %f, coord.y: %f, coord.z: %f\n", coord.x, coord.y, coord.z);
+    Coords coord = Coords(tLength, sina, ZRad); 
     if (coord.isEqual(localX, localY, localZ)) return sina;
     const double a1 =  PI + asina;
-    Coords coord2 = Coords(length, a1, ZRad);    
-    //Serial.printf("coord2.x: %f, coord2.y: %f, coord2.z: %f\n", coord2.x, coord2.y, coord2.z);
+    Coords coord2 = Coords(tLength, a1, ZRad);    
     if (coord2.isEqual(localX, localY, localZ)) return a1;
     const double a2 =  PI - asina;
-    Coords coord3 = Coords(length, a2, ZRad);    
-    //Serial.printf("coord3.x: %f, coord3.y: %f, coord3.z: %f\n", coord3.x, coord3.y, coord3.z);
+    Coords coord3 = Coords(tLength, a2, ZRad);        
     if (coord3.isEqual(localX, localY, localZ)) return a2;
     return NAN;    
 }
@@ -346,7 +342,7 @@ void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, cons
 }
 
 const bool ArmWrist::isValid(ArmElbow elbow) {    
-    const double angle = getYAngle(elbow);
+    const double angle = getYAngle(elbow);    
     if (angle < 0) return false;
     return true;
 }
@@ -356,19 +352,19 @@ const bool ArmWrist::isValid(ArmElbow elbow) {
 ArmClaw::ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawZAngle, const double clawAngle) {
     const double cxRad = getXRad(clawXAngle);
     const double czRad = getZRad(clawZAngle);
-    const double clawRad = getClawRad(clawAngle);
-    setRads(cxRad, wrist.YRad, czRad, clawRad);
+    const double clawRad = getClawRad(clawAngle);    
+    setRads(cxRad, wrist.YRad, czRad + wrist.ZRad, clawRad);
 }
 
 const double ArmClaw::getClawRad(const double angle) {    
     return (CLAW_SCALE * angle + CLAW_BASE) * PI / 180.0;
 }
 
-ArmClaw::ArmClaw(const double xRad, const double yRad, const double zRad, const double clawRad) {    
+ArmClaw::ArmClaw(const double xRad, const double yRad, const double zRad, const double clawRad) {        
     setRads(xRad, yRad, zRad, clawRad);
 }
 
-void ArmClaw::setRads(const double xRad, const double yRad, const double zRad, const double clawRad) {
+void ArmClaw::setRads(const double xRad, const double yRad, const double zRad, const double clawRad) {    
     this->YRad = yRad;
     this->ZRad = zRad;
     if (!isnan(xRad))
@@ -381,7 +377,6 @@ void ArmClaw::setRads(const double xRad, const double yRad, const double zRad, c
 void ArmClaw::setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z) {        
     const double cx = x - (shoulder.x + elbow.x + wrist.x);
     const double cy = y - (shoulder.y + elbow.y + wrist.y);
-    //const double cz = z - (shoulder.z + elbow.z + wrist.z + BASE_HEIGHT);
     const double zRad = getRadFromXY(cx, cy);
     setRads(XRad, YRad, zRad, clawRad);
 }
@@ -413,7 +408,7 @@ const double ArmClaw::getXAngle(const bool validate) {
 }
 
 const double ArmClaw::getZAngle(ArmWrist wrist, const bool validate) {     
-     const double angle = getZAngleFromRad(this->ZRad - wrist.ZRad);
+    const double angle = getZAngleFromRad(this->ZRad - wrist.ZRad);     
     if (!validate)
         return angle;
     return ArmClaw::validateZAngle(angle);    

@@ -29,20 +29,20 @@ Position Strategy::tryHalfLength(ArmShoulder shoulder, const double length, cons
     return tryShoulderLength(shoulder, nHalf, x, y, z, clawXAngle, clawAngle);            
 }
 
-Position Strategy::getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {    
+Position Strategy::getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {        
     Position rPos = tryShoulderRad(shoulder, PI/2, x, y, z, clawXAngle, clawAngle);        
-    if (rPos.isValid()) return rPos;
+    if (rPos.isValid()) return rPos;    
+    double fullLength = ELBOW_LENGTH + WRIST_LENGTH + CLAW_LENGTH;
     
-    double fullLength = ELBOW_LENGTH + WRIST_LENGTH;
-                
     Position fPos = tryShoulderLength(shoulder, fullLength, x, y, z, clawXAngle, clawAngle);        
     if (fPos.isValid()) return fPos;
         
+    
     Position mPos = tryShoulderLength(shoulder, ELBOW_LENGTH, x, y, z, clawXAngle, clawAngle);        
     if (mPos.isValid()) return mPos;
     
     int count = 1;    
-    const double length = WRIST_LENGTH;
+    const double length = WRIST_LENGTH + CLAW_LENGTH;
     for (int i = 0; i < 2; i++) {
         count = count * 2;
         const double step = length / count;
@@ -65,7 +65,7 @@ Position Strategy::tryShoulderLength(ArmShoulder shoulder, const double length, 
         
     for (double rad : rads) {
         tShoulder.setRads(rad, tShoulder.ZRad);        
-        Position pos = tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);    
+        Position pos = tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);       
         if (pos.isValid()) return pos;
     }
     return Position();
@@ -76,32 +76,37 @@ Position Strategy::tryShoulderRad(ArmShoulder shoulder, const double rad, const 
     tShoulder.setRads(rad, tShoulder.ZRad);        
     if (!tShoulder.isValid()) {
         return Position();
-    }   
+    }      
     return tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);    
 }
 
 
 Position Strategy::tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
-    ArmElbow elbow = position.elbow;    
+    ArmElbow elbow = startPosition.elbow;    
     elbow.setRads(elbow.YRad, shoulder.ZRad);    
     elbow.setPosLocal(root.x, root.y, root.z);      
     
     if (!elbow.isValid(shoulder))
-        return Position();
-    ArmWrist wrist = position.wrist;    
-    wrist.setPos(shoulder, elbow, x, y, z);     
-    if (!wrist.isValid(elbow)) {
+        return Position();    
+    ArmWrist wrist = startPosition.wrist;    
+    const double cx = x - (shoulder.x + elbow.x);
+    const double cy = y - (shoulder.y + elbow.y);
+    const double cz = z - (shoulder.z + elbow.z + BASE_HEIGHT);
+    wrist.setRads(wrist.YRad, elbow.ZRad);
+    const double yRad = wrist.getYRadFromPos(cx, cy, cz, CLAW_LENGTH + WRIST_LENGTH);    
+    wrist.setRads(yRad, wrist.ZRad);
+    if (!wrist.isValid(elbow)) {    
         return Position();   
-    }        
-    ArmClaw claw = position.claw;
+    }            
+    ArmClaw claw = startPosition.claw;
     const double cxRad = clawXAngle / 180 * PI;    
-    const double clawRad = clawAngle / 180 * PI;
-    claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);
-    return Position(shoulder, elbow, wrist, claw);    
+    const double clawRad = clawAngle / 180 * PI;    
+    claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);        
+    return Position(shoulder, elbow, wrist, claw);
 }
 
 Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
-    ArmRoots roots = Strategy::getElbowRoots(shoulder, x, y, z, WRIST_LENGTH);
+    ArmRoots roots = Strategy::getElbowRoots(shoulder, x, y, z, WRIST_LENGTH + CLAW_LENGTH);
     if (roots.r1.isValid()) {
         Position fPos = tryElbowRoot(shoulder, roots.r1, x, y, z, clawXAngle, clawAngle);
         if (fPos.isValid()) return fPos;        
@@ -114,27 +119,28 @@ Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y
 }
 
 
-void Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {                
+Position Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {                    
     const double vl = sqrt(x*x + y*y);
     if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
-        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
-        return;
+        Position ep = Position();
+        ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
+        return ep;
     }
     
     const double sLength = ArmShoulder::getLength(x, y, z);        
     if (sLength > MAX_LENGTH) {
-        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(sLength, MAX_LENGTH));
-        return;
+        Position ep = Position();
+        ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(sLength, MAX_LENGTH));
+        return ep;
     }
                         
-    ArmShoulder shoulder = position.shoulder;  
+    ArmShoulder shoulder = startPosition.shoulder;  
     const double zRad = shoulder.getZRadFromXY(x, y);    
     shoulder.setRads(shoulder.YRad, zRad);        
-    Position pos = getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle); 
-    addPositionToSequence(pos); 
+    return getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle);     
 }
 
-void Strategy::addPositionToSequence(Position pos) {
+/*void Strategy::addPositionToSequence(Position pos) {
     if (!pos.isValid()) {            
         position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
         return;    
@@ -168,9 +174,9 @@ void Strategy::addPositionToSequence(Position pos) {
     
     EngineControl sEngine(SHOULDER_Y_ENGINE, syAngle);
     sequence.push_back(sEngine);
-}
+}*/
   
-void Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
+Position Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
     const double rRad = clawZAngle / 180 * PI;    
     const double cRad = clawYAngle / 180 * PI;
     
@@ -191,33 +197,36 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     const double ez = wz - wzl;
 
     if (ez < MIN_Z) {
-        position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getElbowZError(ez, MIN_Z));        
-        return;
+        Position ep = Position();
+        ep.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getElbowZError(ez, MIN_Z));        
+        return ep;
     }
             
     const double el = sqrt(ex*ex + ey*ey);
-    const double cl = sqrt(x*x + y*y);
-
+    
     if (el > SHOULDER_LENGTH + ELBOW_LENGTH) {        
-        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(el,  SHOULDER_LENGTH + ELBOW_LENGTH + WRIST_LENGTH));        
-        return;
+        Position ep = Position();
+        ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(el,  SHOULDER_LENGTH + ELBOW_LENGTH + WRIST_LENGTH));        
+        return ep;
     }
 
     if ((z <= BASE_HEIGHT) && 
         ((el < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2) || 
          (ex * x < 0) || (ey * y < 0))) {    
-            position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
-            return;
+            Position ep = Position();
+            ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
+            return ep;
     }
 
     
-    ArmShoulder shoulder = position.shoulder;
+    ArmShoulder shoulder = startPosition.shoulder;
     const double zRad = shoulder.getZRadFromXY(ex, ey);    
     shoulder.setRads(shoulder.YRad, zRad);    
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
     if (rads.size() == 0) {
-        position.setLastError(ERROR_OUT_OF_RANGE, ArmError::getShoulderError());
-        return;
+        Position ep = Position();
+        ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getShoulderError());
+        return ep;
     }
 
     const double cxRad = clawXAngle / 180 * PI;    
@@ -226,21 +235,21 @@ void Strategy::fixedAngle(const double x, const double y, const double z, const 
     for(double rad : rads) {                 
         shoulder.setRads(rad, shoulder.ZRad);
         if (!shoulder.isValid()) continue;                
-        ArmElbow elbow = position.elbow;        
+        ArmElbow elbow = startPosition.elbow;        
         elbow.setRads(elbow.YRad, shoulder.ZRad);
         elbow.setPos(shoulder, ex, ey, ez);
-        ArmWrist wrist = position.wrist;        
+        ArmWrist wrist = startPosition.wrist;        
         wrist.setPos(shoulder, elbow, wx, wy, wz);
-        ArmClaw claw = position.claw;
+        ArmClaw claw = startPosition.claw;
         claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);
         claw.setPos(shoulder, elbow, wrist, x, y, z);
         Position pos = Position(shoulder, elbow, wrist, claw);
-        if (pos.isValid()) {
-            addPositionToSequence(pos);
-            return;
-        }        
+        if (pos.isValid())
+            return pos;        
     }   
-    position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
+    Position ep = Position();
+    ep.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
+    return ep;
 }
 
 Strategy::Strategy(
@@ -256,7 +265,7 @@ Strategy::Strategy(
     const unsigned int postDelay,
     const unsigned int iterationDelay
 ) : 
-    position(pos),
+    startPosition(pos),
     iterations(iterations),
     postDelay(postDelay),
     iterationDelay(iterationDelay)
@@ -269,11 +278,11 @@ Strategy::Strategy(
     const double lClawZAngle = isnan(clawZAngle) ? scza : clawZAngle;
 
     if (isnan(clawYAngle)) {
-        freeAngle(x, y, z, lClawXAngle, lClawAngle);
+        endPosition = freeAngle(x, y, z, lClawXAngle, lClawAngle);
         return;
     }
         
-    fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
+    endPosition = fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
     return;
 }
 
