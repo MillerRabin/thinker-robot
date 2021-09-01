@@ -140,42 +140,6 @@ Position Strategy::freeAngle(const double x, const double y, const double z, con
     return getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle);     
 }
 
-/*void Strategy::addPositionToSequence(Position pos) {
-    if (!pos.isValid()) {            
-        position.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
-        return;    
-    }
-    
-    const double szAngle = pos.getShoulderZAngle();
-    const double syAngle = pos.getShoulderYAngle();
-    const double eyAngle = pos.getElbowYAngle();
-    const double wyAngle = pos.getWristYAngle();
-    const double cxAngle = pos.getClawXAngle();
-    const double czAngle = pos.getClawZAngle();
-    const double clawAngle = pos.getClawAngle();
-        
-    EngineControl clawEngine(CLAW_ENGINE, clawAngle);
-    sequence.push_back(clawEngine);
-
-    EngineControl rEngine(SHOULDER_Z_ENGINE, szAngle);
-    sequence.push_back(rEngine);
-    
-    EngineControl cxEngine(CLAW_X_ENGINE, cxAngle);
-    sequence.push_back(cxEngine);
-
-    EngineControl czEngine(CLAW_Z_ENGINE, czAngle);
-    sequence.push_back(czEngine);
-
-    EngineControl wEngine(WRIST_Y_ENGINE, wyAngle);
-    sequence.push_back(wEngine);
-    
-    EngineControl eEngine(ELBOW_Y_ENGINE, eyAngle);
-    sequence.push_back(eEngine);    
-    
-    EngineControl sEngine(SHOULDER_Y_ENGINE, syAngle);
-    sequence.push_back(sEngine);
-}*/
-  
 Position Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
     const double rRad = clawZAngle / 180 * PI;    
     const double cRad = clawYAngle / 180 * PI;
@@ -183,19 +147,23 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
     const double cxl = CLAW_LENGTH * cos(cRad) * cos(rRad);
     const double cyl = CLAW_LENGTH * cos(cRad) * sin(rRad);
     const double czl = CLAW_LENGTH * sin(cRad);
+        
     const double wx = x - cxl;
     const double wy = y - cyl;
     const double wz = z - czl;
-        
-    const double wRad = ArmPoint::getRadFromXY(wx, wy);
-    const double wxl = WRIST_LENGTH * cos(cRad) * cos(wRad);
-    const double wyl = WRIST_LENGTH * cos(cRad) * sin(wRad);
-    const double wzl = WRIST_LENGTH * sin(cRad);
 
+    ArmShoulder shoulder = startPosition.shoulder;
+    const double zRad = shoulder.getZRadFromXY(wx, wy);
+    shoulder.setRads(shoulder.YRad, zRad);    
+
+    
+    const double wxl = WRIST_LENGTH * cos(cRad) * cos(zRad);
+    const double wyl = WRIST_LENGTH * cos(cRad) * sin(zRad);    
+    const double wzl = WRIST_LENGTH * sin(cRad);    
     const double ex = wx - wxl;
     const double ey = wy - wyl;
     const double ez = wz - wzl;
-
+        
     if (ez < MIN_Z) {
         Position ep = Position();
         ep.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getElbowZError(ez, MIN_Z));        
@@ -219,9 +187,6 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
     }
 
     
-    ArmShoulder shoulder = startPosition.shoulder;
-    const double zRad = shoulder.getZRadFromXY(ex, ey);    
-    shoulder.setRads(shoulder.YRad, zRad);    
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
     if (rads.size() == 0) {
         Position ep = Position();
@@ -232,14 +197,14 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
     const double cxRad = clawXAngle / 180 * PI;    
     const double clawRad = clawAngle / 180 * PI;
     
-    for(double rad : rads) {                 
-        shoulder.setRads(rad, shoulder.ZRad);
+    for(double rad : rads) {                         
+        shoulder.setRads(rad, shoulder.ZRad);        
         if (!shoulder.isValid()) continue;                
         ArmElbow elbow = startPosition.elbow;        
         elbow.setRads(elbow.YRad, shoulder.ZRad);
-        elbow.setPos(shoulder, ex, ey, ez);
+        elbow.setPos(shoulder, ex, ey, ez);        
         ArmWrist wrist = startPosition.wrist;        
-        wrist.setPos(shoulder, elbow, wx, wy, wz);
+        wrist.setPos(shoulder, elbow, wx, wy, wz);        
         ArmClaw claw = startPosition.claw;
         claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);
         claw.setPos(shoulder, elbow, wrist, x, y, z);
