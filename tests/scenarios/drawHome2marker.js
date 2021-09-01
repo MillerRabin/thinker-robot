@@ -14,7 +14,7 @@ const home = {
     }
 };
 
-describe('draw home', function() {
+describe.skip('draw home', function() {
     it('move to home', async function () {
         await position.set({ "claw-x": 95,  "claw-y": 0,    "claw-z": 25,       "iterations": 60, "claw-angle-x": 0, "claw-angle": 0, "iteration-delay": 30 });
     });

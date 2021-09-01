@@ -12,10 +12,12 @@ async function request(pos) {
         method: 'POST',
         body: JSON.stringify(pos)
     });
+    let text = '';
     try {
-        return await res.json();
+        text = await res.text();
+        return JSON.parse(text);
     } catch (e) {
-        console.log (await res.text());
+        console.log (text);
         throw e;
     }
 }
@@ -33,7 +35,7 @@ exports.set = async (pos) => {
         const obj = await request(pos);
         const err = obj['error'];
         if (err == null) return obj;
-        if (err.code == -22) {
+        if (err.code == -25) {
             await delay(500);
             continue;
         }

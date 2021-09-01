@@ -336,6 +336,7 @@ void ArmWrist::setPos(ArmShoulder shoulder, ArmElbow elbow, const double x, cons
     const double wx = x - (shoulder.x + elbow.x);
     const double wy = y - (shoulder.y + elbow.y);
     const double wz = z - (shoulder.z + elbow.z + BASE_HEIGHT);
+    Serial.printf("wrist.setPos: wx: %f, wy: %f, wz: %f\n", wx, wy, wz);
     setRads(YRad, elbow.ZRad);
     const double wrad = getYRadFromPos(wx, wy, wz);
     setRads(wrad, elbow.ZRad);
