@@ -49,6 +49,7 @@ class Strategy {
         Position tryHalfLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);        
+        std::string type;
     public:
         Strategy(
                 Position pos, 
@@ -68,6 +69,7 @@ class Strategy {
         const unsigned int iterations;
         const unsigned int postDelay;
         const unsigned int iterationDelay;
+        std::string getType() { return type; };
 };
 
 #endif

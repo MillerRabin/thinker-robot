@@ -24,11 +24,15 @@ class Coords {
 
 class ArmPoint {    
     protected:
+        double XRadLocal = 0;
+        double YRadLocal = 0;
+        double ZRadLocal = 0;
         void setCoords();            
+        void setRadsLocal(const double xRad, const double yRad, const double zRad);
     public:
-        double YRad = NAN;
-        double ZRad = NAN;
-        double XRad = NAN;
+        double YRad = 0;
+        double ZRad = 0;
+        double XRad = 0;
         double x = NAN;
         double y = NAN;
         double z = NAN;        
@@ -81,7 +85,7 @@ class ArmPoint {
         const double getZRad(const double angle);        
         const double getXAngleFromRad(const double rad);
         const double getYAngleFromRad(const double rad);
-        const double getZAngleFromRad(const double rad);
+        const double getZAngleFromRad(const double rad);        
         static const double getRadFromXY(const double x, const double y);
         const bool isValid();
 };
@@ -208,15 +212,14 @@ class ArmClaw : public ArmPoint {
         const double getClawRad(const double angle);
         const double getClawAngleFromRad(const double rad);
     public:    
-        double clawRad = NAN;
-        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawZAngle, const double clawAngle);
-        ArmClaw(const double xRad, const double yRad, const double zRad, const double clawRad);
+        double clawRad = 0;
+        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawZAngle, const double clawAngle);        
         const double getAngle(const bool validate = true);
         const double getXAngle(const bool validate = true);                
         const double getZAngle(ArmWrist wrist, const bool validate = true);
-        const double getYAngle(ArmWrist wrist, const bool validate = true);        
+        const double getYAngle(ArmWrist wrist, const bool validate = true);                
         void setRads(const double xRad, const double yRad, const double zRad, const double clawRad);
-        void setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z);        
+        void setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z);                
         const double getLength() override {
             return CLAW_LENGTH;
         };

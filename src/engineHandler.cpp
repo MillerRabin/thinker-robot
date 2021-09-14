@@ -7,11 +7,12 @@
 #include "armEngines.h"
 #include "engineHandler.h"
 
-void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos) {
+void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos, std::string strategyType) {
     AsyncResponseStream *response = request->beginResponseStream("application/json");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
     
+    root["strategy-type"] = strategyType.c_str();
     if (pos.getLastError() == ARM_OPERATION_SUCCESS) {
         JsonObject& pAngles = root.createNestedObject("target-physical-angles");
         pAngles["claw-angle"] = pos.getClawAngle();
@@ -31,13 +32,13 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos) {
         lAngles["shoulder-angle-y"] = double(pos.shoulder.YRad / PI) * 180;
         lAngles["shoulder-angle-z"] = double(pos.shoulder.ZRad / PI) * 180;
 
-         JsonObject& positions = root.createNestedObject("target-position");
+        JsonObject& positions = root.createNestedObject("target-position");
         positions["claw-x"] = pos.getX();
         positions["claw-y"] = pos.getY();
         positions["claw-z"] = pos.getZ();        
         positions["wrist-x"] = pos.shoulder.x + pos.elbow.x + pos.wrist.x;
         positions["wrist-y"] = pos.shoulder.y + pos.elbow.y + pos.wrist.y;
-        positions["wrist-z"] = pos.shoulder.z + pos.elbow.z + pos.wrist.z;
+        positions["wrist-z"] = pos.shoulder.z + pos.elbow.z + pos.wrist.z + BASE_HEIGHT;
         positions["elbow-x"] = pos.shoulder.x + pos.elbow.x;
         positions["elbow-y"] = pos.shoulder.y + pos.elbow.y;
         positions["elbow-z"] = pos.shoulder.z + pos.elbow.z + BASE_HEIGHT;
@@ -74,7 +75,7 @@ EngineHandler::EngineHandler() {
         try {
             JsonObject& jsonObj = json.as<JsonObject>();
             Position pos = armEngines.set(jsonObj);
-            sendSuccess(request, pos);
+            sendSuccess(request, pos, "Direct move");
         } catch (const std::exception& e) {
             sendError(request, e.what());
         } catch (...) {
@@ -88,9 +89,9 @@ EngineHandler::EngineHandler() {
             Position pos = armEngines.getPosition();        
             Strategy moveStrategy(
                 pos, 
-                ArmEngines::getDouble(jsonObj, "claw-x"),
-                ArmEngines::getDouble(jsonObj, "claw-y"),
-                ArmEngines::getDouble(jsonObj, "claw-z"),
+                ArmEngines::getDoubleDef(jsonObj, "claw-x", pos.getX()),
+                ArmEngines::getDoubleDef(jsonObj, "claw-y", pos.getY()),
+                ArmEngines::getDoubleDef(jsonObj, "claw-z", pos.getZ()),
                 ArmEngines::getDouble(jsonObj, "claw-angle-x"),
                 ArmEngines::getDouble(jsonObj, "claw-angle-y"),
                 ArmEngines::getDouble(jsonObj, "claw-angle-z"),
@@ -100,7 +101,7 @@ EngineHandler::EngineHandler() {
                 ArmEngines::getUintDef(jsonObj, "iteration-delay", DEFAULT_ITERATION_DELAY)                
             );            
             Position rPos = armEngines.applyStrategy(moveStrategy);            
-            sendSuccess(request, rPos);
+            sendSuccess(request, rPos, moveStrategy.getType());
         } catch (const std::exception& e) {
             sendError(request, e.what());
         } catch (...) {

@@ -36,7 +36,7 @@ exports.set = async (pos) => {
         const err = obj['error'];
         if (err == null) return obj;
         if (err.code == -25) {
-            await delay(500);
+            await delay(2000);
             continue;
         }
         throw err;

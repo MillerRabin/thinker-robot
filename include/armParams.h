@@ -23,7 +23,7 @@
 
 //Home point. Physical angles of engines
 #define SHOULDER_Z_PHYSICAL_ANGLE 135
-#define SHOULDER_Y_PHYSICAL_ANGLE 90
+#define SHOULDER_Y_PHYSICAL_ANGLE 135
 #define ELBOW_Y_PHYSICAL_ANGLE 230
 #define WRIST_Y_PHYSICAL_ANGLE 235
 #define CLAW_X_PHYSICAL_ANGLE 135
@@ -48,7 +48,7 @@
 #define SHOULDER_Z_MAX 270
 
 #define ELBOW_LENGTH 95
-#define ELBOW_Y_BASE 140
+#define ELBOW_Y_BASE 145
 #define ELBOW_Y_SCALE -1
 #define ELBOW_Y_MIN 0
 #define ELBOW_Y_MAX 280

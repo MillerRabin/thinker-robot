@@ -14,6 +14,7 @@ volatile double ArmEngines::wristYAngle = WRIST_Y_PHYSICAL_ANGLE;
 volatile double ArmEngines::clawXAngle = CLAW_X_PHYSICAL_ANGLE;
 volatile double ArmEngines::clawZAngle = CLAW_Z_PHYSICAL_ANGLE;
 volatile double ArmEngines::clawAngle = CLAW_PHYSICAL_ANGLE;
+Position ArmEngines::lastPosition = Position();
 TaskHandle_t ArmEngines::loopTask = NULL;
 ArmQueue ArmEngines::queue = ArmQueue();
 
@@ -160,6 +161,8 @@ Position ArmEngines::set(
             iterationDelay
     );
     pos.setLastError(res, ArmError::getErrorText(res));
+    if (res == ARM_OPERATION_SUCCESS)
+        ArmEngines::lastPosition = pos;
     return pos;
 }
 
@@ -170,8 +173,7 @@ Position ArmEngines::set(
         const unsigned int iterationDelay
     ) {    
     
-    if (!pos.isValid()) return pos;
-        
+    if (!pos.isValid()) return pos;    
     ArmOperationResult res = ArmEngines::queue.enqueue(
             pos.getShoulderYAngle(),
             pos.getShoulderZAngle(),        
@@ -185,21 +187,24 @@ Position ArmEngines::set(
             iterationDelay
     );
     pos.setLastError(res, ArmError::getErrorText(res));
+    if (res == ARM_OPERATION_SUCCESS)
+        ArmEngines::lastPosition = pos;
     return pos;
 }
 
 Position ArmEngines::set(JsonObject& jsonObj) {
-    return set(        
-        getDoubleDef(jsonObj, "shoulder-y", ArmEngines::shoulderYAngle),
-        getDoubleDef(jsonObj, "shoulder-z", ArmEngines::shoulderZAngle),
-        getDoubleDef(jsonObj, "elbow-y", ArmEngines::elbowYAngle),
-        getDoubleDef(jsonObj, "wrist-y", ArmEngines::wristYAngle),
-        getDoubleDef(jsonObj, "claw-x", ArmEngines::clawXAngle),
-        getDoubleDef(jsonObj, "claw-z", ArmEngines::clawZAngle),
-        getDoubleDef(jsonObj, "claw", ArmEngines::clawAngle),
-        getDoubleDef(jsonObj, "iterations", 100),
-        getDoubleDef(jsonObj, "post-delay", 1000),
-        getDoubleDef(jsonObj, "iteration-delay", 50)    
+    Position pos = ArmEngines::getPosition();
+    return set(
+        getDoubleDef(jsonObj, "shoulder-y", pos.getShoulderYAngle()),
+        getDoubleDef(jsonObj, "shoulder-z", pos.getShoulderZAngle()),
+        getDoubleDef(jsonObj, "elbow-y", pos.getElbowYAngle()),
+        getDoubleDef(jsonObj, "wrist-y", pos.getWristYAngle()),
+        getDoubleDef(jsonObj, "claw-x", pos.getClawXAngle()),        
+        getDoubleDef(jsonObj, "claw-z", pos.getClawZAngle()),
+        getDoubleDef(jsonObj, "claw", pos.getClawAngle()),
+        getDoubleDef(jsonObj, "iterations", DEFAULT_ITERATIONS),
+        getDoubleDef(jsonObj, "post-delay", DEFAULT_POST_DELAY),
+        getDoubleDef(jsonObj, "iteration-delay", DEFAULT_ITERATION_DELAY)    
     );
 }
 
@@ -235,45 +240,6 @@ const uint ArmEngines::degToCount(const double value, const uint maxDeg) {
 Position ArmEngines::applyStrategy(Strategy strategy) {    
     ArmOperationResult res = strategy.endPosition.getLastError();    
     if (res != ARM_OPERATION_SUCCESS) return strategy.endPosition;
-
-    double shoulderYAngle = NAN;
-    double shoulderZAngle = NAN;    
-    double elbowYAngle = NAN;
-    double wristYAngle = NAN;
-    double clawXAngle = NAN;
-    double clawZAngle = NAN;
-    double clawAngle = NAN;
-
-    for(EngineControl control : strategy.sequence) {    
-        if (control.engine == SHOULDER_Y_ENGINE) {            
-            shoulderYAngle = control.angle;
-            continue;
-        }
-        if (control.engine == ELBOW_Y_ENGINE) {
-            elbowYAngle = control.angle;
-            continue;
-        }
-        if (control.engine == WRIST_Y_ENGINE) {
-            wristYAngle = control.angle;
-            continue;
-        }
-        if (control.engine == SHOULDER_Z_ENGINE) {
-            shoulderZAngle = control.angle;
-            continue;
-        }
-        if (control.engine == CLAW_X_ENGINE) {
-            clawXAngle = control.angle;
-            continue;
-        }
-        if (control.engine == CLAW_Z_ENGINE) {
-            clawZAngle = control.angle;
-            continue;
-        }
-        if (control.engine == CLAW_ENGINE) {
-            clawAngle = control.angle;
-            continue;
-        }
-    }    
     return set(
         strategy.endPosition,
         strategy.iterations, 
@@ -284,7 +250,10 @@ Position ArmEngines::applyStrategy(Strategy strategy) {
 
 
 Position ArmEngines::getPosition() {
-    return Position(
+    if (ArmEngines::lastPosition.isValid())
+        return ArmEngines::lastPosition;
+
+    ArmEngines::lastPosition = Position(
         ArmEngines::shoulderYAngle, 
         ArmEngines::shoulderZAngle, 
         ArmEngines::elbowYAngle, 
@@ -293,4 +262,6 @@ Position ArmEngines::getPosition() {
         ArmEngines::clawZAngle, 
         ArmEngines::clawAngle
     );
+    
+    return ArmEngines::lastPosition;
 }

@@ -25,6 +25,7 @@ class ArmEngines {
         static volatile double clawXAngle;
         static volatile double clawZAngle;
         static volatile double clawAngle;  
+        static Position lastPosition;
         static const double setEngine(const uint engine, const double angle);        
         static const uint degToCount(const double value, const uint maxDeg);
         static TaskHandle_t loopTask;
