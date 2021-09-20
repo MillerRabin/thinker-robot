@@ -83,6 +83,9 @@ class ArmPoint {
         const double getXRad(const double angle);
         const double getYRad(const double angle);
         const double getZRad(const double angle);        
+        const double getXRad();
+        const double getYRad();
+        const double getZRad(); 
         const double getXAngleFromRad(const double rad);
         const double getYAngleFromRad(const double rad);
         const double getZAngleFromRad(const double rad);        

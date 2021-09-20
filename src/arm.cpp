@@ -39,6 +39,19 @@ const double ArmPoint::getZRad(const double angle) {
     return (this->getZScale() * angle + this->getZBase()) * PI / 180.0;    
 }
 
+const double ArmPoint::getXRad() {    
+    return this->XRad + this->XRadLocal;
+}
+
+const double ArmPoint::getYRad() {    
+    return this->YRad + this->YRadLocal;
+}
+
+const double ArmPoint::getZRad() {    
+    return this->ZRad + this->ZRadLocal;
+}
+
+
 void ArmPoint::setCoords() {    
     const double length = this->getLength();
     this->x = length * cos(this->YRad) * cos(this->ZRad + this->ZRadLocal);
@@ -401,14 +414,16 @@ const double ArmClaw::getClawAngleFromRad(const double rad) {
 }
 
 
-const double ArmClaw::getXAngle(const bool validate) {     
-     const double angle = getXAngleFromRad(XRad);
+const double ArmClaw::getXAngle(const bool validate) {                 
+    const double delta = YRad * ZRad;
+    const double tXRad = this->XRad + delta;    
+    const double angle = getXAngleFromRad(tXRad);
     if (!validate)
         return angle;
     return ArmClaw::validateXAngle(angle);    
 }
 
-const double ArmClaw::getZAngle(ArmWrist wrist, const bool validate) {     
+const double ArmClaw::getZAngle(ArmWrist wrist, const bool validate) {         
     const double angle = getZAngleFromRad(this->ZRad - wrist.ZRad);     
     if (!validate)
         return angle;

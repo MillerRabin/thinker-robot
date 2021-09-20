@@ -25,8 +25,8 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos, st
         
         JsonObject& lAngles = root.createNestedObject("target-logical-angles");
         lAngles["claw-angle"] = pos.getClawAngle();
-        lAngles["claw-angle-x"] = double(pos.claw.XRad / PI) * 180;
-        lAngles["claw-angle-z"] = double(pos.claw.ZRad / PI) * 180;
+        lAngles["claw-angle-x"] = double(pos.claw.getXRad() / PI) * 180;
+        lAngles["claw-angle-z"] = double(pos.claw.getZRad() / PI) * 180;
         lAngles["wrist-angle-y"] = double(pos.wrist.YRad / PI) * 180;
         lAngles["elbow-angle-y"] = double(pos.elbow.YRad / PI) * 180;    
         lAngles["shoulder-angle-y"] = double(pos.shoulder.YRad / PI) * 180;

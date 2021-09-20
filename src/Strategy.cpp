@@ -201,7 +201,7 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
         return ep;
     }
 
-    const double cxRad = clawXAngle / 180 * PI;    
+    const double cxRad = clawXAngle / 180 * PI;        
     const double clawRad = clawAngle / 180 * PI;
     
     for(double rad : rads) {                         
@@ -212,12 +212,13 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
         elbow.setPos(shoulder, ex, ey, ez);        
         ArmWrist wrist = startPosition.wrist;        
         wrist.setPos(shoulder, elbow, wx, wy, wz);        
-        ArmClaw claw = startPosition.claw;
+        ArmClaw claw = startPosition.claw;        
         claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);
-        claw.setPos(shoulder, elbow, wrist, x, y, z);
+        claw.setPos(shoulder, elbow, wrist, x, y, z);        
         Position pos = Position(shoulder, elbow, wrist, claw);
         if (pos.isValid())
             return pos;        
+        
     }   
     Position ep = Position();
     ep.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
