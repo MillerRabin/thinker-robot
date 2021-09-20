@@ -234,14 +234,12 @@ Strategy::Strategy(
     const double clawYAngle, 
     const double clawZAngle, 
     const double clawAngle,
-    const unsigned int iterations,
-    const unsigned int postDelay,
-    const unsigned int iterationDelay
+    const double speed,
+    const unsigned int postDelay    
 ) : 
     startPosition(pos),
-    iterations(iterations),
-    postDelay(postDelay),
-    iterationDelay(iterationDelay)
+    speed(speed),
+    postDelay(postDelay)    
 {        
     const double sca = pos.claw.clawRad / PI * 180;
     const double scxa = pos.claw.XRad / PI * 180;

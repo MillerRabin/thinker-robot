@@ -30,6 +30,8 @@ class ArmEngines {
         static const uint degToCount(const double value, const uint maxDeg);
         static TaskHandle_t loopTask;
         static void loop( void* param );     
+        static const double getMaxRange(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange);
+        static const unsigned int getIterations(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange);
     public:    
         ArmEngines();        
         ~ArmEngines();
@@ -41,15 +43,13 @@ class ArmEngines {
             const double clawXAngle, 
             const double clawZAngle, 
             const double clawAngle,
-            const unsigned int iterations = DEFAULT_ITERATIONS,
-            const unsigned int postDelay = DEFAULT_POST_DELAY,
-            const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
+            const double speed = DEFAULT_SPEED,
+            const unsigned int postDelay = DEFAULT_POST_DELAY            
         );
         Position set(
             Position pos,
-            const unsigned int iterations = DEFAULT_ITERATIONS,
-            const unsigned int postDelay = DEFAULT_POST_DELAY,
-            const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
+            const double speed = DEFAULT_SPEED,
+            const unsigned int postDelay = DEFAULT_POST_DELAY            
         );
         Position set(JsonObject& jsonObj);
         Position applyStrategy(Strategy strategy);

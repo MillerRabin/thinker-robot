@@ -11,9 +11,8 @@ ArmQueueItem::ArmQueueItem(
         const double clawXAngle, 
         const double clawZAngle, 
         const double clawAngle, 
-        const unsigned int iterations, 
-        const unsigned int postDelay, 
-        const unsigned int iterationDelay
+        const double speed, 
+        const unsigned int postDelay        
     ) :     
     shoulderZAngle(shoulderZAngle),
     shoulderYAngle(shoulderYAngle),            
@@ -22,9 +21,8 @@ ArmQueueItem::ArmQueueItem(
     clawXAngle(clawXAngle),
     clawZAngle(clawZAngle),
     clawAngle(clawAngle),
-    iterations(iterations),
+    speed(speed),
     postDelay(postDelay),
-    iterationDelay(iterationDelay),
     valid(isValid())
 {};
 
@@ -38,10 +36,8 @@ const bool ArmQueueItem::isValid() {
             !isnan(clawAngle)       &&
             (postDelay > 0)         &&
             (postDelay < 10000)     &&
-            (iterationDelay > 1)    &&
-            (iterationDelay <= 100) &&
-            (iterations > 0)        &&
-            (iterations <= 100));
+            (speed > 0)             &&
+            (speed <= 10));
 }
 
 //----------ArmQueue-----------
@@ -72,9 +68,8 @@ ArmOperationResult ArmQueue::enqueue(
     const double clawXAngle, 
     const double clawZAngle, 
     const double clawAngle, 
-    const unsigned int iterations,
-    const unsigned int postDelay,
-    const unsigned int iterationDelay
+    const double speed,
+    const unsigned int postDelay    
 ) {    
     if (isFull()) {        
         return ERROR_COMMAND_QUEUE_IS_FULL;    
@@ -87,9 +82,8 @@ ArmOperationResult ArmQueue::enqueue(
                                 clawXAngle, 
                                 clawZAngle, 
                                 clawAngle, 
-                                iterations,
-                                postDelay,
-                                iterationDelay
+                                speed,
+                                postDelay                                
                          );                             
     if (!item->valid) {                
         delete item;        

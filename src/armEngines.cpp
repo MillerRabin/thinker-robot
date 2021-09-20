@@ -55,6 +55,40 @@ ArmEngines::~ArmEngines() {
     vTaskDelete(ArmEngines::loopTask);
 }
 
+const unsigned int ArmEngines::getIterations(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange) {
+    const double maxRange = getMaxRange(shoulderYAngleRange, shoulderZAngleRange, elbowYAngleRange, wristYAngleRange, clawXAngleRange, clawZAngleRange, clawAngleRange);
+    const unsigned int mi =  int(maxRange);
+    return (mi == 0) ? 1 : mi;
+}
+
+const double ArmEngines::getMaxRange(
+    const double shoulderYAngleRange, 
+    const double shoulderZAngleRange, 
+    const double elbowYAngleRange, 
+    const double wristYAngleRange, 
+    const double clawXAngleRange, 
+    const double clawZAngleRange, 
+    const double clawAngleRange
+) {
+    const double aShoulderYAngleRange = abs(shoulderYAngleRange);
+    const double aShoulderZAngleRange = abs(shoulderZAngleRange);
+    const double aElbowYAngleRange = abs(elbowYAngleRange);
+    const double aWristYAngleRange = abs(wristYAngleRange);
+    const double aClawXAngleRange = abs(clawXAngleRange);
+    const double aClawZAngleRange = abs(clawZAngleRange);
+    const double aClawAngleRange = abs(clawAngleRange);
+
+    double max = aShoulderYAngleRange;
+    max = (aShoulderZAngleRange > max) ? aShoulderZAngleRange : max;
+    max = (aElbowYAngleRange > max) ? aElbowYAngleRange : max;
+    max = (aWristYAngleRange > max) ? aWristYAngleRange : max;
+    max = (aClawXAngleRange > max) ? aClawXAngleRange : max;
+    max = (aClawZAngleRange > max) ? aClawZAngleRange : max;
+    max = (aClawAngleRange > max) ? aClawAngleRange : max;
+    return max;
+}
+
+
 void ArmEngines::loop( void* param ) {    
     while (true) {
         ArmQueueItem* aq = ArmEngines::queue.dequeue();
@@ -64,8 +98,7 @@ void ArmEngines::loop( void* param ) {
             continue;
         }
 
-        const unsigned int iterations = aq->iterations;
-        const unsigned int iterationDelay = aq->iterationDelay;
+        const unsigned int speed = aq->speed;
         const unsigned int postDelay = aq->postDelay;
 
         const double targetShoulderYAngle = aq->shoulderYAngle;    
@@ -93,6 +126,10 @@ void ArmEngines::loop( void* param ) {
         const double clawXAngleRange = targetClawXAngle - sourceClawXAngle;
         const double clawZAngleRange = targetClawZAngle - sourceClawZAngle;
         const double clawAngleRange = targetClawAngle - sourceClawAngle;
+
+        const unsigned int iterations = getIterations(shoulderYAngleRange, shoulderZAngleRange, elbowYAngleRange, wristYAngleRange, clawXAngleRange, clawZAngleRange, clawAngleRange) / speed;
+        const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY;
+        //Serial.printf("eIterations: %d\n", eIterations);
 
         for (unsigned int counter = 1; counter <= iterations; counter++) {
             const double shoulderYAngleInc = shoulderYAngleRange / iterations * counter;
@@ -140,9 +177,8 @@ Position ArmEngines::set(
         const double clawXAngle, 
         const double clawZAngle, 
         const double clawAngle,
-        const unsigned int iterations,
-        const unsigned int postDelay,
-        const unsigned int iterationDelay
+        const double speed,
+        const unsigned int postDelay        
     ) {    
 
     Position pos = Position(shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawZAngle, clawAngle);
@@ -156,9 +192,8 @@ Position ArmEngines::set(
             clawXAngle, 
             clawZAngle, 
             clawAngle, 
-            iterations,
-            postDelay,
-            iterationDelay
+            speed,
+            postDelay            
     );
     pos.setLastError(res, ArmError::getErrorText(res));
     if (res == ARM_OPERATION_SUCCESS)
@@ -168,9 +203,8 @@ Position ArmEngines::set(
 
 Position ArmEngines::set(
         Position pos,
-        const unsigned int iterations,
-        const unsigned int postDelay,
-        const unsigned int iterationDelay
+        const double speed,
+        const unsigned int postDelay        
     ) {    
     
     if (!pos.isValid()) return pos;    
@@ -182,9 +216,8 @@ Position ArmEngines::set(
             pos.getClawXAngle(), 
             pos.getClawZAngle(), 
             pos.getClawAngle(), 
-            iterations,
-            postDelay,
-            iterationDelay
+            speed,
+            postDelay
     );
     pos.setLastError(res, ArmError::getErrorText(res));
     if (res == ARM_OPERATION_SUCCESS)
@@ -202,9 +235,8 @@ Position ArmEngines::set(JsonObject& jsonObj) {
         getDoubleDef(jsonObj, "claw-x", pos.getClawXAngle()),        
         getDoubleDef(jsonObj, "claw-z", pos.getClawZAngle()),
         getDoubleDef(jsonObj, "claw", pos.getClawAngle()),
-        getDoubleDef(jsonObj, "iterations", DEFAULT_ITERATIONS),
-        getDoubleDef(jsonObj, "post-delay", DEFAULT_POST_DELAY),
-        getDoubleDef(jsonObj, "iteration-delay", DEFAULT_ITERATION_DELAY)    
+        getDoubleDef(jsonObj, "speed", DEFAULT_SPEED),
+        getDoubleDef(jsonObj, "post-delay", DEFAULT_POST_DELAY)        
     );
 }
 
@@ -242,9 +274,8 @@ Position ArmEngines::applyStrategy(Strategy strategy) {
     if (res != ARM_OPERATION_SUCCESS) return strategy.endPosition;
     return set(
         strategy.endPosition,
-        strategy.iterations, 
-        strategy.postDelay, 
-        strategy.iterationDelay
+        strategy.speed, 
+        strategy.postDelay        
     );
 }
 

@@ -60,15 +60,14 @@ class Strategy {
                 const double clawYAngle, 
                 const double clawZAngle, 
                 const double clawAngle, 
-                const unsigned int iterations = DEFAULT_ITERATIONS, 
-                const unsigned int postDelay = DEFAULT_POST_DELAY, 
-                const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY);
+                const double speed = DEFAULT_SPEED, 
+                const unsigned int postDelay = DEFAULT_POST_DELAY                
+        );
         std::vector<EngineControl> sequence;        
         Position startPosition;
         Position endPosition;
-        const unsigned int iterations;
-        const unsigned int postDelay;
-        const unsigned int iterationDelay;
+        const double speed;
+        const unsigned int postDelay;        
         std::string getType() { return type; };
 };
 

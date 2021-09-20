@@ -17,9 +17,8 @@ class ArmQueueItem {
         const double clawXAngle;
         const double clawZAngle;
         const double clawAngle; 
-        const unsigned int iterations;
-        const unsigned int postDelay;
-        const unsigned int iterationDelay;
+        const unsigned int speed;
+        const unsigned int postDelay;        
         const bool valid;
         
         ArmQueueItem(
@@ -30,9 +29,8 @@ class ArmQueueItem {
             const double clawXAngle = NAN, 
             const double clawZAngle = NAN, 
             const double clawAngle = NAN, 
-            const unsigned int iterations = DEFAULT_ITERATIONS, 
-            const unsigned int postDelay = DEFAULT_POST_DELAY,
-            const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY
+            const double speed = DEFAULT_SPEED, 
+            const unsigned int postDelay = DEFAULT_POST_DELAY            
         );
 };
 
@@ -56,9 +54,8 @@ class ArmQueue {
             const double clawXAngle, 
             const double clawZAngle, 
             const double clawAngle, 
-            const unsigned int iterations, 
-            const unsigned int postDelay, 
-            const unsigned int iterationDelay);
+            const double speed, 
+            const unsigned int postDelay);
         ArmQueueItem* dequeue();        
 };
 

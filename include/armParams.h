@@ -86,9 +86,7 @@
 
 #define COMMAND_QUEUE_SIZE 20
 
-//Every engine movement will split into iterations
-//Affects on arm movements smooth and speed. 
-#define DEFAULT_ITERATIONS 50
+#define DEFAULT_SPEED 1
 //Default delay between commands in queue in ms
 #define DEFAULT_POST_DELAY 500
 
