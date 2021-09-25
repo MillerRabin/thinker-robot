@@ -61,6 +61,13 @@ const unsigned int ArmEngines::getIterations(const double shoulderYAngleRange, c
     return (mi == 0) ? 1 : mi;
 }
 
+const unsigned int ArmEngines::isCompleted(const double targetShoulderYAngle, const double targetShoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange) {
+    const double maxRange = getMaxRange(shoulderYAngleRange, shoulderZAngleRange, elbowYAngleRange, wristYAngleRange, clawXAngleRange, clawZAngleRange, clawAngleRange);
+    const unsigned int mi =  int(maxRange);
+    return (mi == 0) ? 1 : mi;
+}
+
+
 const double ArmEngines::getMaxRange(
     const double shoulderYAngleRange, 
     const double shoulderZAngleRange, 
@@ -129,16 +136,17 @@ void ArmEngines::loop( void* param ) {
 
         const unsigned int iterations = getIterations(shoulderYAngleRange, shoulderZAngleRange, elbowYAngleRange, wristYAngleRange, clawXAngleRange, clawZAngleRange, clawAngleRange) / speed;
         const unsigned int iterationDelay = DEFAULT_ITERATION_DELAY;
-        //Serial.printf("eIterations: %d\n", eIterations);
+        const double shoulderYAngleInc = shoulderYAngleRange / iterations;
+        const double shoulderZAngleInc = shoulderZAngleRange / iterations;
+        const double elbowYAngleInc = elbowYAngleRange / iterations;
+        const double wristYAngleInc = wristYAngleRange / iterations;
+        const double clawXAngleInc = clawXAngleRange / iterations;
+        const double clawZAngleInc = clawZAngleRange / iterations;
+        const double clawAngleInc = clawAngleRange / iterations;
 
-        for (unsigned int counter = 1; counter <= iterations; counter++) {
-            const double shoulderYAngleInc = shoulderYAngleRange / iterations * counter;
-            const double shoulderZAngleInc = shoulderZAngleRange / iterations * counter;
-            const double elbowYAngleInc = elbowYAngleRange / iterations * counter;
-            const double wristYAngleInc = wristYAngleRange / iterations * counter;
-            const double clawXAngleInc = clawXAngleRange / iterations * counter;
-            const double clawZAngleInc = clawZAngleRange / iterations * counter;
-            const double clawAngleInc = clawAngleRange / iterations * counter;
+        
+            while()
+            
 
             ArmEngines::shoulderYAngle = (counter <= iterations) ? sourceShoulderYAngle + shoulderYAngleInc : targetShoulderYAngle;    
             ArmEngines::shoulderZAngle = (counter <= iterations) ? sourceShoulderZAngle + shoulderZAngleInc : targetShoulderZAngle;
