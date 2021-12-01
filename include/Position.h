@@ -2,7 +2,7 @@
 #define position_h
 
 #include <armParams.h>
-#include <position.h>
+#include <Position.h>
 #include <arm.h>
 
 class Position {

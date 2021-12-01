@@ -1,6 +1,6 @@
 #include <arm.h>
 #include <math.h>
-#include <arduino.h>
+#include <Arduino.h>
 #include "armParams.h"
 #include "radsList.h"
 #include <string>
@@ -445,7 +445,7 @@ const double ArmClaw::validateYAngle(const double angle) {
 }
 
 const double ArmClaw::validateXAngle(const double angle) {        
-    if (isnan(angle)) return ERROR_CLAW_X_ANGLE_IS_NAN;            
+    if (isnan(angle)) return ERROR_CLAW_X_ANGLE_IS_NAN;                
     if (angle < CLAW_X_MIN) return ERROR_CLAW_X_ANGLE_LESS_MIN;     
     if (angle > CLAW_X_MAX) return ERROR_CLAW_X_ANGLE_ABOVE_MAX;            
     return angle;      

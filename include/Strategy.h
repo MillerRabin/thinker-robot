@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 #include "arm.h"
-#include "position.h"
-#include "ArmParams.h"
+#include "Position.h"
+#include "armParams.h"
 
 //------EngineControl------
 

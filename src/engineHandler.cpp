@@ -2,8 +2,8 @@
 #include <ArduinoJson.h>
 #include "armParams.h"
 #include "initServer.h"
-#include "position.h"
-#include "strategy.h"
+#include "Position.h"
+#include "Strategy.h"
 #include "armEngines.h"
 #include "engineHandler.h"
 

@@ -8,9 +8,8 @@
 
 #include "armError.h"
 #include "armParams.h"
-#include "strategy.h"
-#include "position.h"
-#include "strategy.h"
+#include "Strategy.h"
+#include "Position.h"
 #include "armQueue.h"
 
 //------ArmEngines------

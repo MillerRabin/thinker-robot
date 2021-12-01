@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "armParams.h"
-#include "strategy.h"
-#include "position.h"
+#include "Strategy.h"
+#include "Position.h"
 #include "arm.h"
 #include "armError.h"
 

@@ -1,7 +1,7 @@
 #include "armError.h"
 #include "string.h"
 #include <ArduinoJson.h>
-#include "position.h"
+#include "Position.h"
 #include "armParams.h"
 
 std::string ArmError::getBaseError(const double x, const double y, const double z) {

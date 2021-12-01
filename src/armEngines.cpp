@@ -1,7 +1,7 @@
 #include <ArduinoJson.h>
 #include "armParams.h"
 #include "armEngines.h"
-#include "strategy.h"
+#include "Strategy.h"
 #include "armQueue.h"
 
 //Start engines parameter
