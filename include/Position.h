@@ -3,7 +3,10 @@
 
 #include <armParams.h>
 #include <Position.h>
-#include <arm.h>
+#include <ArmShoulder.h>
+#include <ArmElbow.h>
+#include <ArmWrist.h>
+#include <ArmClaw.h>
 
 class Position {
     private:
@@ -20,6 +23,7 @@ class Position {
             const double elbowYAngle = NAN, 
             const double wristYAngle = NAN, 
             const double clawXAngle = NAN, 
+            const double clawYAngle = NAN, 
             const double clawZAngle = NAN, 
             const double clawAngle = NAN
         );
@@ -33,6 +37,7 @@ class Position {
         const double getElbowYAngle();
         const double getWristYAngle();
         const double getClawXAngle();
+        const double getClawYAngle();
         const double getClawZAngle();
         const double getClawAngle();
         ArmOperationResult getLastError() { return lastError; };        

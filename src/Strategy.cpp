@@ -2,7 +2,6 @@
 #include "armParams.h"
 #include "Strategy.h"
 #include "Position.h"
-#include "arm.h"
 #include "armError.h"
 
 //------ArmRoot------
@@ -91,13 +90,10 @@ Position Strategy::tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double
     ArmWrist wrist = startPosition.wrist;    
     const double cx = x - (shoulder.x + elbow.x);
     const double cy = y - (shoulder.y + elbow.y);
-    const double cz = z - (shoulder.z + elbow.z + BASE_HEIGHT);    
+    const double cz = z - (shoulder.z + elbow.z);    
     wrist.setRads(wrist.YRad, elbow.ZRad);
-    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);
-    Serial.printf("cx: %f, cy: %f, cz: %f\n", cx, cy, cz);    
     const double yRad = wrist.getYRadFromPos(cx, cy, cz, CLAW_LENGTH + WRIST_LENGTH);    
     wrist.setRads(yRad, wrist.ZRad);
-    Serial.printf("wrist.x: %f, wrist.y: %f, wrist.z: %f\n", wrist.x, wrist.y, wrist.z);
     if (!wrist.isValid(elbow)) {    
         return Position();   
     }   
@@ -127,14 +123,14 @@ Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y
 
 Position Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {                    
     this->type = "Free angle";
-    const double vl = sqrt(x*x + y*y);
-    if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
+    //const double vl = sqrt(x*x + y*y);
+    /*if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
         Position ep = Position();
         ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
         return ep;
-    }
+    }*/
     
-    const double sLength = ArmShoulder::getLength(x, y, z);        
+    const double sLength = ArmShoulder::getLengthFromPoint(x, y, z);        
     if (sLength > MAX_LENGTH) {
         Position ep = Position();
         ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getMaxLengthError(sLength, MAX_LENGTH));
@@ -186,12 +182,12 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
         return ep;
     }
     
-    if ((z <= BASE_HEIGHT) && 
+    /*if ((z <= BASE_HEIGHT) && 
         ((el < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2))) {    
             Position ep = Position();
             ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
             return ep;
-    }
+    }*/
 
     
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
@@ -261,7 +257,7 @@ Strategy::Strategy(
 ArmRoots Strategy::getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length) {    
     const double sx = x - shoulder.x;
     const double sy = y - shoulder.y;
-    const double sz = z - (shoulder.z + BASE_HEIGHT);
+    const double sz = z - (shoulder.z);
     const double qx = sx * sx;
     const double qy = sy * sy;
     const double qz = sz * sz;

@@ -1,10 +1,10 @@
 #ifndef arm_engines_h
 #define arm_engines_h
 
-#define COUNT_LOW 1638
-#define COUNT_HIGH 7864
-#define COUNT_RANGE (COUNT_HIGH - COUNT_LOW)
+#define ENGINE_IMPULSE_MIN 500
+#define ENGINE_IMPULSE_MAX 2500
 #define TIMER_WIDTH 16
+#define TIMER_FREQ 200
 
 #include "armError.h"
 #include "armParams.h"
@@ -22,15 +22,18 @@ class ArmEngines {
         static volatile double elbowYAngle;
         static volatile double wristYAngle;         
         static volatile double clawXAngle;
+        static volatile double clawYAngle;
         static volatile double clawZAngle;
         static volatile double clawAngle;  
         static Position lastPosition;
         static const double setEngine(const uint engine, const double angle);        
-        static const uint degToCount(const double value, const uint maxDeg);
+        static const uint degToCount(const double value, const uint maxDeg, const uint impulseMin = ENGINE_IMPULSE_MIN, const uint impulseMax = ENGINE_IMPULSE_MAX);
         static TaskHandle_t loopTask;
         static void loop( void* param );     
-        static const double getMaxRange(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange);
-        static const unsigned int getIterations(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, const double clawXAngleRange, const double clawZAngleRange, const double clawAngleRange);
+        static const double getMaxRange(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, 
+                                        const double clawXAngleRange, const double clawYAngleRange, const double clawZAngleRange, const double clawAngleRange);
+        static const unsigned int getIterations(const double shoulderYAngleRange, const double shoulderZAngleRange, const double elbowYAngleRange, const double wristYAngleRange, 
+                                        const double clawXAngleRange, const double clawYAngleRange, const double clawZAngleRange, const double clawAngleRange);
     public:    
         ArmEngines();        
         ~ArmEngines();
@@ -40,6 +43,7 @@ class ArmEngines {
             const double elbowYAngle, 
             const double wristYAngle, 
             const double clawXAngle, 
+            const double clawYAngle, 
             const double clawZAngle, 
             const double clawAngle,
             const double speed = DEFAULT_SPEED,
@@ -60,6 +64,8 @@ class ArmEngines {
         const double getElbowYAngle() { return ArmEngines::elbowYAngle; };
         const double getWristYAngle() { return ArmEngines::wristYAngle; };
         const double getClawXAngle() { return ArmEngines::clawXAngle; };
+        const double getClawYAngle() { return ArmEngines::clawYAngle; };
+        const double getClawZAngle() { return ArmEngines::clawZAngle; };
         const double getClawAngle() { return ArmEngines::clawAngle; };
         Position getPosition();
         static ArmQueue queue;        

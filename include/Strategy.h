@@ -2,7 +2,6 @@
 #define strategy_h
 
 #include <Arduino.h>
-#include "arm.h"
 #include "Position.h"
 #include "armParams.h"
 

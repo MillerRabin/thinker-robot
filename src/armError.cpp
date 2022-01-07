@@ -40,6 +40,13 @@ std::string ArmError::getElbowZError(const double z, const double minZ) {
     return std::string("The elbow z: ") + sz + std::string(" is below minimum: ") + mz;            
 }
 
+std::string ArmError::getSumError(const double sum) {    
+    char mz[25]; 
+    dtostrf(sum, 1, 3, mz);    
+    char sz[25]; 
+    dtostrf(MAX_SUM_ANGLE, 1, 3, sz);
+    return std::string("the sum of angles: ") + mz + std::string(" is above maximum: ") + sz;            
+}
 
 std::string ArmError::getErrorText(ArmOperationResult res) {
     switch(res) {

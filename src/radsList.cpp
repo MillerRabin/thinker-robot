@@ -7,7 +7,7 @@ void RadsList::addIfValid(ArmShoulder shoulder, const double rad, const double t
     shoulder.setRads(rad, shoulder.ZRad);    
     const double tLength = ArmElbow::getLength(shoulder, x, y, z);    
     if (!shoulder.isValid()) return;    
-    if (!ArmPoint::isEqual(tLength, targetLength)) return;
+    if (!ArmPart::isEqual(tLength, targetLength)) return;
     rads.push_back(rad);
 }
 

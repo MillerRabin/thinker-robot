@@ -15,6 +15,7 @@ class ArmQueueItem {
         const double elbowYAngle;
         const double wristYAngle;         
         const double clawXAngle;
+        const double clawYAngle;
         const double clawZAngle;
         const double clawAngle; 
         const unsigned int speed;
@@ -27,6 +28,7 @@ class ArmQueueItem {
             const double elbowYAngle = NAN, 
             const double wristYAngle = NAN, 
             const double clawXAngle = NAN, 
+            const double clawYAngle = NAN, 
             const double clawZAngle = NAN, 
             const double clawAngle = NAN, 
             const double speed = DEFAULT_SPEED, 
@@ -52,6 +54,7 @@ class ArmQueue {
             const double elbowYAngle, 
             const double wristYAngle, 
             const double clawXAngle, 
+            const double clawYAngle, 
             const double clawZAngle, 
             const double clawAngle, 
             const double speed, 

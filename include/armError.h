@@ -12,6 +12,7 @@ class ArmError {
         static std::string getShoulderError();
         static std::string getUnreachableError();
         static std::string getElbowZError(const double z, const double minZ);        
+        static std::string getSumError(const double sum);                
         static std::string getErrorText(ArmOperationResult res);        
 };
 

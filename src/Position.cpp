@@ -2,15 +2,15 @@
 #include <math.h>
 #include "armParams.h"
 #include "Position.h"
-#include "arm.h"
 #include "armError.h"
 
-Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, const double clawZAngle, const double clawAngle) : 
+Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, 
+                   const double clawYAngle, const double clawZAngle, const double clawAngle) : 
     shoulder(shoulderYAngle, shoulderZAngle),
     elbow(shoulder, elbowYAngle),
     wrist(elbow, wristYAngle),
-    claw(wrist, clawXAngle, clawZAngle, clawAngle)    
-{
+    claw(wrist, clawXAngle, clawYAngle, clawZAngle, clawAngle)    
+{    
     isValid();
 }
 
@@ -32,7 +32,7 @@ const double Position::getY() {
 }
 
 const double Position::getZ() {                
-    return shoulder.z + elbow.z + wrist.z + claw.z + BASE_HEIGHT;
+    return shoulder.z + elbow.z + wrist.z + claw.z;
 }
 
 const double Position::getShoulderZAngle() {
@@ -55,6 +55,10 @@ const double Position::getClawXAngle() {
     return claw.getXAngle();
 }
 
+const double Position::getClawYAngle() {
+    return claw.getYAngle(wrist);
+}
+
 const double Position::getClawZAngle() {
     return claw.getZAngle(wrist);
 }
@@ -69,6 +73,7 @@ const bool Position::isValid() {
     const double deAngle = getElbowYAngle();
     const double dwAngle = getWristYAngle();        
     const double cxAngle = getClawXAngle();        
+    const double cyAngle = getClawYAngle();        
     const double czAngle = getClawZAngle();        
     const double clawAngle = getClawAngle();    
     if (dzAngle < 0) {
@@ -108,11 +113,11 @@ const bool Position::isValid() {
         return false;
     }
         
-    const double eRad = abs(elbow.getLocalRad(shoulder));
+    const double eRad = abs(elbow.getLocalRad(shoulder));    
     const double wRad = abs(wrist.getLocalRad(elbow));
     const double sum = (eRad + wRad) / PI * 180;    
     if (sum > MAX_SUM_ANGLE) {                
-        setLastError(ERROR_SUM_OF_ANGLES_ABOVE_MAX, ArmError::getErrorText(ERROR_SUM_OF_ANGLES_ABOVE_MAX));
+        setLastError(ERROR_SUM_OF_ANGLES_ABOVE_MAX, ArmError::getSumError(sum));
         return false;    
     }
     setLastError(ARM_OPERATION_SUCCESS, "");
