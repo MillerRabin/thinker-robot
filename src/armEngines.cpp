@@ -222,14 +222,14 @@ Position ArmEngines::set(
     
     if (!pos.isValid()) return pos;    
     ArmOperationResult res = ArmEngines::queue.enqueue(
-            pos.getShoulderYAngle(),
-            pos.getShoulderZAngle(),        
-            pos.getElbowYAngle(), 
-            pos.getWristYAngle(), 
-            pos.getClawXAngle(), 
-            pos.getClawYAngle(), 
-            pos.getClawZAngle(), 
-            pos.getClawAngle(), 
+            pos.shoulder.getYAngle(),
+            pos.shoulder.getZAngle(),        
+            pos.elbow.getYAngle(), 
+            pos.wrist.getYAngle(), 
+            pos.claw.getXAngle(), 
+            pos.claw.getYAngle(), 
+            pos.claw.getZAngle(), 
+            pos.claw.getAngle(), 
             speed,
             postDelay
     );
@@ -242,14 +242,14 @@ Position ArmEngines::set(
 Position ArmEngines::set(JsonObject& jsonObj) {
     Position pos = ArmEngines::getPosition();
     return set(
-        getDoubleDef(jsonObj, "shoulder-y", pos.getShoulderYAngle()),
-        getDoubleDef(jsonObj, "shoulder-z", pos.getShoulderZAngle()),
-        getDoubleDef(jsonObj, "elbow-y", pos.getElbowYAngle()),
-        getDoubleDef(jsonObj, "wrist-y", pos.getWristYAngle()),
-        getDoubleDef(jsonObj, "claw-x", pos.getClawXAngle()),        
-        getDoubleDef(jsonObj, "claw-y", pos.getClawYAngle()),        
-        getDoubleDef(jsonObj, "claw-z", pos.getClawZAngle()),
-        getDoubleDef(jsonObj, "claw", pos.getClawAngle()),
+        getDoubleDef(jsonObj, "shoulder-y", pos.shoulder.getYAngle()),
+        getDoubleDef(jsonObj, "shoulder-z", pos.shoulder.getZAngle()),
+        getDoubleDef(jsonObj, "elbow-y", pos.elbow.getYAngle()),
+        getDoubleDef(jsonObj, "wrist-y", pos.wrist.getYAngle()),
+        getDoubleDef(jsonObj, "claw-x", pos.claw.getXAngle()),        
+        getDoubleDef(jsonObj, "claw-y", pos.claw.getYAngle()),        
+        getDoubleDef(jsonObj, "claw-z", pos.claw.getAngle()),
+        getDoubleDef(jsonObj, "claw", pos.claw.getAngle()),
         getDoubleDef(jsonObj, "speed", DEFAULT_SPEED),
         getDoubleDef(jsonObj, "post-delay", DEFAULT_POST_DELAY)        
     );

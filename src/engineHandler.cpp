@@ -15,16 +15,22 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest* request, Position pos, st
     root["strategy-type"] = strategyType.c_str();
     if (pos.getLastError() == ARM_OPERATION_SUCCESS) {
         JsonObject& pAngles = root.createNestedObject("target-physical-angles");
-        pAngles["claw-angle"] = pos.getClawAngle();
-        pAngles["claw-angle-x"] = pos.getClawXAngle();    
-        pAngles["claw-angle-z"] = pos.getClawZAngle(); 
-        pAngles["wrist-angle-y"] = pos.getWristYAngle();     
-        pAngles["elbow-angle-y"] = pos.getElbowYAngle();    
-        pAngles["shoulder-angle-y"] = pos.getShoulderYAngle();
-        pAngles["shoulder-angle-z"] = pos.getShoulderZAngle();
+        pAngles["claw-angle"] = pos.claw.getAngle();
+        pAngles["claw-angle-x"] = pos.claw.getXAngle();    
+        pAngles["claw-angle-y"] = pos.claw.getYAngle();    
+        pAngles["claw-angle-z"] = pos.claw.getZAngle();         
+        pAngles["wrist-angle-x"] = pos.wrist.getXAngle();     
+        pAngles["wrist-angle-y"] = pos.wrist.getYAngle();     
+        pAngles["wrist-angle-z"] = pos.wrist.getZAngle();     
+        pAngles["elbow-angle-x"] = pos.elbow.getXAngle();    
+        pAngles["elbow-angle-y"] = pos.elbow.getYAngle();    
+        pAngles["elbow-angle-z"] = pos.elbow.getZAngle();    
+        pAngles["shoulder-angle-x"] = pos.shoulder.getXAngle();
+        pAngles["shoulder-angle-y"] = pos.shoulder.getYAngle();
+        pAngles["shoulder-angle-z"] = pos.shoulder.getZAngle();
         
         JsonObject& lAngles = root.createNestedObject("target-logical-angles");
-        lAngles["claw-angle"] = pos.getClawAngle();
+        lAngles["claw-angle"] = pos.claw.getAngle();
         lAngles["claw-angle-x"] = double(pos.claw.getXRad() / PI) * 180;
         lAngles["claw-angle-z"] = double(pos.claw.getZRad() / PI) * 180;
         lAngles["wrist-angle-y"] = double(pos.wrist.YRad / PI) * 180;

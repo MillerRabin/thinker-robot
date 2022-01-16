@@ -35,51 +35,15 @@ const double Position::getZ() {
     return shoulder.z + elbow.z + wrist.z + claw.z;
 }
 
-const double Position::getShoulderZAngle() {
-    return shoulder.getZAngle();
-}
-
-const double Position::getShoulderYAngle() {
-    return shoulder.getYAngle();
-}
-
-const double Position::getElbowYAngle() {
-    return NAN;
-    //return elbow.getYAngle(shoulder);
-}
-
-const double Position::getWristYAngle() {
-    return NAN;
-    //return wrist.getYAngle(elbow);
-}
-
-const double Position::getClawXAngle() {
-    return claw.getXAngle();
-}
-
-const double Position::getClawYAngle() {
-    return NAN;
-    //return claw.getYAngle(wrist);
-}
-
-const double Position::getClawZAngle() {
-    return NAN;
-    //return claw.getZAngle(wrist);
-}
-
-const double Position::getClawAngle() {
-    return claw.getAngle();
-}
-
 const bool Position::isValid() {        
-    const double dzAngle = getShoulderZAngle();
-    const double dsAngle = getShoulderYAngle();
-    const double deAngle = getElbowYAngle();
-    const double dwAngle = getWristYAngle();        
-    const double cxAngle = getClawXAngle();        
-    const double cyAngle = getClawYAngle();        
-    const double czAngle = getClawZAngle();        
-    const double clawAngle = getClawAngle();    
+    const double dzAngle = this->shoulder.getZAngle();
+    const double dsAngle = this->shoulder.getYAngle();
+    const double deAngle = this->elbow.getYAngle();
+    const double dwAngle = this->wrist.getYAngle();        
+    const double cxAngle = this->claw.getXAngle();        
+    const double cyAngle = this->claw.getYAngle();        
+    const double czAngle = this->claw.getZAngle();        
+    const double clawAngle = this->claw.getAngle();    
     if (dzAngle < 0) {
         ArmOperationResult res = (ArmOperationResult)dzAngle;
         setLastError(res, ArmError::getErrorText(res));

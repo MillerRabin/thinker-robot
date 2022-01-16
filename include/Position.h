@@ -32,14 +32,6 @@ class Position {
         const double getX();
         const double getY();
         const double getZ();
-        const double getShoulderZAngle();
-        const double getShoulderYAngle();
-        const double getElbowYAngle();
-        const double getWristYAngle();
-        const double getClawXAngle();
-        const double getClawYAngle();
-        const double getClawZAngle();
-        const double getClawAngle();
         ArmOperationResult getLastError() { return lastError; };        
         std::string getLastErrorText() { return lastErrorText; };
         void setLastError(ArmOperationResult error, std::string text) { lastError = error; lastErrorText = text; };

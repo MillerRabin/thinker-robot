@@ -1,16 +1,13 @@
 #include <ArmPart.h>
 
-void ArmPart::build(ArmBase& base, const double xAngle, const double yAngle, const double zAngle) {            
-    Serial.printf("\nBuild\nname: %s\nxAngle: %f, yAngle: %f, zAngle: %f\n", name().c_str(), xAngle, yAngle, zAngle);
+void ArmPart::build(ArmBase& base, const double xAngle, const double yAngle, const double zAngle) {                
     const double xRad = getXRad(xAngle);    
     const double yRad = getYRad(yAngle);    
-    const double zRad = getZRad(zAngle);        
-    Serial.printf("XRad: %f, YRad: %f, ZRad: %f\n", xRad, yRad, zRad);
+    const double zRad = getZRad(zAngle);            
     setRadsLocal(xRad, yRad, zRad);    
     const double pxRad = base.getXRad();
     const double pyRad = base.getYRad();
-    const double pzRad = base.getZRad();
-    Serial.printf("base.XRad: %f, base.YRad: %f, base.ZRad: %f\n", pxRad, pyRad, pzRad);
+    const double pzRad = base.getZRad();    
     setRads(pxRad, pyRad, pzRad);  
     updateCoords();  
 }

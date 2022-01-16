@@ -21,8 +21,6 @@ const bool Coords::isEqual(const double x, const double y, const double z, const
 //------ArmBase------
 
 void ArmBase::updateCoords() {    
-    Serial.printf("yRadLocal: %f, yRad: %f\n", YRadLocal, YRad);
-    Serial.printf("zRadLocal: %f, zRad: %f\n", ZRadLocal, ZRad);    
     const double xLength = this->getXLength();
     const double yLength = this->getYLength();    
     const double zLength = this->getZLength();
@@ -42,14 +40,7 @@ void ArmBase::updateCoords() {
     
     this->x = zxLocal + yxLocal + xxLocal;
     this->y = zyLocal + yyLocal + xyLocal;
-    this->z = zzLocal + yzLocal + xzLocal;
-    
-    Serial.printf("\nname: %s\n", name().c_str());
-    Serial.printf("xLength: %f, yLength: %f, zLength: %f\n", xLength, yLength, zLength);    
-    Serial.printf("zxLocal: %f, zyLocal: %f, zzLocal: %f\n", zxLocal, zyLocal, zzLocal);
-    Serial.printf("yxLocal: %f, yyLocal: %f, yzLocal: %f\n", yxLocal, yyLocal, yzLocal);
-    Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);    
-    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);                    
+    this->z = zzLocal + yzLocal + xzLocal;    
 }
 
 void ArmBase::setRads(const double xRad, const double yRad, const double zRad) {    
@@ -194,23 +185,23 @@ const double ArmBase::getZRadFromXY(const double x, const double y) {
     return rRad;
 }
 
-const double ArmBase::getXAngle(const bool validate) {    
-    const double angle = getXAngleFromRad(YRad);
+const double ArmBase::getXAngle(const bool validate) {        
+    const double angle = getXAngleFromRad(XRadLocal);
     if (!validate)
         return angle;
-    return ArmBase::validateYAngle(angle);
+    return ArmBase::validateXAngle(angle);
 }
 
 
 const double ArmBase::getYAngle(const bool validate) {    
-    const double angle = getYAngleFromRad(YRad);
+    const double angle = getYAngleFromRad(YRadLocal);
     if (!validate)
         return angle;
     return ArmBase::validateYAngle(angle);
 }
 
 const double ArmBase::getZAngle(const bool validate) {    
-    const double angle = getZAngleFromRad(ZRad);
+    const double angle = getZAngleFromRad(ZRadLocal);
     if (!validate)
         return angle;
     return ArmBase::validateZAngle(angle);
