@@ -1,17 +1,21 @@
 #include <ArmPart.h>
 
-ArmPart::ArmPart(ArmBase* prev, const double xAngle, const double yAngle, const double zAngle) {    
+void ArmPart::build(ArmBase& base, const double xAngle, const double yAngle, const double zAngle) {            
+    Serial.printf("\nBuild\nname: %s\nxAngle: %f, yAngle: %f, zAngle: %f\n", name().c_str(), xAngle, yAngle, zAngle);
     const double xRad = getXRad(xAngle);    
     const double yRad = getYRad(yAngle);    
     const double zRad = getZRad(zAngle);        
+    Serial.printf("XRad: %f, YRad: %f, ZRad: %f\n", xRad, yRad, zRad);
     setRadsLocal(xRad, yRad, zRad);    
-    const double pxRad = (prev == NULL) ? 0 : prev->XRad;
-    const double pyRad = (prev == NULL) ? 0 : prev->YRad;
-    const double pzRad = (prev == NULL) ? 0 : prev->ZRad;    
-    setRads(pxRad, pyRad, pzRad);    
+    const double pxRad = base.getXRad();
+    const double pyRad = base.getYRad();
+    const double pzRad = base.getZRad();
+    Serial.printf("base.XRad: %f, base.YRad: %f, base.ZRad: %f\n", pxRad, pyRad, pzRad);
+    setRads(pxRad, pyRad, pzRad);  
+    updateCoords();  
 }
 
-const double ArmPart::getLength(ArmBase* prev, const double x, const double y, const double z) {    
+const double ArmPart::getPointLength(ArmBase* prev, const double x, const double y, const double z) {    
     const double px = (prev == NULL) ? 0 : prev->x;
     const double py = (prev == NULL) ? 0 : prev->y;
     const double pz = (prev == NULL) ? 0 : prev->z;        

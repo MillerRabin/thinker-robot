@@ -4,23 +4,28 @@
 #include <armParams.h>
 #include <ArmPart.h>
 #include <ArmElbow.h>
+#include <ArmShoulder.h>
 
 class ArmElbow : public ArmPart {
     public:        
+        ArmElbow(ArmShoulder shoulder, const double yAngle);
+        virtual const String name() override {
+            return "Elbow";
+        };        
         void setRads(const double yRad, const double zRad);
-        const double getYLength() override {
+        virtual const double getYLength() override {
             return ELBOW_Y_LENGTH;
         };
-        const double getYBase() override {
+        virtual const double getYBase() override {
             return ELBOW_Y_BASE;
         };
-        const double getYScale() override {
+        virtual const double getYScale() override {
             return ELBOW_Y_SCALE;
         };
-        const double getYMaxAngle() override {
+        virtual const double getYMaxAngle() override {
             return ELBOW_Y_MAX;
         };
-        const double getYMinAngle() override {
+        virtual const double getYMinAngle() override {
             return ELBOW_Y_MIN;
         };    
 };

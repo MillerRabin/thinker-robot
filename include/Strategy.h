@@ -38,8 +38,8 @@ class ArmRoots {
 
 class Strategy {
     private:
-        Position freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        Position fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle, const double clawAngle);
+        //Position freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
+        //Position fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle, const double clawAngle);
         static ArmRoots getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
         static ArmRoot getValidElbowRoot(ArmElbow elbow, ArmShoulder shoulder, ArmRoots roots);
         Position tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);

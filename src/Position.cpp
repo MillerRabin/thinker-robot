@@ -44,11 +44,13 @@ const double Position::getShoulderYAngle() {
 }
 
 const double Position::getElbowYAngle() {
-    return elbow.getYAngle(shoulder);
+    return NAN;
+    //return elbow.getYAngle(shoulder);
 }
 
 const double Position::getWristYAngle() {
-    return wrist.getYAngle(elbow);
+    return NAN;
+    //return wrist.getYAngle(elbow);
 }
 
 const double Position::getClawXAngle() {
@@ -56,11 +58,13 @@ const double Position::getClawXAngle() {
 }
 
 const double Position::getClawYAngle() {
-    return claw.getYAngle(wrist);
+    return NAN;
+    //return claw.getYAngle(wrist);
 }
 
 const double Position::getClawZAngle() {
-    return claw.getZAngle(wrist);
+    return NAN;
+    //return claw.getZAngle(wrist);
 }
 
 const double Position::getClawAngle() {
@@ -113,13 +117,13 @@ const bool Position::isValid() {
         return false;
     }
         
-    const double eRad = abs(elbow.getLocalRad(shoulder));    
+    /*const double eRad = abs(elbow.getLocalRad(shoulder));    
     const double wRad = abs(wrist.getLocalRad(elbow));
     const double sum = (eRad + wRad) / PI * 180;    
     if (sum > MAX_SUM_ANGLE) {                
         setLastError(ERROR_SUM_OF_ANGLES_ABOVE_MAX, ArmError::getSumError(sum));
         return false;    
-    }
+    }*/
     setLastError(ARM_OPERATION_SUCCESS, "");
     return true;    
 }

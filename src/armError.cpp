@@ -52,36 +52,6 @@ std::string ArmError::getErrorText(ArmOperationResult res) {
     switch(res) {
         case ARM_OPERATION_SUCCESS:
             return "Success";
-        case ERROR_SHOULDER_Y_ANGLE_IS_NAN:
-            return "Shoulder Y angle is NAN";
-        case ERROR_SHOULDER_Y_ANGLE_LESS_MIN:
-            return "Shoulder Y angle less minimum";
-        case ERROR_SHOULDER_Y_ANGLE_ABOVE_MAX:
-            return "Shoulder Y angle above maximum";
-        case ERROR_SHOULDER_Z_ANGLE_IS_NAN:
-            return "Shoulder Z angle is NAN";
-        case ERROR_SHOULDER_Z_ANGLE_LESS_MIN:
-            return "Shoulder Z angle less minimum";
-        case ERROR_SHOULDER_Z_ANGLE_ABOVE_MAX:
-            return "Shoulder Z angle above maximum";
-        case ERROR_ELBOW_Y_ANGLE_IS_NAN:
-            return "Elbow Y angle is NAN";
-        case ERROR_ELBOW_Y_ANGLE_LESS_MIN:
-            return "Elbow Y angle less minimum";
-        case ERROR_ELBOW_Y_ANGLE_ABOVE_MAX:
-            return "Elbow Y angle above maximum";
-        case ERROR_WRIST_Y_ANGLE_IS_NAN:
-            return "Wrist Y angle is NAN";
-        case ERROR_WRIST_Y_ANGLE_LESS_MIN:
-            return "Wrist Y angle less minimum";
-        case ERROR_WRIST_Y_ANGLE_ABOVE_MAX:
-            return "Wrist Y angle above maximum";
-        case ERROR_CLAW_X_ANGLE_IS_NAN:
-            return "Claw X angle is NAN";
-        case ERROR_CLAW_X_ANGLE_LESS_MIN:
-            return "Claw X angle less minimum";
-        case ERROR_CLAW_X_ANGLE_ABOVE_MAX:
-            return "Claw X angle above maximum";
         case ERROR_CLAW_ANGLE_IS_NAN:
             return "Claw angle is NAN";
         case ERROR_CLAW_ANGLE_LESS_MIN:

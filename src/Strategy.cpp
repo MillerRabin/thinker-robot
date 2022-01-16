@@ -63,7 +63,7 @@ Position Strategy::tryShoulderLength(ArmShoulder shoulder, const double length, 
     }
         
     for (double rad : rads) {
-        tShoulder.setRads(rad, tShoulder.ZRad);        
+        //tShoulder.setRads(rad, tShoulder.ZRad);        
         Position pos = tryElbow(tShoulder, x, y, z, clawXAngle, clawAngle);       
         if (pos.isValid()) return pos;
     }
@@ -72,7 +72,7 @@ Position Strategy::tryShoulderLength(ArmShoulder shoulder, const double length, 
 
 Position Strategy::tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
     ArmShoulder tShoulder = shoulder;
-    tShoulder.setRads(rad, tShoulder.ZRad);        
+    //tShoulder.setRads(rad, tShoulder.ZRad);        
     if (!tShoulder.isValid()) {
         return Position();
     }          
@@ -83,25 +83,25 @@ Position Strategy::tryShoulderRad(ArmShoulder shoulder, const double rad, const 
 Position Strategy::tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {
     ArmElbow elbow = startPosition.elbow;    
     elbow.setRads(elbow.YRad, shoulder.ZRad);    
-    elbow.setPosLocal(root.x, root.y, root.z);      
+    //elbow.setPosLocal(root.x, root.y, root.z);      
     
-    if (!elbow.isValid(shoulder))
-        return Position();        
+    /*if (!elbow.isValid(shoulder))
+        return Position();        */
     ArmWrist wrist = startPosition.wrist;    
     const double cx = x - (shoulder.x + elbow.x);
     const double cy = y - (shoulder.y + elbow.y);
     const double cz = z - (shoulder.z + elbow.z);    
-    wrist.setRads(wrist.YRad, elbow.ZRad);
+    //wrist.setRads(wrist.YRad, elbow.ZRad);
     const double yRad = wrist.getYRadFromPos(cx, cy, cz, CLAW_LENGTH + WRIST_LENGTH);    
-    wrist.setRads(yRad, wrist.ZRad);
-    if (!wrist.isValid(elbow)) {    
+    //wrist.setRads(yRad, wrist.ZRad);
+    /*if (!wrist.isValid(elbow)) {    
         return Position();   
-    }   
+    } */  
     
     ArmClaw claw = startPosition.claw;
-    const double cxRad = clawXAngle / 180 * PI;    
-    const double clawRad = clawAngle / 180 * PI;    
-    claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);        
+    //const double cxRad = clawXAngle / 180 * PI;    
+    //const double clawRad = clawAngle / 180 * PI;    
+    //claw.setRads(cxRad, wrist.YRad, wrist.ZRad, clawRad);        
     return Position(shoulder, elbow, wrist, claw);
 }
 
@@ -121,14 +121,14 @@ Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y
 }
 
 
-Position Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {                    
+/*Position Strategy::freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle) {                    
     this->type = "Free angle";
     //const double vl = sqrt(x*x + y*y);
-    /*if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
+    if ((z <= BASE_HEIGHT) && (vl < BASE_WIDTH / 2)) {
         Position ep = Position();
         ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
         return ep;
-    }*/
+    }
     
     const double sLength = ArmShoulder::getLengthFromPoint(x, y, z);        
     if (sLength > MAX_LENGTH) {
@@ -140,10 +140,10 @@ Position Strategy::freeAngle(const double x, const double y, const double z, con
     ArmShoulder shoulder = startPosition.shoulder;  
     const double zRad = shoulder.getZRadFromXY(x, y);       
     shoulder.setRads(shoulder.YRad, zRad);        
-    return getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle);     
-}
+    return getArmPosition(shoulder, x, y, z, clawXAngle, clawAngle); 
+}*/
 
-Position Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
+/*Position Strategy::fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle,const double clawAngle) {                    
     this->type = "Fixed angle";
     const double rRad = clawZAngle / 180 * PI;    
     const double cRad = clawYAngle / 180 * PI;
@@ -182,12 +182,12 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
         return ep;
     }
     
-    /*if ((z <= BASE_HEIGHT) && 
+    if ((z <= BASE_HEIGHT) && 
         ((el < BASE_WIDTH / 2) || (el < BASE_WIDTH / 2))) {    
             Position ep = Position();
             ep.setLastError(ERROR_OUT_OF_RANGE, ArmError::getBaseError(x, y, z));
             return ep;
-    }*/
+    }
 
     
     vector<double> rads = shoulder.getAvailableRads(ELBOW_LENGTH, ex, ey, ez);
@@ -219,7 +219,7 @@ Position Strategy::fixedAngle(const double x, const double y, const double z, co
     Position ep = Position();
     ep.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getUnreachableError());        
     return ep;
-}
+}*/
 
 Strategy::Strategy(
     Position pos, 
@@ -245,11 +245,11 @@ Strategy::Strategy(
     const double lClawZAngle = isnan(clawZAngle) ? scza : clawZAngle;
 
     if (isnan(clawYAngle)) {
-        endPosition = freeAngle(x, y, z, lClawXAngle, lClawAngle);
+        //endPosition = freeAngle(x, y, z, lClawXAngle, lClawAngle);
         return;
     }
         
-    endPosition = fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
+    //endPosition = fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
     return;
 }
 

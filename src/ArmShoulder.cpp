@@ -2,7 +2,12 @@
 #include <ArmShoulder.h>
 #include "radsList.h"
 
-vector<double> ArmShoulder::getAvailableRads(const double maxLength, const double x, const double y, const double z) {    
+ArmShoulder::ArmShoulder(const double yAngle, const double zAngle) {
+    ArmBase base = ArmBase{ 0.0, PI / 2, 0.0 };
+    build(base, 0, yAngle, zAngle);
+}
+
+std::vector<double> ArmShoulder::getAvailableRads(const double maxLength, const double x, const double y, const double z) {    
     const double a = ArmShoulder::getLengthFromPoint(x, y, z);    
     const double c = getLength();    
     const double acSum = a + c;

@@ -20,26 +20,50 @@ const bool Coords::isEqual(const double x, const double y, const double z, const
 
 //------ArmBase------
 
-void ArmBase::setCoords() {    
+void ArmBase::updateCoords() {    
+    Serial.printf("yRadLocal: %f, yRad: %f\n", YRadLocal, YRad);
+    Serial.printf("zRadLocal: %f, zRad: %f\n", ZRadLocal, ZRad);    
     const double xLength = this->getXLength();
     const double yLength = this->getYLength();    
     const double zLength = this->getZLength();
-    Serial.printf("xLength: %f, yLength: %f, zLength: %f\n", xLength, yLength, zLength);
-    Serial.printf("yRadLocal: %f, yRad: %f\n", YRadLocal, YRad);
-    Serial.printf("zRadLocal: %f, zRad: %f\n", ZRadLocal, ZRad);
-    const double zRadTotal = this->ZRad + this->ZRadLocal; 
-    const double hLeverage = zLength * cos(this->YRadLocal) + (yLength + xLength) * cos(this->YRad);
-    this->x = hLeverage * cos(zRadTotal);
-    this->y = hLeverage * sin(zRadTotal);
-    this->z = zLength * sin(this->YRadLocal) + (yLength + xLength) * sin(this->YRad);
+        
+    const double zRadTotal = this->ZRad + this->ZRadLocal;
+    const double yRadTotal = this->YRad + this->YRadLocal;
+
+    const double zxLocal = zLength * cos(zRadTotal) * cos(this->YRad);
+    const double zyLocal = zLength * sin(zRadTotal) * cos(this->YRad);;
+    const double zzLocal = zLength * sin(this->YRad);
+    const double yxLocal = yLength * cos(yRadTotal) * cos(zRadTotal);
+    const double yyLocal = yLength * cos(yRadTotal) * sin(zRadTotal);
+    const double yzLocal = yLength * sin(yRadTotal);
+    const double xxLocal = xLength * cos(yRadTotal) * cos(zRadTotal);
+    const double xyLocal = xLength * cos(yRadTotal) * sin(zRadTotal);
+    const double xzLocal = xLength * sin(yRadTotal);
+    
+    this->x = zxLocal + yxLocal + xxLocal;
+    this->y = zyLocal + yyLocal + xyLocal;
+    this->z = zzLocal + yzLocal + xzLocal;
+    
+    Serial.printf("\nname: %s\n", name().c_str());
+    Serial.printf("xLength: %f, yLength: %f, zLength: %f\n", xLength, yLength, zLength);    
+    Serial.printf("zxLocal: %f, zyLocal: %f, zzLocal: %f\n", zxLocal, zyLocal, zzLocal);
+    Serial.printf("yxLocal: %f, yyLocal: %f, yzLocal: %f\n", yxLocal, yyLocal, yzLocal);
+    Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);    
+    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);                    
 }
 
-void ArmBase::setRads(const double xRad, const double yRad, const double zRad, const double clawRad) {    
+void ArmBase::setRads(const double xRad, const double yRad, const double zRad) {    
     this->YRad = yRad;
     this->ZRad = zRad;
-    this->XRad = xRad;    
-    setCoords();    
+    this->XRad = xRad;
 }
+
+void ArmBase::setRadsLocal(const double xRad, const double yRad, const double zRad) {    
+    this->XRadLocal = xRad;
+    this->YRadLocal = yRad;
+    this->ZRadLocal = zRad;
+}
+
 const double ArmBase::getXRad(const double angle) {    
     return (this->getXScale() * angle + this->getXBase()) * PI / 180.0;    
 }
@@ -72,12 +96,6 @@ const double ArmBase::getXAngleFromRad(const double rad) {
         sAngle = 360 + sAngle;
     const double tAngle = sAngle - (trunc(sAngle / 360) * 360);
     return tAngle;
-}
-
-void ArmBase::setRadsLocal(const double xRad, const double yRad, const double zRad) {    
-    this->XRadLocal = xRad;
-    this->YRadLocal = yRad;
-    this->ZRadLocal = zRad;    
 }
 
 const double ArmBase::getYAngleFromRad(const double rad) {
@@ -166,7 +184,7 @@ const double ArmBase::validateZAngle(const double angle) {
 }
 
 const double ArmBase::getZRadFromXY(const double x, const double y) {
-    const double rRad = ArmPart::getRadFromXY(x, y);
+    const double rRad = ArmBase::getRadFromXY(x, y);
     const double minRad = (SHOULDER_Z_MIN + SHOULDER_Z_BASE) / 180.0 * PI;
     const double maxRad = (SHOULDER_Z_MAX + SHOULDER_Z_BASE) / 180.0 * PI;    
     if (rRad > maxRad) 

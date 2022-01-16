@@ -15,13 +15,12 @@ class ArmClaw : public ArmPart {
         const double getClawAngleFromRad(const double rad);
     public:    
         double clawRad = 0;
-        ArmClaw(ArmWrist wrist, const double clawXAngle, const double clawYAngle, const double clawZAngle, const double clawAngle);        
-        const double getAngle(const bool validate = true);
-        const double getXAngle(const bool validate = true);                        
-        const double getYAngle(ArmWrist wrist, const bool validate = true);                
-        const double getZAngle(ArmWrist wrist, const bool validate = true);
-        void setRads(const double xRad, const double yRad, const double zRad, const double clawRad);
-        void setPos(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, const double x, const double y, const double z);                
+        ArmClaw(ArmWrist wrist, const double xAngle, const double yAngle, const double zAngle, const double clawAngle);
+        const double getAngle(const bool validate = true);        
+
+        virtual const String name() override {
+            return "Claw";
+        };                
         const double getXLength() override {
             return CLAW_X_LENGTH;
         };        

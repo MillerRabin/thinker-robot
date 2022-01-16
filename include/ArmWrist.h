@@ -3,23 +3,29 @@
 
 #include <armParams.h>
 #include <ArmPart.h>
+#include <ArmElbow.h>
 #include <ArmWrist.h>
+
 
 class ArmWrist : public ArmPart {
     public: 
-        const double getYLength() override {
+        ArmWrist(ArmElbow elbow, const double yAngle);
+        virtual const String name() override {
+            return "Wrist";
+        };        
+        virtual const double getYLength() override {
             return WRIST_Y_LENGTH;
         };
-        const double getYBase() override {
+        virtual const double getYBase() override {
             return WRIST_Y_BASE;
         };
-        const double getYScale() override {
+        virtual const double getYScale() override {
             return WRIST_Y_SCALE;
         };
-        const double getYMaxAngle() override {
+        virtual const double getYMaxAngle() override {
             return WRIST_Y_MAX;
         };
-        const double getYMinAngle() override {
+        virtual const double getYMinAngle() override {
             return WRIST_Y_MIN;
         };
 
