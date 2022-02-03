@@ -17,7 +17,7 @@ class ArmClaw : public ArmPart {
         double clawRad = 0;
         ArmClaw(ArmWrist wrist, const double xAngle, const double yAngle, const double zAngle, const double clawAngle);
         const double getAngle(const bool validate = true);        
-
+        
         virtual const String name() override {
             return "Claw";
         };                

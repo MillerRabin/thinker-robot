@@ -5,9 +5,12 @@
 #include <ArmPart.h>
 
 class ArmShoulder : public ArmPart {    
+    private:
+        static const double getZRadFromXY(const double x, const double y);
     public:        
         std::vector<double> getAvailableRads(const double maxLength, const double x, const double y, const double z);
         ArmShoulder(const double yAngle, const double zAngle);                
+        
         virtual const String name() override {
             return "Shoulder";
         };        

@@ -20,7 +20,7 @@ async function checkPosition(pos, tolerance = config.tolerance) {
 }
 
 
-describe('Positioning', function() {
+describe.skip('Positioning', function() {
     describe('Set position free angle', function () {
         it ('130 0 80', async function () {
             await checkPosition({ "claw-x": 130, "claw-y": 0, "claw-z": 80 });

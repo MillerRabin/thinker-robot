@@ -19,6 +19,15 @@ class Coords {
         const bool isEqual(const double x, const double y, const double z, const double tolerance = 0.00001);
 };
 
+//------Point------
+class Point {
+    public:        
+        const double x;
+        const double y;
+        const double z;
+        Point(const double x, const double y, const double z) : x(x), y(y), z(z) {};
+};
+
 //------ArmBase------
 
 class ArmBase {    
@@ -28,8 +37,16 @@ class ArmBase {
         double ZRadLocal = 0;                                    
         const double validateXAngle(const double angle);
         const double validateYAngle(const double angle);
-        const double validateZAngle(const double angle);
-        static const double getZRadFromXY(const double x, const double y);
+        const double validateZAngle(const double angle);           
+        const double getZXLength(const double zRadLocal);
+        const double getZYLength(const double zRadLocal);
+        const double getZZLength();
+        const double getYXLength(const double yRadLocal, const double zRadLocal);
+        const double getYYLength(const double yRadLocal, const double zRadLocal);
+        const double getYZLength(const double yRadLocal);
+        const double getXXLength(const double yRadLocal, const double zRadLocal);
+        const double getXYLength(const double yRadLocal, const double zRadLocal);
+        const double getXZLength(const double yRadLocal);
     public:
         ArmBase(const double XRad = 0, const double YRad = 0, const double ZRad = 0) :
             XRad(XRad),
@@ -112,13 +129,16 @@ class ArmBase {
         const double getZAngleFromRad(const double rad);        
         static const double getRadFromXY(const double x, const double y);
         const bool isValid();
-        const double getLengthFromPoint(const double x, const double y, const double z);
-        void setRads(const double xRad, const double yRad, const double zRad);
+        static const double getLengthFromPoint(const double x, const double y, const double z);        
+        void setRads(const double xRad, const double yRad, const double zRad);        
         void setRadsLocal(const double xRad, const double yRad, const double zRad);
         void updateCoords();
         const double getXAngle(const bool validate = true);
         const double getYAngle(const bool validate = true);
-        const double getZAngle(const bool validate = true);
+        const double getZAngle(const bool validate = true);        
+        static const double getXLength(const double length, const double YRad, const double ZRad);
+        static const double getYLength(const double length, const double YRad, const double ZRad);
+        static const double getZLength(const double length, const double YRad);     
 };
 
 

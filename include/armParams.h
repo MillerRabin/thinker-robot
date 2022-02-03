@@ -24,7 +24,7 @@
 #define WRIST_Y_PIN 26
 
 //Home point. Physical angles of engines
-#define SHOULDER_Z_PHYSICAL_ANGLE 135
+#define SHOULDER_Z_PHYSICAL_ANGLE 130
 #define SHOULDER_Y_PHYSICAL_ANGLE 90
 #define ELBOW_Y_PHYSICAL_ANGLE 135
 #define WRIST_Y_PHYSICAL_ANGLE 135

@@ -150,7 +150,7 @@ Position Strategy::tryElbow(ArmShoulder shoulder, const double x, const double y
     
     const double cxl = CLAW_LENGTH * cos(cRad) * cos(rRad);
     const double cyl = CLAW_LENGTH * cos(cRad) * sin(rRad);
-    const double czl = CLAW_LENGTH * sin(cRad) * cos(rRad);;
+    const double czl = CLAW_LENGTH * sin(cRad) * cos(rRad);
         
     const double wx = x - cxl;
     const double wy = y - cyl;
@@ -237,19 +237,45 @@ Strategy::Strategy(
     speed(speed),
     postDelay(postDelay)    
 {        
-    const double sca = pos.claw.clawRad / PI * 180;
-    const double scxa = pos.claw.XRad / PI * 180;
-    const double scza = pos.claw.ZRad / PI * 180;
-    const double lClawAngle = isnan(clawAngle) ? sca : clawAngle;
-    const double lClawXAngle = isnan(clawXAngle) ? scxa : clawXAngle;
-    const double lClawZAngle = isnan(clawZAngle) ? scza : clawZAngle;
+    const double sca = pos.claw.clawRad;
+    const double scxa = pos.claw.XRad;
+    const double scya = pos.claw.YRad;
+    const double scza = pos.claw.ZRad;
+    const double clawRad = isnan(clawAngle) ? sca : clawAngle / 180 * PI;
+    const double clawXRad = isnan(clawXAngle) ? scxa : clawXAngle / 180 * PI;
+    const double clawYRad = isnan(clawYAngle) ? scya : clawYAngle / 180 * PI;
+    const double clawZRad = isnan(clawZAngle) ? scza : clawZAngle / 180 * PI;    
 
-    if (isnan(clawYAngle)) {
-        //endPosition = freeAngle(x, y, z, lClawXAngle, lClawAngle);
+    const double cxLength = pos.claw.getXLength();
+    const double cyLength = pos.claw.getYLength();
+    Coords xCoord = Coords{ cxLength + cyLength, clawYRad, clawZRad };
+    const double cxx = x - xCoord.x;
+    const double cyx = y - xCoord.y;
+    const double czx = z - xCoord.z;
+    const double pLength = ArmBase::getLengthFromPoint(cxx, cyx, czx);
+    const double zRad = ArmBase::getRadFromXY(cxx, cyx);
+    Serial.printf("x: %f, y: %f, z: %f\n", x, y, z);
+    Serial.printf("xCoord.x: %f, xCoord.y: %f, xCoord.z: %f\n", xCoord.x, xCoord.y, xCoord.z);
+    Serial.printf("cxx: %f, cyx: %f, czx: %f, pLength: %f\n", cxx, cyx, czx, pLength);    
+    Serial.printf("shoulder.length: %f, elbow.length: %f, wrist.length: %f, claw.length: %f\n", 
+                    pos.shoulder.getLength(), pos.elbow.getLength(), pos.wrist.getLength(), pos.claw.getLength()
+    );
+    Serial.printf("zRad: %f\n", zRad);
+
+    const double sHorzLength = pos.shoulder.getLength();
+    const double eHorzLength = pos.elbow.getLength();
+    const double wHorzLength = pos.wrist.getLength();
+    const double cHorzLength = pos.claw.getZLength();
+    const double maxHorzLength = sHorzLength + eHorzLength + wHorzLength + cHorzLength;
+    Serial.printf("sHorzLength: %f, eHorzLength: %f, wHorzlength: %f, cHorzLength: %f\n", sHorzLength, eHorzLength, wHorzLength, cHorzLength);
+    Serial.printf("maxHorzLength: %f\n", maxHorzLength);
+    if (maxHorzLength < pLength) {
+        this->endPosition = Position();
+        this->endPosition.setLastError(ERROR_POINT_UNREACHABLE, ArmError::getMaxLengthError(pLength, maxHorzLength));
         return;
     }
         
-    //endPosition = fixedAngle(x, y, z, lClawXAngle, clawYAngle, lClawZAngle, lClawAngle);
+    Serial.printf("passed\n");        
     return;
 }
 

@@ -43,3 +43,14 @@ std::vector<double> ArmShoulder::getAvailableRads(const double maxLength, const 
 
     return radsList.getRads(cRad);
 }
+
+const double ArmShoulder::getZRadFromXY(const double x, const double y) {
+    const double rRad = ArmBase::getRadFromXY(x, y);
+    const double minRad = (SHOULDER_Z_MIN + SHOULDER_Z_BASE) / 180.0 * PI;
+    const double maxRad = (SHOULDER_Z_MAX + SHOULDER_Z_BASE) / 180.0 * PI;    
+    if (rRad > maxRad) 
+        return (rRad - PI);        
+    if (rRad < minRad) 
+        return (rRad + PI);
+    return rRad;
+}

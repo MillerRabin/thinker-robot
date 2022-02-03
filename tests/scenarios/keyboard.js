@@ -64,7 +64,7 @@ async function press(key) {
 
 
 
-describe.only('Keyboard', function() {
+describe.skip('Keyboard', function() {
     it.only('take a pen', async function () {
         await position.set({"claw-angle": 35, "claw-angle-x": fAngleX, "claw-angle-y": 10,"claw-angle-z": -90, "claw-x": pen.x,"claw-y": pen.y + 60,"claw-z": pen.z + 50, "iterations": 60, "post-delay": 500 });
         await position.set({"claw-angle": 35, "claw-angle-x": fAngleX, "claw-angle-y": 10,"claw-angle-z": -90, "claw-x": pen.x,"claw-y": pen.y,"claw-z": pen.z, "iterations": 60, "post-delay": 1000 });
