@@ -37,16 +37,10 @@ class ArmBase {
         double ZRadLocal = 0;                                    
         const double validateXAngle(const double angle);
         const double validateYAngle(const double angle);
-        const double validateZAngle(const double angle);           
-        const double getZXLength(const double zRadLocal);
-        const double getZYLength(const double zRadLocal);
-        const double getZZLength();
-        const double getYXLength(const double yRadLocal, const double zRadLocal);
-        const double getYYLength(const double yRadLocal, const double zRadLocal);
-        const double getYZLength(const double yRadLocal);
-        const double getXXLength(const double yRadLocal, const double zRadLocal);
-        const double getXYLength(const double yRadLocal, const double zRadLocal);
-        const double getXZLength(const double yRadLocal);
+        const double validateZAngle(const double angle);                   
+        void rotateX(const double xRad);
+        void rotateY(const double yRad);
+        void rotateZ(const double zRad);        
     public:
         ArmBase(const double XRad = 0, const double YRad = 0, const double ZRad = 0) :
             XRad(XRad),
@@ -138,7 +132,7 @@ class ArmBase {
         const double getZAngle(const bool validate = true);        
         static const double getXLength(const double length, const double YRad, const double ZRad);
         static const double getYLength(const double length, const double YRad, const double ZRad);
-        static const double getZLength(const double length, const double YRad);     
+        static const double getZLength(const double length, const double YRad, const double ZRad);     
 };
 
 

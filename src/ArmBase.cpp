@@ -5,7 +5,7 @@
 Coords::Coords(const double length, const double YRad, const double ZRad) : length(length),
   x(ArmBase::getXLength(length, YRad, ZRad)),
   y(ArmBase::getYLength(length, YRad, ZRad)),
-  z(ArmBase::getZLength(length, YRad))
+  z(ArmBase::getZLength(length, YRad, ZRad))
 {}
 
 const bool Coords::isEqual(const double x, const double y, const double z, const double tolerance)
@@ -22,66 +22,66 @@ const bool Coords::isEqual(const double x, const double y, const double z, const
 
 void ArmBase::updateCoords()
 {
-  const double zRadTotal = ZRadLocal + this->ZRad;
-  const double yRadTotal = YRadLocal + this->YRad;
-
-  const double zxLocal = getZXLength(zRadTotal);
-  const double zyLocal = getZYLength(zRadTotal);
-  const double zzLocal = getZZLength();
+  const double zLength = getZLength();  
+  const double zxLocal = zLength * cos(ZRadLocal);
+  const double zyLocal = zLength * sin(ZRadLocal);
+  const double zzLocal = 0;
   
-  const double yxLocal = getYXLength(yRadTotal, zRadTotal);
-  const double yyLocal = getYYLength(yRadTotal, zRadTotal);
-  const double yzLocal = getYZLength(yRadTotal);
+  const double yLength = getYLength();  
+  const double yxLocal = yLength * cos(YRadLocal) * cos(ZRadLocal);
+  const double yyLocal = yLength * cos(YRadLocal) * sin(ZRadLocal);
+  const double yzLocal = yLength * sin(YRadLocal);
   
-  const double xxLocal = getXXLength(yRadTotal, zRadTotal);
-  const double xyLocal = getXYLength(yRadTotal, zRadTotal);
-  const double xzLocal = getXZLength(yRadTotal);
+  const double xLength = getXLength();  
+  const double xxLocal = xLength * cos(YRadLocal) * cos(ZRadLocal);
+  const double xyLocal = xLength * cos(YRadLocal) * sin(ZRadLocal);
+  const double xzLocal = xLength * sin(YRadLocal);
 
-  /*Serial.printf("\nname: %s\n", name().c_str());
+  Serial.printf("\nname: %s\n", name().c_str());
+  Serial.printf("ZRadLocal: %f, YRadLocal: %f, XRadLocal: %f\n", ZRadLocal, YRadLocal, ZRadLocal);
+  Serial.printf("ZRad: %f, YRad: %f, XRad: %f\n", ZRad, YRad, XRad);
   Serial.printf("zxLocal: %f, zyLocal: %f, zzLocal: %f\n", zxLocal, zyLocal, zzLocal);
   Serial.printf("yxLocal: %f, yyLocal: %f, yzLocal: %f\n", yxLocal, yyLocal, yzLocal);
-  Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);*/
-    
+  Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);
+
   this->x = zxLocal + yxLocal + xxLocal;
   this->y = zyLocal + yyLocal + xyLocal;
   this->z = zzLocal + yzLocal + xzLocal;
-  //Serial.printf("x: %f, y: %f, z: %f\n", this->x, this->y, this->z);
+  Serial.printf("x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  rotateX(XRad);
+  Serial.printf("rotate x x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  rotateY(YRad);
+  Serial.printf("rotate y x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  rotateZ(ZRad);
+  Serial.printf("rotate z x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
 }
 
-const double ArmBase::getZXLength(const double zRadLocal) { 
-  return ArmBase::getXLength(getZLength(), this->YRad, zRadLocal);
+void ArmBase::rotateZ(const double zRad) { 
+  const double sx = this->x;  
+  const double sy = this->y;
+  const double sz = this->z;    
+  this->x = sx * cos(zRad) - sy * sin(zRad);
+  this->y = sx * sin(zRad) + sy * cos(zRad);
+  this->z = sz;
 }
 
-const double ArmBase::getZYLength(const double zRadLocal) { 
-  return ArmBase::getYLength(getZLength(), this->YRad, zRadLocal);
+void ArmBase::rotateX(const double xRad) { 
+  const double sx = this->x;
+  const double sy = this->y;
+  const double sz = this->z;    
+  this->x = sx;
+  this->y = sy * cos(xRad) - sz * sin(xRad);
+  this->z = sy * sin(xRad) + sz * cos(xRad);
+  
 }
 
-const double ArmBase::getZZLength() {  
-  return ArmBase::getZLength(getZLength(), this->YRad);
-}
-
-const double ArmBase::getYXLength(const double yRadLocal, const double zRadLocal) {  
-  return ArmBase::getXLength(getYLength(), yRadLocal, zRadLocal);
-}
-
-const double ArmBase::getYYLength(const double yRadLocal, const double zRadLocal) {  
-  return ArmBase::getYLength(getYLength(), yRadLocal, zRadLocal);
-}
-
-const double ArmBase::getYZLength(const double yRadLocal) {    
-  return ArmBase::getZLength(getYLength(), yRadLocal);
-}
-
-const double ArmBase::getXXLength(const double yRadLocal, const double zRadLocal) {
-  return ArmBase::getXLength(getXLength(), yRadLocal, zRadLocal);
-}
-
-const double ArmBase::getXYLength(const double yRadLocal, const double zRadLocal) {
-  return ArmBase::getYLength(getXLength(), yRadLocal, zRadLocal);
-}
-
-const double ArmBase::getXZLength(const double yRadLocal) {  
-  return ArmBase::getZLength(getXLength(), yRadLocal);
+void ArmBase::rotateY(const double yRad) { 
+  const double sx = this->x;
+  const double sy = this->y;
+  const double sz = this->z;    
+  this->x = sx * cos(yRad) - sz * sin(yRad);
+  this->y = sy;
+  this->z = sx * sin(yRad) + sz * cos(yRad);
 }
 
 void ArmBase::setRads(const double xRad, const double yRad, const double zRad)
@@ -297,7 +297,7 @@ const bool ArmBase::isValid()
 
 const double ArmBase::getXLength(const double length, const double YRad, const double ZRad)
 {
-  return length * cos(YRad) * cos(ZRad);
+  return length * sin(YRad) * cos(ZRad);
 }
 
 const double ArmBase::getYLength(const double length, const double YRad, const double ZRad)
@@ -305,7 +305,7 @@ const double ArmBase::getYLength(const double length, const double YRad, const d
   return length * cos(YRad) * sin(ZRad);
 }
 
-const double ArmBase::getZLength(const double length, const double YRad)
-{
-  return length * sin(YRad);
+const double ArmBase::getZLength(const double length, const double YRad, const double ZRad)
+{  
+  return length * cos(YRad) * sin(ZRad);
 }

@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ArmPart.h>
+#include <vector>
 
 class ArmShoulder : public ArmPart {    
     private:

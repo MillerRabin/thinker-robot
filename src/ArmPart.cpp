@@ -55,15 +55,6 @@ void ArmPart::setPos(ArmBase *prev, const double x, const double y, const double
 }
 
 const double ArmPart::getMaxHorzLength()
-{  
-  const double zxMax = this->getZXLength(ZRadLocal);
-  const double zyMax = this->getZYLength(ZRadLocal);
-  const double yxMax = this->getYXLength(0, ZRadLocal);
-  const double yyMax = this->getYYLength(0, ZRadLocal);  
-  const double xxMax = this->getXXLength(0, ZRadLocal);
-  const double xyMax = this->getXYLength(0, ZRadLocal);  
-  const double xLn = zxMax + yxMax + xxMax;
-  const double yLn = zyMax + yyMax + xyMax;  
-  const double maxLength  = sqrt(xLn * xLn + yLn * yLn);  
-  return maxLength;
+{      
+  return 0;
 }

@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <string>
 #include "armParams.h"
 
 class ArmError {
