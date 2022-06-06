@@ -37,23 +37,23 @@ void ArmBase::updateCoords()
   const double xyLocal = xLength * cos(YRadLocal) * sin(ZRadLocal);
   const double xzLocal = xLength * sin(YRadLocal);
 
-  Serial.printf("\nname: %s\n", name().c_str());
+  /*Serial.printf("\nname: %s\n", name().c_str());
   Serial.printf("ZRadLocal: %f, YRadLocal: %f, XRadLocal: %f\n", ZRadLocal, YRadLocal, ZRadLocal);
   Serial.printf("ZRad: %f, YRad: %f, XRad: %f\n", ZRad, YRad, XRad);
   Serial.printf("zxLocal: %f, zyLocal: %f, zzLocal: %f\n", zxLocal, zyLocal, zzLocal);
   Serial.printf("yxLocal: %f, yyLocal: %f, yzLocal: %f\n", yxLocal, yyLocal, yzLocal);
-  Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);
+  Serial.printf("xxLocal: %f, xyLocal: %f, xzLocal: %f\n", xxLocal, xyLocal, xzLocal);*/
 
   this->x = zxLocal + yxLocal + xxLocal;
   this->y = zyLocal + yyLocal + xyLocal;
   this->z = zzLocal + yzLocal + xzLocal;
-  Serial.printf("x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  //Serial.printf("x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
   rotateX(XRad);
-  Serial.printf("rotate x x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  //Serial.printf("rotate x x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
   rotateY(YRad);
-  Serial.printf("rotate y x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  //Serial.printf("rotate y x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
   rotateZ(ZRad);
-  Serial.printf("rotate z x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
+  //Serial.printf("rotate z x: %f, y: %f, z: %f\n", this->x, this->y, this->z);  
 }
 
 void ArmBase::rotateZ(const double zRad) { 
