@@ -297,7 +297,7 @@ const bool ArmBase::isValid()
 
 const double ArmBase::getXLength(const double length, const double YRad, const double ZRad)
 {
-  return length * sin(YRad) * cos(ZRad);
+  return length * cos(YRad) * cos(ZRad);
 }
 
 const double ArmBase::getYLength(const double length, const double YRad, const double ZRad)
@@ -307,5 +307,5 @@ const double ArmBase::getYLength(const double length, const double YRad, const d
 
 const double ArmBase::getZLength(const double length, const double YRad, const double ZRad)
 {  
-  return length * cos(YRad) * sin(ZRad);
+  return length * sin(YRad);
 }

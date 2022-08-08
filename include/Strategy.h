@@ -37,17 +37,15 @@ class ArmRoots {
 //------Strategy------
 
 class Strategy {
-    private:
-        //Position freeAngle(const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        //Position fixedAngle(const double x, const double y, const double z, const double clawXAngle, const double clawYAngle, const double clawZAngle, const double clawAngle);
+    private:        
         static ArmRoots getElbowRoots(ArmShoulder shoulder, const double x, const double y, const double z, const double length);
         static ArmRoot getValidElbowRoot(ArmElbow elbow, ArmShoulder shoulder, ArmRoots roots);
         Position tryElbowRoot(ArmShoulder shoulder, ArmRoot root, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position tryElbow(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);                
         Position tryShoulderLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
         Position tryHalfLength(ArmShoulder shoulder, const double length, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        Position tryShoulderRad(ArmShoulder shoulder, const double rad, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);
-        Position getArmPosition(ArmShoulder shoulder, const double x, const double y, const double z, const double clawXAngle, const double clawAngle);        
+        Position tryShoulderRad(const double rad, const double x, const double y, const double z, const double clawXRad, const double clawYRad, const double clawZRad, const double clawRad);
+        Position getArmPosition(const double x, const double y, const double z, const double clawXRad, const double clawYRad, const double clawZRad, const double clawRad);
         std::string type;
     public:
         Strategy(
