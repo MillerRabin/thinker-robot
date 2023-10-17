@@ -307,7 +307,7 @@ Strategy::Strategy(
   ArmWrist wrist = pos.wrist;
   ArmClaw claw = pos.claw;
   
-  claw.setRadsLocal(clawXRad, clawYRad, scza, sca);
+  //claw.setRadsLocal(clawXRad, clawYRad, scza, sca);
   return;
 }
 

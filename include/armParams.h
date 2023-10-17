@@ -14,13 +14,13 @@
 
 //ESP32 WROOM GPIO PINS
 
-#define SHOULDER_Z_PIN 32
-#define SHOULDER_Y_PIN 33
-#define ELBOW_Y_PIN 25
-#define CLAW_PIN 13
-#define CLAW_X_PIN 12
-#define CLAW_Y_PIN 14
-#define CLAW_Z_PIN 27
+#define SHOULDER_Z_PIN 23
+#define SHOULDER_Y_PIN 27
+#define ELBOW_Y_PIN 32
+#define CLAW_PIN 18
+#define CLAW_X_PIN 33
+#define CLAW_Y_PIN 19
+#define CLAW_Z_PIN 25
 #define WRIST_Y_PIN 26
 
 //Home point. Physical angles of engines

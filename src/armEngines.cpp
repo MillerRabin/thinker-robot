@@ -197,16 +197,15 @@ Position ArmEngines::set(
     Position pos = Position(shoulderYAngle, shoulderZAngle, elbowYAngle, wristYAngle, clawXAngle, clawYAngle, clawZAngle, clawAngle);
     if (!pos.isValid()) return pos;
     ArmOperationResult res = ArmEngines::queue.enqueue(
-            shoulderYAngle, 
-            shoulderZAngle, 
-            elbowYAngle, 
-            wristYAngle, 
-            clawXAngle, 
-            clawYAngle, 
-            clawZAngle, 
-            clawAngle, 
-            speed,
-            postDelay            
+        shoulderYAngle, 
+        shoulderZAngle, 
+        elbowYAngle, 
+        wristYAngle, 
+        clawXAngle, 
+        clawYAngle, 
+        clawZAngle, 
+        clawAngle, 
+        speed,        postDelay
     );
     pos.setLastError(res, ArmError::getErrorText(res));
     if (res == ARM_OPERATION_SUCCESS)
