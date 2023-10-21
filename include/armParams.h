@@ -1,7 +1,7 @@
 #ifndef arm_params_h
 #define arm_params_h
 
-#define APP_VERSION "3.0.0"
+#define APP_VERSION "3.0.1"
 
 #define CLAW_ENGINE 1
 #define CLAW_X_ENGINE 2
@@ -110,6 +110,15 @@
 //Default delay between iterations. Affects on arm movements smooth and speed
 #define DEFAULT_ITERATION_DELAY 15
 
+#define SECOND_LINE_SDA 5
+#define SECOND_LINE_SCL 4
+
+#define BASE_MPU_ADDR 0x68
+#define BASE_BME_ADDR 0x76
+
+#define DETECTORS_LOOP_DELAY (500 / portTICK_RATE_MS)
+#define SEALEVELPRESSURE_HPA (1013.25)
+
 enum ArmOperationResult {
     ARM_OPERATION_SUCCESS = 0,
     ERROR_X_ANGLE_IS_NAN = -1,
@@ -130,5 +139,17 @@ enum ArmOperationResult {
     ERROR_COMMAND_QUEUE_IS_FULL = -16,
     ERROR_COMMAND_QUEUE_ITEM_IS_INVALID = -17
 };
+
+enum BMEError {
+  BME_ERROR_OK = 0,
+  BME_ERROR_NOT_DETECTED = -1
+};
+
+enum MPUError {
+  MPU_ERROR_OK = 0,
+  MPU_ERROR_NOT_DETECTED = -1,
+  MPU_ERROR_MAGNETOMOTER_NOT_DETECTED = -2
+};
+
 
 #endif
