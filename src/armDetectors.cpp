@@ -4,20 +4,35 @@
 unsigned int ArmDetectors::instancesCount;
 TwoWire ArmDetectors::baseLine = TwoWire(1);
 MPU9250_WE ArmDetectors::baseMPU = MPU9250_WE(&ArmDetectors::baseLine, BASE_MPU_ADDR);
-Adafruit_BME280 ArmDetectors::baseBME;
+Adafruit_VL53L0X ArmDetectors::clawRange = Adafruit_VL53L0X();
 
-ArmDetectorsData ArmDetectors::data;
+ArmDetectorsData ArmDetectors::data = ArmDetectorsData();
 
 TaskHandle_t ArmDetectors::loopTask = NULL;
 const volatile SemaphoreHandle_t ArmDetectors::iicSemaphore = xSemaphoreCreateBinary();
+
+bool ArmDetectors::vl53L0x_setup() {
+  if (!ArmDetectors::clawRange.begin()) {
+    Serial.print("\nFailed to boot claw range VL53L0X\n");
+    ArmDetectors::data.clawRangeError = RANGE_ERROR_NOT_DETECTED;
+    return false;
+  }  
+  ArmDetectors::clawRange.startRangeContinuous();
+  Serial.print("\nClaw range VL53L0X is detected\n");
+  ArmDetectors::data.clawRangeError = RANGE_ERROR_OK;
+  return true;
+}
 
 
 bool ArmDetectors::baseMPUSetup() {
   bool status = ArmDetectors::baseMPU.init();
   if (!status) {
+    Serial.print("\nbaseMPU not detected");
     ArmDetectors::data.baseMPUError = MPU_ERROR_NOT_DETECTED;
     return status;
   }
+
+  Serial.print("\nbaseMPU detected");
     
   if(!ArmDetectors::baseMPU.initMagnetometer()) {
     ArmDetectors::data.baseMPUError = MPU_ERROR_MAGNETOMOTER_NOT_DETECTED;
@@ -46,27 +61,27 @@ bool ArmDetectors::baseMPUSetup() {
   return true;
 }
 
-bool ArmDetectors::baseBMESetup() {
-  bool status = ArmDetectors::baseBME.begin(BASE_BME_ADDR, &ArmDetectors::baseLine);
-  if (!status) {
-    ArmDetectors::data.baseBMEError = BME_ERROR_NOT_DETECTED;
-    return status;
-  }
-  ArmDetectors::data.baseBMEError = BME_ERROR_OK;
-  return status;
-}
-
-
 ArmDetectors::ArmDetectors()
 {
   ArmDetectors::instancesCount++;
   if (ArmDetectors::instancesCount > 1)
     return;
   
-  Wire.begin();
-  ArmDetectors::baseLine.begin(SECOND_LINE_SDA, SECOND_LINE_SCL);
-  baseBMESetup();
+  bool fl = Wire.begin();
+  if (fl) {
+    Serial.print("\nFirst iic initialized");
+  } else {
+    Serial.print("\nFirst iic not initialized");
+  }
+  bool sl = ArmDetectors::baseLine.begin(SECOND_LINE_SDA, SECOND_LINE_SCL);
+  if (sl) {
+    Serial.print("\nSecond iic initialized");
+  } else {
+    Serial.print("\nSecond iic not initialized");
+  }
+
   baseMPUSetup();
+  vl53L0x_setup();
       
   xTaskCreate(
       ArmDetectors::loop,
@@ -89,18 +104,12 @@ ArmDetectors::~ArmDetectors()
 
 void ArmDetectors::loop(void *param)
 {
+  xSemaphoreGive(ArmDetectors::iicSemaphore);
   while (true)
   {
     xSemaphoreTake(ArmDetectors::iicSemaphore, portMAX_DELAY);
-    if (ArmDetectors::data.baseBMEError == BME_ERROR_OK) {
-      ArmDetectors::data.baseAltitude = ArmDetectors::baseBME.readAltitude(SEALEVELPRESSURE_HPA);
-      ArmDetectors::data.baseBMETemperature = ArmDetectors::baseBME.readTemperature();
-    } else {
-      ArmDetectors::data.baseAltitude = NAN;
-      ArmDetectors::data.baseBMETemperature = NAN;
-    }
 
-    if (ArmDetectors::data.baseMPUError == MPU_ERROR_OK) {    
+    if (ArmDetectors::data.baseMPUError == MPU_ERROR_OK) {
       ArmDetectors::data.baseGValues = ArmDetectors::baseMPU.getGValues();
       ArmDetectors::data.baseGyroValues = ArmDetectors::baseMPU.getGyrValues();
       ArmDetectors::data.baseMagValues = ArmDetectors::baseMPU.getMagValues();
@@ -114,7 +123,15 @@ void ArmDetectors::loop(void *param)
       ArmDetectors::data.baseMPUTemperature = NAN;
       ArmDetectors::data.baseResultantG = NAN;
       ArmDetectors::data.baseAngles = xyzFloat(NAN, NAN, NAN);
-    }    
+    }
+
+    if (ArmDetectors::data.clawRangeError == RANGE_ERROR_OK) {
+      if (!ArmDetectors::clawRange.isRangeComplete()) {
+        ArmDetectors::data.clawRange = ArmDetectors::clawRange.readRange();
+      } else {
+        ArmDetectors::data.clawRange = -1;
+      }
+    }
     xSemaphoreGive(ArmDetectors::iicSemaphore);
     vTaskDelay(DETECTORS_LOOP_DELAY);
   }
@@ -122,8 +139,11 @@ void ArmDetectors::loop(void *param)
 
 
 ArmDetectorsData ArmDetectors::getData() {
+  //Serial.printf("\nget data");
   xSemaphoreTake(ArmDetectors::iicSemaphore, portMAX_DELAY);
+  //Serial.printf("\nget data semaphore taken");
   const ArmDetectorsData data = ArmDetectors::data;
   xSemaphoreGive(ArmDetectors::iicSemaphore);
+  //Serial.printf("\nget data semaphore given");
   return data;  
 }

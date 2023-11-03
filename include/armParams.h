@@ -140,16 +140,15 @@ enum ArmOperationResult {
     ERROR_COMMAND_QUEUE_ITEM_IS_INVALID = -17
 };
 
-enum BMEError {
-  BME_ERROR_OK = 0,
-  BME_ERROR_NOT_DETECTED = -1
-};
-
 enum MPUError {
   MPU_ERROR_OK = 0,
   MPU_ERROR_NOT_DETECTED = -1,
   MPU_ERROR_MAGNETOMOTER_NOT_DETECTED = -2
 };
 
+enum RangeError {
+  RANGE_ERROR_OK = 0,
+  RANGE_ERROR_NOT_DETECTED = -1
+};
 
 #endif

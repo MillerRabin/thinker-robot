@@ -56,10 +56,8 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
     positions["shoulder-z"] = pos.shoulder.z;
 
     JsonObject &detectors = root.createNestedObject("detectors");
-    detectors["baseBMEError"] = data.baseBMEError;
     detectors["baseMPUError"] = data.baseMPUError;
-    detectors["baseAltitude"] = data.baseAltitude;
-    detectors["baseBMETemperature"] = data.baseBMETemperature;
+    detectors["clawRangeError"] = data.clawRangeError;
     detectors["baseGValues-x"] = data.baseGValues.x;
     detectors["baseGValues-y"] = data.baseGValues.y;
     detectors["baseGValues-z"] = data.baseGValues.z;
@@ -74,6 +72,7 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
     detectors["baseAngles-x"] = data.baseAngles.x;
     detectors["baseAngles-y"] = data.baseAngles.y;
     detectors["baseAngles-z"] = data.baseAngles.z;
+    detectors["clawRange"] = data.clawRange;
   }
 
   ArmOperationResult res = pos.getLastError();
