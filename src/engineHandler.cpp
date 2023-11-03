@@ -7,15 +7,13 @@
 #include "armEngines.h"
 #include "engineHandler.h"
 
-void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, ArmDetectorsData data, std::string strategyType)
-{
+void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, ArmDetectorsData data, std::string strategyType) {
   AsyncResponseStream *response = request->beginResponseStream("application/json");
   DynamicJsonBuffer jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
 
   root["strategy-type"] = strategyType.c_str();
-  if (pos.getLastError() == ARM_OPERATION_SUCCESS)
-  {
+  if (pos.getLastError() == ARM_OPERATION_SUCCESS) {
     JsonObject &pAngles = root.createNestedObject("target-physical-angles");
     pAngles["claw-angle"] = pos.claw.getAngle();
     pAngles["claw-angle-x"] = pos.claw.getXAngle();
@@ -90,8 +88,7 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
   request->send(response);
 }
 
-void EngineHandler::sendError(AsyncWebServerRequest *request, const char *message)
-{
+void EngineHandler::sendError(AsyncWebServerRequest *request, const char *message) {
   AsyncResponseStream *response = request->beginResponseStream("application/json");
   DynamicJsonBuffer jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -100,53 +97,51 @@ void EngineHandler::sendError(AsyncWebServerRequest *request, const char *messag
   request->send(response);
 }
 
-EngineHandler::EngineHandler()
-{
-  engineHandler = new AsyncCallbackJsonWebHandler("/move", [this](AsyncWebServerRequest *request, JsonVariant &json) mutable
-                                                  {    
-        try {
-            JsonObject& jsonObj = json.as<JsonObject>();
-            Position pos = armEngines.set(jsonObj);
-            ArmDetectorsData data = armDetectors.getData();
-            sendSuccess(request, pos, data, "Direct move");
-        } catch (const std::exception& e) {
-            sendError(request, e.what());
-        } catch (...) {
-            sendError(request, "Unknown Error");
-        } });
+EngineHandler::EngineHandler() {
+  engineHandler = new AsyncCallbackJsonWebHandler("/move", [this](AsyncWebServerRequest *request, JsonVariant &json) mutable {    
+    try {
+      JsonObject& jsonObj = json.as<JsonObject>();
+      Position pos = armEngines.set(jsonObj);
+      ArmDetectorsData data = armDetectors.getData();
+      sendSuccess(request, pos, data, "Direct move");
+    } catch (const std::exception& e) {
+      sendError(request, e.what());
+    } catch (...) {
+      sendError(request, "Unknown Error");
+    } 
+  });
 
-  positionHandler = new AsyncCallbackJsonWebHandler("/position", [this](AsyncWebServerRequest *request, JsonVariant &json) mutable
-                                                    {    
-        try {
-            JsonObject& jsonObj = json.as<JsonObject>();        
-            Position pos = armEngines.getPosition();        
-            Strategy moveStrategy(
-                pos, 
-                ArmEngines::getDoubleDef(jsonObj, "claw-x", pos.getX()),
-                ArmEngines::getDoubleDef(jsonObj, "claw-y", pos.getY()),
-                ArmEngines::getDoubleDef(jsonObj, "claw-z", pos.getZ()),
-                ArmEngines::getDouble(jsonObj, "claw-angle-x"),
-                ArmEngines::getDouble(jsonObj, "claw-angle-y"),
-                ArmEngines::getDouble(jsonObj, "claw-angle-z"),
-                ArmEngines::getDouble(jsonObj, "claw-angle"),           
-                ArmEngines::getUintDef(jsonObj, "speed", DEFAULT_SPEED),
-                ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY)            
-            );            
-            Position rPos = armEngines.applyStrategy(moveStrategy);
-            ArmDetectorsData data = armDetectors.getData();
-            sendSuccess(request, rPos, data, moveStrategy.getType());
-        } catch (const std::exception& e) {
-            sendError(request, e.what());
-        } catch (...) {
-            sendError(request, "Unknown Error");
-        } });
+  positionHandler = new AsyncCallbackJsonWebHandler("/position", [this](AsyncWebServerRequest *request, JsonVariant &json) mutable {    
+    try {
+      JsonObject& jsonObj = json.as<JsonObject>();        
+      Position pos = armEngines.getPosition();        
+      Strategy moveStrategy(
+        pos, 
+        ArmEngines::getDoubleDef(jsonObj, "claw-x", pos.getX()),
+        ArmEngines::getDoubleDef(jsonObj, "claw-y", pos.getY()),
+        ArmEngines::getDoubleDef(jsonObj, "claw-z", pos.getZ()),
+        ArmEngines::getDouble(jsonObj, "claw-angle-x"),
+        ArmEngines::getDouble(jsonObj, "claw-angle-y"),
+        ArmEngines::getDouble(jsonObj, "claw-angle-z"),
+        ArmEngines::getDouble(jsonObj, "claw-angle"),           
+        ArmEngines::getUintDef(jsonObj, "speed", DEFAULT_SPEED),
+        ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY)            
+      );            
+      Position rPos = armEngines.applyStrategy(moveStrategy);
+      ArmDetectorsData data = armDetectors.getData();
+      sendSuccess(request, rPos, data, moveStrategy.getType());
+    } catch (const std::exception& e) {
+      sendError(request, e.what());
+    } catch (...) {
+      sendError(request, "Unknown Error");
+    } 
+  });
 
   Server.addHandler(engineHandler);
   Server.addHandler(positionHandler);
 }
 
-EngineHandler::~EngineHandler()
-{
+EngineHandler::~EngineHandler() {
   delete engineHandler;
   delete positionHandler;
 }
