@@ -9,12 +9,12 @@
 class ArmError
 {
 public:
-  static std::string getBaseError(const double x, const double y, const double z);
-  static std::string getMaxLengthError(const double length, const double maxLength);
+  static std::string getBaseError(const float x, const float y, const float z);
+  static std::string getMaxLengthError(const float length, const float maxLength);
   static std::string getShoulderError();
   static std::string getUnreachableError();
-  static std::string getElbowZError(const double z, const double minZ);
-  static std::string getSumError(const double sum);
+  static std::string getElbowZError(const float z, const float minZ);
+  static std::string getSumError(const float sum);
   static std::string getErrorText(ArmOperationResult res);
 };
 

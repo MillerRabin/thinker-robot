@@ -2,37 +2,37 @@
 #include <ArmShoulder.h>
 #include "radsList.h"
 
-ArmShoulder::ArmShoulder(const double yAngle, const double zAngle) {
+ArmShoulder::ArmShoulder(const float yAngle, const float zAngle) {
     ArmBase base = ArmBase{ 0.0, PI / 2, 0.0 };
     build(base, 0, yAngle, zAngle);
 }
 
-std::vector<double> ArmShoulder::getAvailableRads(const double maxLength, const double x, const double y, const double z) {    
-    const double a = ArmShoulder::getLengthFromPoint(x, y, z);    
-    const double c = getLength();    
-    const double acSum = a + c;
+std::vector<float> ArmShoulder::getAvailableRads(const float maxLength, const float x, const float y, const float z) {    
+    const float a = ArmShoulder::getLengthFromPoint(x, y, z);    
+    const float c = getLength();    
+    const float acSum = a + c;
 
-    const double b = (maxLength > acSum) ? acSum : maxLength;
+    const float b = (maxLength > acSum) ? acSum : maxLength;
 
-    const double p = (a + b + c) / 2;
-    const double pa = p - a;
-    const double pb = p - b;
-    const double pc = p - c;
+    const float p = (a + b + c) / 2;
+    const float pa = p - a;
+    const float pb = p - b;
+    const float pc = p - c;
     
-    const double h = 2 * sqrt(p * pa * pb * pc) / a;    
+    const float h = 2 * sqrt(p * pa * pb * pc) / a;    
     
-    const double sinh = h / c;
-    const double trad = asin(sinh);    
+    const float sinh = h / c;
+    const float trad = asin(sinh);    
     RadsList radsList;
     if (isnan(trad)) {        
         return radsList.getRads(NAN);
     }
 
-    const double wz = z;
-    const double lsin = wz / a;
-    const double lrad = asin(lsin);
+    const float wz = z;
+    const float lsin = wz / a;
+    const float lrad = asin(lsin);
             
-    const double cRad = this->YRad;    
+    const float cRad = this->YRad;    
     
     radsList.addIfValid(*this, trad + lrad, b, x, y, z);            
     radsList.addIfValid(*this, trad - lrad, b, x, y, z);            
@@ -44,10 +44,10 @@ std::vector<double> ArmShoulder::getAvailableRads(const double maxLength, const 
     return radsList.getRads(cRad);
 }
 
-const double ArmShoulder::getZRadFromXY(const double x, const double y) {
-    const double rRad = ArmBase::getRadFromXY(x, y);
-    const double minRad = (SHOULDER_Z_MIN + SHOULDER_Z_BASE) / 180.0 * PI;
-    const double maxRad = (SHOULDER_Z_MAX + SHOULDER_Z_BASE) / 180.0 * PI;    
+const float ArmShoulder::getZRadFromXY(const float x, const float y) {
+    const float rRad = ArmBase::getRadFromXY(x, y);
+    const float minRad = (SHOULDER_Z_MIN + SHOULDER_Z_BASE) / 180.0 * PI;
+    const float maxRad = (SHOULDER_Z_MAX + SHOULDER_Z_BASE) / 180.0 * PI;    
     if (rRad > maxRad) 
         return (rRad - PI);        
     if (rRad < minRad) 

@@ -20,19 +20,19 @@ public:
   ArmWrist wrist;
   ArmClaw claw;
   Position(
-      const double shoulderYAngle = NAN,
-      const double shoulderZAngle = NAN,
-      const double elbowYAngle = NAN,
-      const double wristYAngle = NAN,
-      const double clawXAngle = NAN,
-      const double clawYAngle = NAN,
-      const double clawZAngle = NAN,
-      const double clawAngle = NAN);
+      const float shoulderYAngle = NAN,
+      const float shoulderZAngle = NAN,
+      const float elbowYAngle = NAN,
+      const float wristYAngle = NAN,
+      const float clawXAngle = NAN,
+      const float clawYAngle = NAN,
+      const float clawZAngle = NAN,
+      const float clawAngle = NAN);
   Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw claw);
   const bool isValid();
-  const double getX();
-  const double getY();
-  const double getZ();
+  const float getX();
+  const float getY();
+  const float getZ();
   ArmOperationResult getLastError() { return lastError; };
   std::string getLastErrorText() { return lastErrorText; };
   void setLastError(ArmOperationResult error, std::string text)

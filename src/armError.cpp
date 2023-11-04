@@ -4,7 +4,7 @@
 #include "Position.h"
 #include "armParams.h"
 
-std::string ArmError::getBaseError(const double x, const double y, const double z) {
+std::string ArmError::getBaseError(const float x, const float y, const float z) {
     char sx[25]; 
     dtostrf(x, 1, 3, sx);
     char sy[25]; 
@@ -14,7 +14,7 @@ std::string ArmError::getBaseError(const double x, const double y, const double 
     return std::string("The Arm can`t move through it`s base. x: ") + sx + std::string(", y: ") + sy + std::string(", z: ") + sz;            
 }
 
-std::string ArmError::getMaxLengthError(const double length, const double maxLength) {
+std::string ArmError::getMaxLengthError(const float length, const float maxLength) {
     char ss[25]; 
     dtostrf(length, 1, 3, ss);
     char ms[25]; 
@@ -32,7 +32,7 @@ std::string ArmError::getShoulderError() {
     return "EUNREACHABLE: The shoulder angle is not found to achieve specific point";     
 }
 
-std::string ArmError::getElbowZError(const double z, const double minZ) {    
+std::string ArmError::getElbowZError(const float z, const float minZ) {    
     char mz[25]; 
     dtostrf(minZ, 1, 3, mz);    
     char sz[25]; 
@@ -40,7 +40,7 @@ std::string ArmError::getElbowZError(const double z, const double minZ) {
     return std::string("The elbow z: ") + sz + std::string(" is below minimum: ") + mz;            
 }
 
-std::string ArmError::getSumError(const double sum) {    
+std::string ArmError::getSumError(const float sum) {    
     char mz[25]; 
     dtostrf(sum, 1, 3, mz);    
     char sz[25]; 

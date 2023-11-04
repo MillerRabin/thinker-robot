@@ -2,33 +2,33 @@
 #include <ArmClaw.h>
 #include <ArmPart.h>
 
-ArmClaw::ArmClaw(ArmWrist wrist, const double xAngle, const double yAngle, const double zAngle, const double clawAngle) {        
+ArmClaw::ArmClaw(ArmWrist wrist, const float xAngle, const float yAngle, const float zAngle, const float clawAngle) {        
     build(wrist, xAngle, yAngle, zAngle);
     this->clawRad = getClawRad(clawAngle);          
 }
 
-const double ArmClaw::getClawRad(const double angle) {    
+const float ArmClaw::getClawRad(const float angle) {    
     return (CLAW_SCALE * angle + CLAW_BASE) * PI / 180.0;
 }
 
-const double ArmClaw::getAngle(const bool validate) {     
-     const double angle = getClawAngleFromRad(clawRad);
+const float ArmClaw::getAngle(const bool validate) {     
+     const float angle = getClawAngleFromRad(clawRad);
     if (!validate)
         return angle;
     return ArmClaw::validateClawAngle(angle);    
 }
 
-const double ArmClaw::getClawAngleFromRad(const double rad) {
+const float ArmClaw::getClawAngleFromRad(const float rad) {
     if (rad == NAN) return NAN;
-    const double sdeg = rad / PI * 180.0;
-    double sAngle = (sdeg - CLAW_BASE) / CLAW_SCALE;        
+    const float sdeg = rad / PI * 180.0;
+    float sAngle = (sdeg - CLAW_BASE) / CLAW_SCALE;        
     if (sAngle < 0)
         sAngle = 360 + sAngle;
-    const double tAngle = sAngle - (trunc(sAngle / 360) * 360);
+    const float tAngle = sAngle - (trunc(sAngle / 360) * 360);
     return tAngle;
 }
 
-const double ArmClaw::validateClawAngle(const double angle) {        
+const float ArmClaw::validateClawAngle(const float angle) {        
     if (isnan(angle)) return ERROR_CLAW_ANGLE_IS_NAN;            
     if (angle < CLAW_MIN) return ERROR_CLAW_ANGLE_LESS_MIN;     
     if (angle > CLAW_MAX) return ERROR_CLAW_ANGLE_ABOVE_MAX;            

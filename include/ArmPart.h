@@ -3,18 +3,20 @@
 
 #include <ArmBase.h>
 
-class ArmPart : public ArmBase {    
-    private:
-        void setPosLocal(const double localX, const double localY, const double localZ);    
-    protected:                 
-        const double getPointLength(ArmBase* prev, const double x, const double y, const double z);        
-        void build(ArmBase& base, const double xAngle, const double yAngle, const double zAngle);        
-    public:            
-        void setPos(ArmBase* prev, const double x, const double y, const double z);
-        const double getMaxHorzLength();
-        virtual const String name() override {
-            return "ArmPart";
-        };                        
+class ArmPart : public ArmBase {
+private:
+  void setPosLocal(const float localX, const float localY, const float localZ);
+
+protected:
+  const float getPointLength(ArmBase *prev, const float x, const float y, const float z);
+  void build(ArmBase &base, const float xAngle, const float yAngle, const float zAngle);
+
+public:
+  void setPos(ArmBase *prev, const float x, const float y, const float z);
+  const float getMaxHorzLength();
+  virtual const String name() override {
+    return "ArmPart";
+  };
 };
 
 #endif

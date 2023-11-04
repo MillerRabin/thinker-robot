@@ -4,8 +4,8 @@
 #include "Position.h"
 #include "armError.h"
 
-Position::Position(const double shoulderYAngle, const double shoulderZAngle, const double elbowYAngle, const double wristYAngle, const double clawXAngle, 
-                   const double clawYAngle, const double clawZAngle, const double clawAngle) : 
+Position::Position(const float shoulderYAngle, const float shoulderZAngle, const float elbowYAngle, const float wristYAngle, const float clawXAngle, 
+                   const float clawYAngle, const float clawZAngle, const float clawAngle) : 
     shoulder(shoulderYAngle, shoulderZAngle),
     elbow(shoulder, elbowYAngle),
     wrist(elbow, wristYAngle),
@@ -23,27 +23,27 @@ Position::Position(ArmShoulder shoulder, ArmElbow elbow, ArmWrist wrist, ArmClaw
     isValid();
 }
 
-const double Position::getX() {    
+const float Position::getX() {    
     return shoulder.x + elbow.x + wrist.x + claw.x;
 }
 
-const double Position::getY() {
+const float Position::getY() {
     return shoulder.y + elbow.y + wrist.y + claw.y;
 }
 
-const double Position::getZ() {                
+const float Position::getZ() {                
     return shoulder.z + elbow.z + wrist.z + claw.z;
 }
 
 const bool Position::isValid() {        
-    const double dzAngle = this->shoulder.getZAngle();
-    const double dsAngle = this->shoulder.getYAngle();
-    const double deAngle = this->elbow.getYAngle();
-    const double dwAngle = this->wrist.getYAngle();        
-    const double cxAngle = this->claw.getXAngle();        
-    const double cyAngle = this->claw.getYAngle();        
-    const double czAngle = this->claw.getZAngle();        
-    const double clawAngle = this->claw.getAngle();    
+    const float dzAngle = this->shoulder.getZAngle();
+    const float dsAngle = this->shoulder.getYAngle();
+    const float deAngle = this->elbow.getYAngle();
+    const float dwAngle = this->wrist.getYAngle();        
+    const float cxAngle = this->claw.getXAngle();        
+    const float cyAngle = this->claw.getYAngle();        
+    const float czAngle = this->claw.getZAngle();        
+    const float clawAngle = this->claw.getAngle();    
     if (dzAngle < 0) {
         ArmOperationResult res = (ArmOperationResult)dzAngle;
         setLastError(res, ArmError::getErrorText(res));
@@ -81,9 +81,9 @@ const bool Position::isValid() {
         return false;
     }
         
-    /*const double eRad = abs(elbow.getLocalRad(shoulder));    
-    const double wRad = abs(wrist.getLocalRad(elbow));
-    const double sum = (eRad + wRad) / PI * 180;    
+    /*const float eRad = abs(elbow.getLocalRad(shoulder));    
+    const float wRad = abs(wrist.getLocalRad(elbow));
+    const float sum = (eRad + wRad) / PI * 180;    
     if (sum > MAX_SUM_ANGLE) {                
         setLastError(ERROR_SUM_OF_ANGLES_ABOVE_MAX, ArmError::getSumError(sum));
         return false;    

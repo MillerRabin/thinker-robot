@@ -4,15 +4,15 @@
 //--------ArmQueueItem------------
 
 ArmQueueItem::ArmQueueItem(
-    const double shoulderYAngle,
-    const double shoulderZAngle,
-    const double elbowYAngle,
-    const double wristYAngle,
-    const double clawXAngle,
-    const double clawYAngle,
-    const double clawZAngle,
-    const double clawAngle,
-    const double speed,
+    const float shoulderYAngle,
+    const float shoulderZAngle,
+    const float elbowYAngle,
+    const float wristYAngle,
+    const float clawXAngle,
+    const float clawYAngle,
+    const float clawZAngle,
+    const float clawAngle,
+    const float speed,
     const unsigned int postDelay) : shoulderZAngle(shoulderZAngle),
                                     shoulderYAngle(shoulderYAngle),
                                     elbowYAngle(elbowYAngle),
@@ -63,15 +63,15 @@ const bool ArmQueue::isFull()
 }
 
 ArmOperationResult ArmQueue::enqueue(
-    const double shoulderYAngle,
-    const double shoulderZAngle,
-    const double elbowYAngle,
-    const double wristYAngle,
-    const double clawXAngle,
-    const double clawYAngle,
-    const double clawZAngle,
-    const double clawAngle,
-    const double speed,
+    const float shoulderYAngle,
+    const float shoulderZAngle,
+    const float elbowYAngle,
+    const float wristYAngle,
+    const float clawXAngle,
+    const float clawYAngle,
+    const float clawZAngle,
+    const float clawAngle,
+    const float speed,
     const unsigned int postDelay)
 {
   if (isFull())

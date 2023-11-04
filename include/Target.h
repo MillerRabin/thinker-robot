@@ -1,27 +1,28 @@
 #ifndef target_h
 #define target_h
 
-class TargetRange {
-  public:
-    const double min;
-    const double max;
-    TargetRange(const double min, const double max) : min(min), max(max) {};
-};
+  class Range {
+    public: 
+      const float from;
+      const float to;
+      Range(const float from, const float to) : from(from), to(to) {};
+      Range(const float value) : from(value), to(value) {};
+      const float middle();
+  };
 
-
-
-class Target {
-  private:
-
-  public:
-    Target(            
-      TargetRange xRad,
-      TargetRange yRad,
-      TargetRange zRad,
-      const double x,
-      const double y,
-      const double z
-    );
-};
-
+  class Target {
+    public:        
+      Range x;
+      Range y;
+      Range z;
+      Range angleX;
+      Range angleY;
+      Range angleZ;
+      Target(Range x, 
+             Range y, 
+             Range z, 
+             Range angleX, 
+             Range angleY, 
+             Range angleZ) : x(x), y(y), z(z), angleX(angleX), angleY(angleY), angleZ(angleZ) {};
+  };
 #endif

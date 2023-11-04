@@ -12,28 +12,28 @@ private:
   const bool isValid();
 
 public:
-  const double shoulderZAngle;
-  const double shoulderYAngle;
-  const double elbowYAngle;
-  const double wristYAngle;
-  const double clawXAngle;
-  const double clawYAngle;
-  const double clawZAngle;
-  const double clawAngle;
+  const float shoulderZAngle;
+  const float shoulderYAngle;
+  const float elbowYAngle;
+  const float wristYAngle;
+  const float clawXAngle;
+  const float clawYAngle;
+  const float clawZAngle;
+  const float clawAngle;
   const unsigned int speed;
   const unsigned int postDelay;
   const bool valid;
 
   ArmQueueItem(
-      const double shoulderYAngle = NAN,
-      const double shoulderZAngle = NAN,
-      const double elbowYAngle = NAN,
-      const double wristYAngle = NAN,
-      const double clawXAngle = NAN,
-      const double clawYAngle = NAN,
-      const double clawZAngle = NAN,
-      const double clawAngle = NAN,
-      const double speed = DEFAULT_SPEED,
+      const float shoulderYAngle = NAN,
+      const float shoulderZAngle = NAN,
+      const float elbowYAngle = NAN,
+      const float wristYAngle = NAN,
+      const float clawXAngle = NAN,
+      const float clawYAngle = NAN,
+      const float clawZAngle = NAN,
+      const float clawAngle = NAN,
+      const float speed = DEFAULT_SPEED,
       const unsigned int postDelay = DEFAULT_POST_DELAY);
 };
 
@@ -52,15 +52,15 @@ public:
   const bool isFull();
   const unsigned int size();
   ArmOperationResult enqueue(
-      const double shoulderYAngle,
-      const double shoulderZAngle,
-      const double elbowYAngle,
-      const double wristYAngle,
-      const double clawXAngle,
-      const double clawYAngle,
-      const double clawZAngle,
-      const double clawAngle,
-      const double speed,
+      const float shoulderYAngle,
+      const float shoulderZAngle,
+      const float elbowYAngle,
+      const float wristYAngle,
+      const float clawXAngle,
+      const float clawYAngle,
+      const float clawZAngle,
+      const float clawAngle,
+      const float speed,
       const unsigned int postDelay);
   ArmQueueItem *dequeue();
 };

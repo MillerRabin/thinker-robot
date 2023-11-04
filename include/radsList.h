@@ -8,10 +8,10 @@
 
 class RadsList {
     private:
-        std::vector<double> rads;
+        std::vector<float> rads;
     public: 
-        void addIfValid(ArmShoulder shoulder, const double rad, const double targetLength, const double x, const double y, const double z);        
-        std::vector<double> getRads(const double rad);
+        void addIfValid(ArmShoulder shoulder, const float rad, const float targetLength, const float x, const float y, const float z);        
+        std::vector<float> getRads(const float rad);
 };
 
 #endif

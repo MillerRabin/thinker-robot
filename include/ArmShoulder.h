@@ -7,43 +7,43 @@
 
 class ArmShoulder : public ArmPart {    
     private:
-        static const double getZRadFromXY(const double x, const double y);
+        static const float getZRadFromXY(const float x, const float y);
     public:        
-        std::vector<double> getAvailableRads(const double maxLength, const double x, const double y, const double z);
-        ArmShoulder(const double yAngle, const double zAngle);                
+        std::vector<float> getAvailableRads(const float maxLength, const float x, const float y, const float z);
+        ArmShoulder(const float yAngle, const float zAngle);                
         
         virtual const String name() override {
             return "Shoulder";
         };        
         
-        virtual const double getZLength() override {
+        virtual const float getZLength() override {
             return SHOULDER_Z_LENGTH;
         };
-        virtual const double getYLength() override {
+        virtual const float getYLength() override {
             return SHOULDER_Y_LENGTH;
         };        
-        virtual const double getYBase() override {
+        virtual const float getYBase() override {
             return SHOULDER_Y_BASE;
         };
-        virtual const double getYScale() override {
+        virtual const float getYScale() override {
             return SHOULDER_Y_SCALE;
         };
-        virtual const double getYMaxAngle() override {
+        virtual const float getYMaxAngle() override {
             return SHOULDER_Y_MAX;
         };
-        virtual const double getYMinAngle() override {
+        virtual const float getYMinAngle() override {
             return SHOULDER_Y_MIN;
         };
-        virtual const double getZBase() override {
+        virtual const float getZBase() override {
             return SHOULDER_Z_BASE;
         };
-        virtual const double getZScale() override {
+        virtual const float getZScale() override {
             return SHOULDER_Z_SCALE;
         };
-        virtual const double getZMaxAngle() override {
+        virtual const float getZMaxAngle() override {
             return SHOULDER_Z_MAX;
         };
-        virtual const double getZMinAngle() override {
+        virtual const float getZMinAngle() override {
             return SHOULDER_Z_MIN;
         };
 };

@@ -5,19 +5,19 @@
 
 //----ValidRads-----
 
-void RadsList::addIfValid(ArmShoulder shoulder, const double rad, const double targetLength, const double x, const double y, const double z) {    
+void RadsList::addIfValid(ArmShoulder shoulder, const float rad, const float targetLength, const float x, const float y, const float z) {    
     //shoulder.setRads(rad, shoulder.ZRad);    
-    //const double tLength = ArmElbow::getLength(shoulder, x, y, z);    
+    //const float tLength = ArmElbow::getLength(shoulder, x, y, z);    
     if (!shoulder.isValid()) return;    
     //if (!ArmPart::isEqual(tLength, targetLength)) return;
     rads.push_back(rad);
 }
 
 
-std::vector<double> RadsList::getRads(const double rad) {        
-    sort(rads.begin(), rads.end(), [rad](const double rad1, const double rad2) {
-        const double delta1 = abs(rad1 - rad);
-        const double delta2 = abs(rad2 - rad);
+std::vector<float> RadsList::getRads(const float rad) {        
+    sort(rads.begin(), rads.end(), [rad](const float rad1, const float rad2) {
+        const float delta1 = abs(rad1 - rad);
+        const float delta2 = abs(rad2 - rad);
         return (delta1 < delta2);
     });
     return rads;

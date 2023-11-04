@@ -1,9 +1,17 @@
 #ifndef engine_handler_h
 #define engine_handler_h
 
-#include <armEngines.h>
-#include <armDetectors.h>
 #include <AsyncJson.h>
+#include <ArduinoJson.h>
+#include "armEngines.h"
+#include "armDetectors.h"
+#include "Target.h"
+#include "armParams.h"
+#include "initServer.h"
+#include "Position.h"
+#include "Strategy.h"
+#include "armEngines.h"
+#include "angles.h"
 
 class EngineHandler {
     private:

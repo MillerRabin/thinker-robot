@@ -8,24 +8,24 @@
 
 class ArmElbow : public ArmPart {
     public:        
-        ArmElbow(ArmShoulder shoulder, const double yAngle);
+        ArmElbow(ArmShoulder shoulder, const float yAngle);
         virtual const String name() override {
             return "Elbow";
         };        
-        void setRads(const double yRad, const double zRad);
-        virtual const double getYLength() override {
+        void setRads(const float yRad, const float zRad);
+        virtual const float getYLength() override {
             return ELBOW_Y_LENGTH;
         };
-        virtual const double getYBase() override {
+        virtual const float getYBase() override {
             return ELBOW_Y_BASE;
         };
-        virtual const double getYScale() override {
+        virtual const float getYScale() override {
             return ELBOW_Y_SCALE;
         };
-        virtual const double getYMaxAngle() override {
+        virtual const float getYMaxAngle() override {
             return ELBOW_Y_MAX;
         };
-        virtual const double getYMinAngle() override {
+        virtual const float getYMinAngle() override {
             return ELBOW_Y_MIN;
         };    
 };

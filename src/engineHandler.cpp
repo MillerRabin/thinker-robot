@@ -1,10 +1,3 @@
-#include <AsyncJson.h>
-#include <ArduinoJson.h>
-#include "armParams.h"
-#include "initServer.h"
-#include "Position.h"
-#include "Strategy.h"
-#include "armEngines.h"
 #include "engineHandler.h"
 
 void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, ArmDetectorsData data, std::string strategyType) {
@@ -31,13 +24,13 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
 
     JsonObject &lAngles = root.createNestedObject("target-logical-angles");
     lAngles["claw-angle"] = pos.claw.getAngle();
-    lAngles["claw-angle-x"] = double(pos.claw.getXRad() / PI) * 180;
-    lAngles["claw-angle-y"] = double(pos.claw.getYRad() / PI) * 180;
-    lAngles["claw-angle-z"] = double(pos.claw.getZRad() / PI) * 180;
-    lAngles["wrist-angle-y"] = double(pos.wrist.YRad / PI) * 180;
-    lAngles["elbow-angle-y"] = double(pos.elbow.YRad / PI) * 180;
-    lAngles["shoulder-angle-y"] = double(pos.shoulder.YRad / PI) * 180;
-    lAngles["shoulder-angle-z"] = double(pos.shoulder.ZRad / PI) * 180;
+    lAngles["claw-angle-x"] = float(pos.claw.getXRad() / PI) * 180;
+    lAngles["claw-angle-y"] = float(pos.claw.getYRad() / PI) * 180;
+    lAngles["claw-angle-z"] = float(pos.claw.getZRad() / PI) * 180;
+    lAngles["wrist-angle-y"] = float(pos.wrist.YRad / PI) * 180;
+    lAngles["elbow-angle-y"] = float(pos.elbow.YRad / PI) * 180;
+    lAngles["shoulder-angle-y"] = float(pos.shoulder.YRad / PI) * 180;
+    lAngles["shoulder-angle-z"] = float(pos.shoulder.ZRad / PI) * 180;
 
     JsonObject &positions = root.createNestedObject("target-position");
     positions["claw-x"] = pos.getX();
@@ -114,16 +107,22 @@ EngineHandler::EngineHandler() {
   positionHandler = new AsyncCallbackJsonWebHandler("/position", [this](AsyncWebServerRequest *request, JsonVariant &json) mutable {    
     try {
       JsonObject& jsonObj = json.as<JsonObject>();        
-      Position pos = armEngines.getPosition();        
+      Position pos = armEngines.getPosition();
+
+      const float clawX = ArmEngines::getfloatDef(jsonObj, "claw-x", pos.getX());
+      const float clawY = ArmEngines::getfloatDef(jsonObj, "claw-y", pos.getY());
+      const float clawZ = ArmEngines::getfloatDef(jsonObj, "claw-z", pos.getZ());
+      const float clawRadX = getRad(ArmEngines::getfloat(jsonObj, "claw-angle-x"));
+      const float clawRadY = getRad(ArmEngines::getfloat(jsonObj, "claw-angle-y"));
+      const float clawRadZ = getRad(ArmEngines::getfloat(jsonObj, "claw-angle-z"));
+      const float clawRad = getRad(ArmEngines::getfloat(jsonObj, "claw-angle"));
+
+      Target target = Target({clawX}, {clawY}, {clawZ}, {clawRadX}, {clawRadY}, {clawRadZ});
+
       Strategy moveStrategy(
-        pos, 
-        ArmEngines::getDoubleDef(jsonObj, "claw-x", pos.getX()),
-        ArmEngines::getDoubleDef(jsonObj, "claw-y", pos.getY()),
-        ArmEngines::getDoubleDef(jsonObj, "claw-z", pos.getZ()),
-        ArmEngines::getDouble(jsonObj, "claw-angle-x"),
-        ArmEngines::getDouble(jsonObj, "claw-angle-y"),
-        ArmEngines::getDouble(jsonObj, "claw-angle-z"),
-        ArmEngines::getDouble(jsonObj, "claw-angle"),           
+        pos,
+        target,
+        ArmEngines::getUintDef(jsonObj, "clawAngle", pos.claw.getAngle()),        
         ArmEngines::getUintDef(jsonObj, "speed", DEFAULT_SPEED),
         ArmEngines::getUintDef(jsonObj, "post-delay", DEFAULT_POST_DELAY)            
       );            
