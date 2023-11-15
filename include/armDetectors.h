@@ -4,7 +4,6 @@
 #include <armParams.h>
 #include <MPU9250_WE.h>
 #include <Wire.h>
-#include <Adafruit_BMP280.h>
 #include <Adafruit_VL53L0X.h>
 
 //

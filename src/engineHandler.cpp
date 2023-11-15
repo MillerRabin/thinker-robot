@@ -38,13 +38,13 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
     positions["claw-z"] = pos.getZ();
     positions["wrist-x"] = pos.shoulder.x + pos.elbow.x + pos.wrist.x;
     positions["wrist-y"] = pos.shoulder.y + pos.elbow.y + pos.wrist.y;
-    positions["wrist-z"] = pos.shoulder.z + pos.elbow.z + pos.wrist.z;
+    positions["wrist-z"] = pos.shoulder.z + pos.elbow.z + pos.wrist.z + BASE_HEIGHT;
     positions["elbow-x"] = pos.shoulder.x + pos.elbow.x;
     positions["elbow-y"] = pos.shoulder.y + pos.elbow.y;
-    positions["elbow-z"] = pos.shoulder.z + pos.elbow.z;
+    positions["elbow-z"] = pos.shoulder.z + pos.elbow.z + BASE_HEIGHT;
     positions["shoulder-x"] = pos.shoulder.x;
     positions["shoulder-y"] = pos.shoulder.y;
-    positions["shoulder-z"] = pos.shoulder.z;
+    positions["shoulder-z"] = pos.shoulder.z + BASE_HEIGHT;
 
     JsonObject &detectors = root.createNestedObject("detectors");
     detectors["baseMPUError"] = data.baseMPUError;

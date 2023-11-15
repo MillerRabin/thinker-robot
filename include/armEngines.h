@@ -1,8 +1,8 @@
 #ifndef arm_engines_h
 #define arm_engines_h
 
-#define ENGINE_IMPULSE_MIN 500
-#define ENGINE_IMPULSE_MAX 2500
+#define ENGINE_IMPULSE_MIN 550
+#define ENGINE_IMPULSE_MAX 2480
 #define TIMER_WIDTH 16
 #define TIMER_FREQ 200
 

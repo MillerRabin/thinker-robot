@@ -166,12 +166,12 @@ void ArmEngines::loop(void *param)
       ArmEngines::clawZAngle = (counter <= iterations) ? sourceClawZAngle + clawZAngleInc : targetClawZAngle;
       ArmEngines::clawAngle = (counter <= iterations) ? sourceClawAngle + clawAngleInc : targetClawAngle;
 
-      const unsigned int shoulderY = degToCount(ArmEngines::shoulderYAngle, SHOULDER_Y_PHYSICAL_MAX, SHOULDER_Y_COUNT_LOW, SHOULDER_Y_COUNT_HIGH);
+      const unsigned int shoulderY = degToCount(ArmEngines::shoulderYAngle, SHOULDER_Y_PHYSICAL_MAX);
       const unsigned int shoulderZ = degToCount(ArmEngines::shoulderZAngle, 270);
-      const unsigned int elbowY = degToCount(ArmEngines::elbowYAngle, 270, ELBOW_Y_COUNT_LOW, ELBOW_Y_COUNT_HIGH);
+      const unsigned int elbowY = degToCount(ArmEngines::elbowYAngle, 270);
       const unsigned int wristY = degToCount(ArmEngines::wristYAngle, 270);
       const unsigned int clawX = degToCount(ArmEngines::clawXAngle, 270);
-      const unsigned int clawY = degToCount(ArmEngines::clawYAngle, CLAW_Y_PHYSICAL_MAX, CLAW_Y_COUNT_LOW, CLAW_Y_COUNT_HIGH);
+      const unsigned int clawY = degToCount(ArmEngines::clawYAngle, CLAW_Y_PHYSICAL_MAX);
       const unsigned int clawZ = degToCount(ArmEngines::clawZAngle, 270);
       const unsigned int claw = degToCount(ArmEngines::clawAngle, 180);
 

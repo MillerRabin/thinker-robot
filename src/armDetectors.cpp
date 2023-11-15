@@ -17,8 +17,7 @@ bool ArmDetectors::vl53L0x_setup() {
     ArmDetectors::data.clawRangeError = RANGE_ERROR_NOT_DETECTED;
     return false;
   }  
-  ArmDetectors::clawRange.startRangeContinuous();
-  Serial.print("\nClaw range VL53L0X is detected\n");
+  ArmDetectors::clawRange.startRangeContinuous();  
   ArmDetectors::data.clawRangeError = RANGE_ERROR_OK;
   return true;
 }
@@ -31,9 +30,7 @@ bool ArmDetectors::baseMPUSetup() {
     ArmDetectors::data.baseMPUError = MPU_ERROR_NOT_DETECTED;
     return status;
   }
-
-  Serial.print("\nbaseMPU detected");
-    
+      
   if(!ArmDetectors::baseMPU.initMagnetometer()) {
     ArmDetectors::data.baseMPUError = MPU_ERROR_MAGNETOMOTER_NOT_DETECTED;
   }
@@ -53,8 +50,8 @@ bool ArmDetectors::baseMPUSetup() {
   ArmDetectors::baseMPU.enableAccDLPF(true);
   ArmDetectors::baseMPU.setAccDLPF(MPU9250_DLPF_6);
 
-  //ArmEngines::baseMPU.enableAccAxes(MPU9250_ENABLE_XYZ);
-  //ArmEngines::baseMPU.enableGyrAxes(MPU9250_ENABLE_XYZ);
+  ArmDetectors::baseMPU.enableAccAxes(MPU9250_ENABLE_XYZ);
+  ArmDetectors::baseMPU.enableGyrAxes(MPU9250_ENABLE_XYZ);
   
   if (ArmDetectors::data.baseMPUError != MPU_ERROR_OK)
     ArmDetectors::baseMPU.setMagOpMode(AK8963_CONT_MODE_100HZ);
@@ -68,18 +65,13 @@ ArmDetectors::ArmDetectors()
     return;
   
   bool fl = Wire.begin();
-  if (fl) {
-    Serial.print("\nFirst iic initialized");
-  } else {
-    Serial.print("\nFirst iic not initialized");
+  if (!fl) {    
+    Serial.print("\nFirst iic not initialized");  
   }
   bool sl = ArmDetectors::baseLine.begin(SECOND_LINE_SDA, SECOND_LINE_SCL);
-  if (sl) {
-    Serial.print("\nSecond iic initialized");
-  } else {
+  if (!sl) {
     Serial.print("\nSecond iic not initialized");
   }
-
   baseMPUSetup();
   vl53L0x_setup();
       

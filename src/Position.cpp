@@ -32,7 +32,7 @@ const float Position::getY() {
 }
 
 const float Position::getZ() {                
-    return shoulder.z + elbow.z + wrist.z + claw.z;
+    return shoulder.z + elbow.z + wrist.z + claw.z + BASE_HEIGHT;
 }
 
 const bool Position::isValid() {        
