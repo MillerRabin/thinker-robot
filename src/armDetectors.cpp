@@ -13,7 +13,7 @@ const volatile SemaphoreHandle_t ArmDetectors::iicSemaphore = xSemaphoreCreateBi
 
 bool ArmDetectors::vl53L0x_setup() {
   if (!ArmDetectors::clawRange.begin()) {
-    Serial.print("\nFailed to boot claw range VL53L0X\n");
+    Serial.print("Failed to boot claw range VL53L0X\n");
     ArmDetectors::data.clawRangeError = RANGE_ERROR_NOT_DETECTED;
     return false;
   }  
@@ -26,17 +26,20 @@ bool ArmDetectors::vl53L0x_setup() {
 bool ArmDetectors::baseMPUSetup() {
   bool status = ArmDetectors::baseMPU.init();
   if (!status) {
-    Serial.print("\nbaseMPU not detected");
+    Serial.print("baseMPU not detected\n");
     ArmDetectors::data.baseMPUError = MPU_ERROR_NOT_DETECTED;
     return status;
   }
       
+  
   if(!ArmDetectors::baseMPU.initMagnetometer()) {
+    Serial.print("Magnetometer not responds\n");
     ArmDetectors::data.baseMPUError = MPU_ERROR_MAGNETOMOTER_NOT_DETECTED;
+  } else {
+    Serial.print("baseMPU detected\n");
+    ArmDetectors::data.baseMPUError = MPU_ERROR_OK;
   }
-
-  ArmDetectors::data.baseMPUError = MPU_ERROR_OK;
-
+    
   ArmDetectors::baseMPU.setAccOffsets(-14240.0, 18220.0, -17280.0, 15590.0, -20930.0, 12080.0);
   ArmDetectors::baseMPU.setGyrOffsets(45.0, 145.0, -105.0);
   ArmDetectors::baseMPU.enableGyrDLPF();
@@ -66,12 +69,16 @@ ArmDetectors::ArmDetectors()
   
   bool fl = Wire.begin();
   if (!fl) {    
-    Serial.print("\nFirst iic not initialized");  
+    Serial.print("First iic not initialized\n");    
   }
+
+  //delay(1000);
   bool sl = ArmDetectors::baseLine.begin(SECOND_LINE_SDA, SECOND_LINE_SCL);
   if (!sl) {
-    Serial.print("\nSecond iic not initialized");
+    Serial.print("Second iic not initialized\n");
   }
+
+  //delay(1000);
   baseMPUSetup();
   vl53L0x_setup();
       
@@ -131,11 +138,17 @@ void ArmDetectors::loop(void *param)
 
 
 ArmDetectorsData ArmDetectors::getData() {
-  //Serial.printf("\nget data");
+  //Serial.printf("get data\n");
   xSemaphoreTake(ArmDetectors::iicSemaphore, portMAX_DELAY);
-  //Serial.printf("\nget data semaphore taken");
+  //Serial.printf("get data semaphore taken\n");
   const ArmDetectorsData data = ArmDetectors::data;
   xSemaphoreGive(ArmDetectors::iicSemaphore);
-  //Serial.printf("\nget data semaphore given");
+  //Serial.printf("get data semaphore given\n");
   return data;  
+}
+
+// -------------- ArmDetectorsData ----------------------
+
+float ArmDetectorsData::getBaseAzimuth() {
+  return atan2(baseMagValues.z, baseMagValues.y) * 180 / PI;
 }

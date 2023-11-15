@@ -64,6 +64,7 @@ void EngineHandler::sendSuccess(AsyncWebServerRequest *request, Position pos, Ar
     detectors["baseAngles-y"] = data.baseAngles.y;
     detectors["baseAngles-z"] = data.baseAngles.z;
     detectors["clawRange"] = data.clawRange;
+    detectors["baseAzimuth"] = data.getBaseAzimuth();
   }
 
   ArmOperationResult res = pos.getLastError();

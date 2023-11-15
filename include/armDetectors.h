@@ -19,6 +19,7 @@ public:
   int baseMPUError;
   int clawRangeError;
   uint16_t clawRange;
+  float getBaseAzimuth();
 };
 
 
@@ -36,8 +37,7 @@ private:
   static TaskHandle_t loopTask;
   static void loop(void *param);
   static ArmDetectorsData data;  
-  static const volatile SemaphoreHandle_t iicSemaphore;
-    
+  static const volatile SemaphoreHandle_t iicSemaphore;  
 public:
   ArmDetectors();
   ~ArmDetectors();
